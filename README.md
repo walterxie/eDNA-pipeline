@@ -2,7 +2,7 @@
 
 Evaluating a multigene environmental DNA approach for comprehensive biodiversity assessment
 
-============== Dataset ==============
+## Dataset
 
 1. BioProject in NCBI:
 http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737
@@ -20,21 +20,32 @@ plot_elevations.txt
 CO1_Invertebrate_Pitfall_1526_OTUs.csv, 
 CO1_Leaf_Litter_1526_OTUs.csv
 
-
 6. Vegetation survey data:
 Hauturu (Little Barrier island) in Jan 2011 http://nvs.landcareresearch.co.nz
 
 trees_pilot_species_1_2_0.csv, 
 seedlings_pilot_species_1_2_0.csv
 
-
 7. Bird counts:
 birds_pilot_species_1_2_0.csv
 
 
-============== Download 454 sequences ==============
+## Folder structure in working path 
 
-1. Download soil environmental sequences (454) in SRA:
+1. A working folder, such as ./pipeline
+
+2. Folders for each data set (genes), such as ./pipeline/16S
+
+3. Folders for deconvolution, such as ./pipeline/16S/deconvoluted
+
+4. Folders for quality control, such as ./pipeline/16S/qc
+
+5. Folders for each OTU threshold, such as ./pipeline/16S/otus97
+
+
+## Download 454 sequences 
+
+1. Download soil environmental sequences (454) from SRA:
 http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103
 
 2. Convert sra format into fastq using SRA Toolkit, such as:
@@ -50,7 +61,7 @@ cat *.fastq > 16S.fastq
 Alternatively, use scripts downloadData.sh and prepareData.sh as discribed below.
 
 
-============== UPARSE ==============
+## UPARSE 
 
 1. Download USEARCH http://www.drive5.com/usearch/download.html
 
@@ -80,7 +91,8 @@ cd COI
 ../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
 ```
 
-============== Generate Community Matrix ==============
+
+## Generate Community Matrix 
 
 1. Create a data folder under the working folder, such as ./pipeline/data. And download modified SraRunTable.txt from 
 
@@ -90,5 +102,10 @@ java -jar CMCreator0.1.jar -working COI/otus97 -out COI-97.csv -chi chimeras.fas
 ```
 
 
+## Community Matrix Analysis 
 
+1. Change source path for pipeline and working path for data into your local path.
 
+2. Run createAllDiversitiesOTUsTable.r first to get the rarefraction table and OTU threshold table. This is time-consuming.
+
+3. Run all*.r one by one to get all figures and tables.
