@@ -26,7 +26,7 @@ CO1_Invertebrate_Pitfall_1526_OTUs.csv
 CO1_Leaf_Litter_1526_OTUs.csv
 
 
-7. Vegetation survey data:
+6. Vegetation survey data:
 
 Hauturu (Little Barrier island) in Jan 2011 http://nvs.landcareresearch.co.nz
 
@@ -34,7 +34,7 @@ trees_pilot_species_1_2_0.csv
 seedlings_pilot_species_1_2_0.csv
 
 
-8. Bird counts:
+7. Bird counts:
 
 birds_pilot_species_1_2_0.csv
 
