@@ -5,7 +5,6 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 ============== Dataset ==============
 
 1. BioProject in NCBI:
-
 http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737
 
 2. 20 BioSamples (including lat-long, elevation, temperature):
@@ -46,15 +45,15 @@ birds_pilot_species_1_2_0.csv
 http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103
 
 2. Convert sra format into fastq using SRA Toolkit, such as:
-
+```
 /sratoolkit.2.4.3-mac64/bin/fastq-dump SRR1720812.sra
-
+```
 SRR1720812.fastq will be ready in the same folder.
 
 3. Combine all fastq files from the same marker into one file:
-
+```
 cat *.fastq > 16S.fastq
-
+```
 Alternatively, use scripts downloadData.sh and prepareData.sh
 
 
@@ -75,26 +74,24 @@ ln -s usearch8.0.??? usearch8
 6. scripts/prepareData.sh
 
 7. Go into each gene folder to run script for either denovo chimera filtering or reference filtering (16S only), e.g.
-
+```
 cd 16S
-
 ../scripts/runOTUsRef.sh ./deconvoluted/16S.fastq 
-
+```
 or 
-
+```
 cd COI
-
 ../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
-
+```
 
 ============== Generate Community Matrix ==============
 
 1. Create a data folder under the working folder, such as ./pipeline/data. And download modified SraRunTable.txt from 
 
 2. Stay in the working folder, such as ./pipeline
-
+```
 java -jar CMCreator0.1.jar -working COI/otus97 -out COI-97.csv -chi chimeras.fasta -sra data/SraRunTable.txt -overwrite out.up
-
+```
 
 
 
