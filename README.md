@@ -17,14 +17,14 @@ http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103
 plot_elevations.txt
 
 5. Invertebrate (leaf litter + pitfall traps):
-CO1_Invertebrate_Pitfall_1526_OTUs.csv
+CO1_Invertebrate_Pitfall_1526_OTUs.csv, 
 CO1_Leaf_Litter_1526_OTUs.csv
 
 
 6. Vegetation survey data:
 Hauturu (Little Barrier island) in Jan 2011 http://nvs.landcareresearch.co.nz
 
-trees_pilot_species_1_2_0.csv
+trees_pilot_species_1_2_0.csv, 
 seedlings_pilot_species_1_2_0.csv
 
 
