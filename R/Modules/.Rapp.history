@@ -1,0 +1,926 @@
+allMaxDiv
+allMaxDiv[,2] <- maxDivTable[order(maxDivTable$removedSites),][,1]
+allMaxDiv[,matrixNames[expId]] <- maxDivTable[order(maxDivTable$removedSites),][,1]
+matrixNames[expId]
+maxDivTable[order(maxDivTable$removedSites),][,1]
+allMaxDiv[,1]
+allMaxDiv <- NULL
+allMaxDiv[,1] <- maxDivTable[order(maxDivTable$removedSites),][,3]
+allMaxDiv <- data.frame(Plots= maxDivTable[order(maxDivTable$removedSites),][,3], stringsAsFactors = FALSE)
+allMaxDiv <- NULL
+allMaxDiv <- data.frame(Plots= maxDivTable[order(maxDivTable$removedSites),][,3], stringsAsFactors = FALSE)
+allMaxDiv
+allMaxDiv[,matrixNames[expId]] <- maxDivTable[order(maxDivTable$removedSites),][,1]
+allMaxDiv
+maxX <- 0#
+maxY <- 0#
+allMaxDiv <- NULL#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+	maxX <- max(maxX, max(as.numeric(maxDivTable$rank)))#
+	maxY <- max(maxY, max(as.numeric(maxDivTable$diversity)))#
+	if (expId==1) {		#
+		allMaxDiv <- data.frame(Plots= maxDivTable[order(maxDivTable$removedSites),][,3], stringsAsFactors = FALSE)		#
+	} else {#
+	   if(all(allMaxDiv$Plots != maxDivTable[order(maxDivTable$removedSites),][,3])) #
+           stop(paste("Find different plots ", allMaxDiv$Plots, " != ", maxDivTable[order(maxDivTable$removedSites),][,1], sep=""))#
+	}#
+	allMaxDiv[,matrixNames[expId]] <- maxDivTable[order(maxDivTable$removedSites),][,1]#
+}
+allMaxDiv
+outputMaxDiv <- paste(workingPath, "data/plots-rank-table-", lev, q, ".csv", sep = "")#
+write.csv(maxDiv, outputMaxDiv, row.names=FALSE)
+write.csv(allMaxDiv, outputMaxDiv, row.names=FALSE)
+q
+q=1
+maxX <- 0#
+maxY <- 0#
+allMaxDiv <- NULL#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+	maxX <- max(maxX, max(as.numeric(maxDivTable$rank)))#
+	maxY <- max(maxY, max(as.numeric(maxDivTable$diversity)))#
+	if (expId==1) {		#
+		allMaxDiv <- data.frame(Plots= maxDivTable[order(maxDivTable$removedSites),][,3], stringsAsFactors = FALSE)		#
+	} else {#
+	   if(all(allMaxDiv$Plots != maxDivTable[order(maxDivTable$removedSites),][,3])) #
+           stop(paste("Find different plots ", allMaxDiv$Plots, " != ", maxDivTable[order(maxDivTable$removedSites),][,1], sep=""))#
+	}#
+	allMaxDiv[,matrixNames[expId]] <- maxDivTable[order(maxDivTable$removedSites),][,1]#
+}#
+outputMaxDiv <- paste(workingPath, "data/plots-rank-table-", lev, q, ".csv", sep = "")#
+write.csv(allMaxDiv, outputMaxDiv, row.names=FALSE)
+pdf(paste(workingPath, "figures/max-remained-", lev, q, ".pdf", sep = ""), width=8, height=8)#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+#
+	if (expId == 1) {#
+		plot(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId], xlim=c(maxX,1), ylim=c(0,1), #
+			   xlab="number of sites remained", ylab=paste("% of original ", lev, "(", q, ")", sep=""), main="") 				  #
+	} else {#
+		points(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId]) #
+	}#
+#
+	lines(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), lty=2, col=mypalette[expId]) #
+}    #
+#
+legend("bottomleft", ncol=n, legend=matrixNames, col=mypalette, pch=as.numeric(myshape))#
+#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/max-remained-", lev, q, ".pdf", sep = ""), width=8, height=8)#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+#
+	if (expId == 1) {#
+		plot(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId], xlim=c(nrow(maxDivTable),1), ylim=c(0,1), #
+			   xlab="number of sites remained", ylab=paste("% of original ", lev, "(", q, ")", sep=""), main="") 				  #
+	} else {#
+		points(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId]) #
+	}#
+#
+	lines(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), lty=2, col=mypalette[expId]) #
+}    #
+#
+legend("bottomleft", ncol=n, legend=matrixNames, col=mypalette, pch=as.numeric(myshape))#
+#
+invisible(dev.off())
+q
+maxDivTable
+q-0
+q=0
+allMaxDiv <- NULL#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+	if (expId==1) {		#
+		allMaxDiv <- data.frame(Plots= maxDivTable[order(maxDivTable$removedSites),][,3], stringsAsFactors = FALSE)		#
+	} else {#
+	   if(all(allMaxDiv$Plots != maxDivTable[order(maxDivTable$removedSites),][,3])) #
+           stop(paste("Find different plots ", allMaxDiv$Plots, " != ", maxDivTable[order(maxDivTable$removedSites),][,1], sep=""))#
+	}#
+	allMaxDiv[,matrixNames[expId]] <- maxDivTable[order(maxDivTable$removedSites),][,1]#
+}#
+outputMaxDiv <- paste(workingPath, "data/plots-rank-table-", lev, q, ".csv", sep = "")#
+write.csv(allMaxDiv, outputMaxDiv, row.names=FALSE)#
+pdf(paste(workingPath, "figures/max-remained-", lev, q, ".pdf", sep = ""), width=8, height=8)#
+#
+for (expId in 1:n) {#
+	inputMaxDiv <- paste(workingPath, "data/max-remained-", lev, q, "-", matrixNames[expId], "-by-plot-table.csv", sep = "")#
+#
+	maxDivTable <- read.csv(file=inputMaxDiv, head=TRUE, check.names=FALSE)#
+#
+	if (expId == 1) {#
+		plot(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId], xlim=c(nrow(maxDivTable),1), ylim=c(0,1), #
+			   xlab="number of sites remained", ylab=paste("% of original ", lev, "(", q, ")", sep=""), main="") 				  #
+	} else {#
+		points(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), pch=myshape[expId], col=mypalette[expId]) #
+	}#
+#
+	lines(maxDivTable$rank, maxDivTable$diversity/max(maxDivTable$diversity), lty=2, col=mypalette[expId]) #
+}    #
+#
+legend("bottomleft", ncol=n, legend=matrixNames, col=mypalette, pch=as.numeric(myshape))#
+#
+invisible(dev.off())
+library(gplots)#
+library(ggplot2)#
+library(grid)#
+library(RColorBrewer)#
+#
+workingPath <- "~/Projects/NZGO/LBI/"#
+sourcePath <- "~/svn/compevol/research/ModelEcosystem/pipeline/Modules/"#
+experiments <-  c("16S", "18S", "26S", "ShCO1") #"ITS", "FolCO1-no-plot2", only for cm file name and folder name#
+matrixNames <-  c("16S", "18S", "26S", "COI-short") #"ITS", "COI-fol", #
+#
+n <- length(matrixNames) #
+# number of colours and shapes >= experiments#
+mypalette <- c("red", "orange", "green", "purple", "blue", "brown")#
+myshape <- seq(15, (15 + n -1))#
+#
+replicate = 1#
+threshold = 150#
+levels = rep(c("gamma","alpha","beta"),3)#
+qs = rep(0:2,each=3)#
+otuThr = 97
+expId=1
+matrixName <- matrixNames[expId]#
+	experiment <- experiments[expId]#
+	# e.g. otus97/16S_97_cm.csv#
+	inputCM <- paste(workingPath, "data/", experiment, ".txt", sep="")
+source(paste(sourcePath, "InputBySubplot.R", sep=""), local=TRUE)#
+	source(paste(sourcePath, "CommunityTransposeFilter.R", sep=""), local=TRUE)
+library(vegan)#
+library(ggplot2)
+df.dist <- vegdist(communityMatrix, method="bray", binary=TRUE)
+mds <- metaMDS(df.dist)#
+pts_mds <- as.data.frame(mds$points)#
+stress_mds <- mds$stress
+rownames(pts_mds)
+pts_mds
+stress_mds
+sapply(strsplit(rownames(pts_mds), "\\."), "[", 2)
+sapply(strsplit(rownames(pts_mds), "-"), "[", 2)
+sapply(strsplit(rownames(pts_mds), "-"), "[", 1)
+pts_mds$reps <- sapply(strsplit(rownames(pts_mds), "\\."), "[", 2)
+plot <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = reps)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = pts_mds$reps), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$reps), fill = NA) +#
+                ggtitle(paste(label, ", Jaccard (stress:", round(stress_mds, 2),")"))
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = reps)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = pts_mds$reps), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$reps), fill = NA)
+pts_mds
+pts_mds$reps <- sapply(strsplit(rownames(pts_mds), "-"), "[", 2)
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = reps)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = pts_mds$reps), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$reps), fill = NA)
+pts_mds
+pts_mds$reps <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = reps)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = pts_mds$reps), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$reps), fill = NA)
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = reps)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$reps), fill = NA)
+matrixName
+pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=9, height=9)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$plots), fill = NA) )#
+#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=8, height=6)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$plots), fill = NA) )#
+#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=8, height=7)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$plots), fill = NA) )#
+#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=10, height=8)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+                geom_point(size = 5) + #
+                geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+                geom_polygon(aes(group = pts_mds$plots), fill = NA) )#
+#
+invisible(dev.off())
+stress_mds
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=10, height=8)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			ggtitle(paste("MDS for", matrixName, "using", dissimilarityIndex, "(stress:", round(stress_mds, 2),")") )#
+#
+invisible(dev.off())
+dissimilarityIndex="bray"
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=10, height=8)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			ggtitle(paste("MDS for", matrixName, "using", dissimilarityIndex, "(stress:", round(stress_mds, 2),")") )#
+#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-subplots-", lev, q, "-", matrixName, ".pdf", sep = ""), width=10, height=8)#
+#
+# Plot MDS ordination#
+print( ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			ggtitle(paste("MDS for", matrixName, "using", dissimilarityIndex, "(stress:", round(stress_mds, 2),")")) )#
+#
+invisible(dev.off())
+mds
+sample_count
+adonis_formula <- d.hornMorisita
+d.hornMorisita <- dist(1)
+d.hornMorisita
+adonis_formula <- d.hornMorisita
+adonis_formula
+adonis_formula <- eval(d.hornMorisita)
+adonis_formula
+adonis_formula <- deparse(substitute(d.hornMorisita))
+adonis_formula
+substr("abcdef", 2, 4)
+substring("abcdef", 1:6, 1:6)
+distMethod = "d.brayBin"
+length(distMethod)
+nchar(distMethod)
+substr(distMethod, 3, nchar(distMethod))
+df <- data.frame(var1=c('a', 'b', 'c'), var2=c('d', 'e', 'f'), freq=1:3)
+df
+df.expanded <- df[rep(row.names(df), df$freq), 1:2]
+df.expanded
+df.expanded <- df[rep(df), 1:2]
+rep(df)
+df[rep(seq_len(dim(df)[1]), df$freq), 2]
+df
+dim(df)
+dim(df)[1]
+?dim
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/createAllDiversitiesOTUsTable.r', chdir = TRUE)
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/allSampleCount.r', chdir = TRUE)
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/allWithinBetweenPlots.r', chdir = TRUE)
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/allRarefractions.r', chdir = TRUE)
+# change config below#
+workingPath <- "~/Projects/NZGO/LBI/"#
+#
+inputCM <- paste(workingPath, "LittleBarrierPlantComMatrix.txt", sep="")#
+#
+cm_subplots <- read.table(inputCM, header=T, row.names=1, check.names=FALSE)
+cm_subplots <- read.table(inputCM, header=T, row.names=1, check.names=FALSE)
+cm_subplots <- read.table(inputCM, header=T)
+cm_subplots <- read.table(inputCM, sep="\t", header=TRUE, row.names=1, check.names=FALSE)
+cm_subplots <- read.table(inputCM, sep="\t", header=TRUE)
+cm_subplots <- read.table(inputCM, sep="\t", header=TRUE, row.names = NULL)
+cm_subplots
+cm_subplots <- read.table(inputCM, sep="\t", header=TRUE, row.names = NULL)
+cm_subplots
+cm_subplots <- read.table(inputCM, sep="\t", header=TRUE, row.names = NULL)
+cm_subplots
+workingPath <- "~/Projects/NZGO/LBI/"#
+#
+inputCM <- paste(workingPath, "LittleBarrierPlantComMatrix.txt", sep="")#
+#
+cm_table <- read.table(inputCM, sep="\t", header=TRUE, row.names = NULL)
+cm_table[1,]
+unique(cm_table[,2])
+unique(cm_table[,3])
+colnames(cm_table[,2])
+col.names(cm_table[,2])
+colnames(cm_table)
+unique(cm_table[,2])
+cm_table[cm_table[,colPlotName]=="Plot01",]
+cm_table[cm_table$PlotName=="Plot01",]
+colPlotName = 2#
+colSpecies = 3#
+colTreeCount = 5#
+colSaplingCount = 6
+cm_table[cm_table[,colPlotName]=="Plot01",]
+cm_table[cm_table[,colPlotName]=="Plot01" & cm_table[,colTreeCount] > 0,]
+plotNames <- unique(cm_table[,colPlotName])#
+species <- unique(cm_table[,colSpecies])
+species
+cmEachPlot <- cm_table[cm_table[,colPlotName]=="Plot01" & cm_table[,colTreeCount] > 0,]
+cmEachPlot
+p=1
+plotNames[p]
+cmEachPlot <- cm_table[cm_table[,colPlotName]==plotNames[p] & cm_table[,colTreeCount] > 0,]
+cmEachPlot
+communityMatrix <- matrix(0,nrow=length(species),ncol=length(plotNames))#
+colnames(communityMatrix) <- plotNames#
+rownames(communityMatrix) <- species
+communityMatrix
+plotNames <- sort(unique(cm_table[,colPlotName]))#
+species <- sort(unique(cm_table[,colSpecies]))#
+#
+##### Tree ######
+communityMatrix <- matrix(0,nrow=length(species),ncol=length(plotNames))#
+colnames(communityMatrix) <- plotNames#
+rownames(communityMatrix) <- species
+communityMatrix
+cmEachPlot <- cm_table[cm_table[,colPlotName]==plotNames[p] & cm_table[,colTreeCount] > 0,]
+cmEachPlot
+which(rownames(communityMatrix)==cmEachPlot[,3])
+which(rownames(communityMatrix)==cmEachPlot[1,3])
+cmEachPlot[1,3]
+rownames(communityMatrix)[22]
+s=1
+rowId <- which(rownames(communityMatrix)==cmEachPlot[s,colSpecies])
+rowId
+communityMatrix[rowId,p]
+cmEachPlot[s,colTreeCount]
+communityMatrix[rowId,p] = communityMatrix[rowId,p] + cmEachPlot[s,colTreeCount]
+communityMatrix[rowId,p]
+communityMatrix[rowId,p] += cmEachPlot[s,colTreeCount]
+colnames(communityMatrix) <- gsub("Plot0", "Plot", colnames(communityMatrix))
+colnames(communityMatrix)
+cm_table <- read.table(inputCM, sep="\t", header=TRUE, row.names = NULL)#
+#
+plotNames <- sort(unique(cm_table[,colPlotName]))#
+species <- sort(unique(cm_table[,colSpecies]))#
+#
+##### Tree ######
+communityMatrix <- matrix(0,nrow=length(species),ncol=length(plotNames))#
+colnames(communityMatrix) <- plotNames#
+rownames(communityMatrix) <- species#
+#
+for (p in 1:length(plotNames)) {#
+    cmEachPlot <- cm_table[cm_table[,colPlotName]==plotNames[p] & cm_table[,colTreeCount] > 0,]#
+	for (s in 1:nrow(cmEachPlot)) {#
+	    rowId <- which(rownames(communityMatrix)==cmEachPlot[s,colSpecies])#
+		communityMatrix[rowId,p] = communityMatrix[rowId,p] + cmEachPlot[s,colTreeCount]#
+	}#
+}  #
+#
+# Plot01 => Plot1#
+colnames(communityMatrix) <- gsub("Plot0", "Plot", colnames(communityMatrix))#
+#
+outputCM <- paste(workingPath, "LBI-tree-", lev, q, ".csv", sep = "")#
+write.csv(corSp, outputCor)
+outputCM <- paste(workingPath, "LBI-tree-v1.4.csv", sep = "")#
+write.csv(corSp, outputCor)
+outputCM <- paste(workingPath, "LBI-tree-v1.4.csv", sep = "")#
+write.csv(communityMatrix, outputCM)
+sum(communityMatrix)
+colsum(communityMatrix)
+colSum(communityMatrix)
+rowSums(communityMatrix)
+rowSums(communityMatrix) > 0
+length(rowSums(communityMatrix) > 0)
+length(communityMatrix))
+length(communityMatrix)
+nrow(communityMatrix)
+ncol(communityMatrix)
+ncol(communityMatrix[rowSums(communityMatrix) > 0,])
+nrow(communityMatrix[rowSums(communityMatrix) > 0,])
+communityMatrix <- communityMatrix[rowSums(communityMatrix) > 0,]#
+#
+print(paste("Tree community matrix has ", ncol(communityMatrix), " plots, ", nrow(communityMatrix), " species", sep=""))
+workingPath <- "~/Projects/NZGO/LBI/"#
+sourcePath <- "~/svn/compevol/research/ModelEcosystem/pipeline/Modules/"
+inputCM <- paste(workingPath, "data/plots-rank-correlation-gamma0.csv", sep="")
+corr <- read.csv(file=inputCM, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+corr
+corr[is.na(corr)] <- ""
+corr
+d.corr<-1-corr
+?cmdscale
+as.dist(corr)
+1-corr
+1-as.dist(corr)
+1+as.dist(corr)
+1-as.dist(corr)
+fit <- cmdscale(1-as.dist(corr),eig=TRUE, k=2)
+fit
+# plot solution #
+x <- fit$points[,1]#
+y <- fit$points[,2]
+pdf(paste(workingPath, "figures/mds-correlation-gamma0.pdf", sep = ""), width=5, height=5)
+plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main="Metric MDS",	 type="n")#
+text(x, y, labels = row.names(corr), cex=.7)#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-correlation-gamma0.pdf", sep = ""), width=5, height=5)
+plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main="gamma0",	 type="n")#
+text(x, y, labels = row.names(corr), cex=.7)#
+invisible(dev.off())
+corSp <- read.csv(file=inputCM, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+fit <- cmdscale(1-as.dist(corSp),eig=TRUE, k=2)#
+	# plot solution #
+	x <- fit$points[,1]#
+	y <- fit$points[,2]#
+#
+	pdf(paste(workingPath, "figures/mds-correlation-", lev, q, ".pdf", sep = ""), width=5, height=5)#
+	plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main=paste("Metric MDS", lev, q),	 type="n")#
+	text(x, y, labels = row.names(m.mantel), cex=.7)#
+	invisible(dev.off())
+######## figure ########
+	fit <- cmdscale(1-as.dist(corSp),eig=TRUE, k=2)#
+	# plot solution #
+	x <- fit$points[,1]#
+	y <- fit$points[,2]#
+#
+	pdf(paste(workingPath, "figures/mds-correlation-", lev, q, ".pdf", sep = ""), width=5, height=5)#
+	plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main=paste("Metric MDS", lev, q),	 type="n")#
+	text(x, y, labels = row.names(corSp), cex=.7)#
+	invisible(dev.off())
+inputCM <- paste(workingPath, "data/plots-rank-correlation-beta1.csv", sep="")
+corSp <- read.csv(file=inputCM, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+fit <- cmdscale(1-as.dist(corSp),eig=TRUE, k=2)#
+	# plot solution #
+	x <- fit$points[,1]#
+	y <- fit$points[,2]#
+#
+	pdf(paste(workingPath, "figures/mds-correlation-", lev, q, ".pdf", sep = ""), width=5, height=5)#
+	plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main=paste("Metric MDS", lev, q),	 type="n")#
+	text(x, y, labels = row.names(corSp), cex=.7)#
+	invisible(dev.off())
+lev
+q
+inputCM <- paste(workingPath, "data/plots-rank-correlation-gamma0.csv", sep="")
+corSp <- read.csv(file=inputCM, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+fit <- cmdscale(1-as.dist(corSp),eig=TRUE, k=2)#
+	# plot solution #
+	x <- fit$points[,1]#
+	y <- fit$points[,2]#
+#
+	pdf(paste(workingPath, "figures/mds-correlation-", lev, q, ".pdf", sep = ""), width=5, height=5)#
+	plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main=paste("Metric MDS", lev, q),	 type="n")#
+	text(x, y, labels = row.names(corSp), cex=.7)#
+	invisible(dev.off())
+lev="beta"
+q=1
+inputCM <- paste(workingPath, "data/plots-rank-correlation-beta1.csv", sep="")
+corSp <- read.csv(file=inputCM, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+fit <- cmdscale(1-as.dist(corSp),eig=TRUE, k=2)#
+	# plot solution #
+	x <- fit$points[,1]#
+	y <- fit$points[,2]#
+#
+	pdf(paste(workingPath, "figures/mds-correlation-", lev, q, ".pdf", sep = ""), width=5, height=5)#
+	plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main=paste("Metric MDS", lev, q),	 type="n")#
+	text(x, y, labels = row.names(corSp), cex=.7)#
+	invisible(dev.off())
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/allMDSBySubplots.r', chdir = TRUE)
+pts_mds
+pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
+pts_mds
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/allMDSBySubplots.r', chdir = TRUE)
+plots <- list()#
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=6, height=9)	#
+#attach(mtcars)#
+#par(mfrow=c(3,2))	#
+#
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    mdssubplots <- MDSSubplots(d.brayBin, expId)    #
+    plots <- c(plots, mdssubplots)#
+}#
+multiplot(plotlist=plots, cols=2)#
+invisible(dev.off())
+library(ggplot2)#
+library(vegan)#
+library(vegetarian)#
+library(grid)#
+library(gridExtra)#
+#
+# change config below#
+sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"#
+setwd(sourcePath)#
+#
+workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"#
+experiments <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name#
+matrixNames <-  experiments#
+subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")#
+#
+n <- length(matrixNames) #
+mypalette <- c("red", "orange", "green", "purple", "blue", "brown")#
+myshape <- seq(0, (0 + n-1))#
+#
+otuThr = 97#
+#
+source("init.R", local=TRUE)#
+source("MDSBySubplots.R", local=TRUE)#
+source("MultiplePlots.R", local=TRUE)#
+#extract legend#
+#https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs#
+g_legend<-function(a.gplot){#
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))#
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")#
+  legend <- tmp$grobs[[leg]]#
+  return(legend)}
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="none") +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}
+mylegend<-g_legend(mdsp)
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+#			theme(legend.position="none") +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}
+mylegend<-g_legend(mdsp)#
+#
+#mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position=c(1.2, 1.2), legend.direction="horizontal", #
+#                       plot.margin=unit(c(1.2,0.5,0.2,0.2), "cm"), panel.margin = unit(0.8, "lines"))#
+#mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none", #
+#                       plot.margin=unit(c(1.2,0.5,0.2,0.2), "cm"), panel.margin = unit(0.8, "lines"))#
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/6,5/6))
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top") +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}#
+#
+mylegend<-g_legend(mdsp)
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/6,5/6))
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/8,7/8))
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/10,9/10))
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=8, height=12)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+pts_mds
+rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
+pts_mds
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top") +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}#
+#
+mylegend<-g_legend(mdsp)#
+#
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")#
+#
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=8, height=12)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+rownames(pts_mds)
+pts_mds$plots
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}#
+#
+mylegend<-g_legend(mdsp)#
+#
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")#
+#
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=8, height=12)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+pts_mds$plots
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots, order = -as.numeric(pts_mds$plots)), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+pts_mds$plots
+unique(pts_mds$plots)
+mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			scale_colour_manual("", values = c("Plot1"="red", "Plot2"="black", "Plot3"="blue", "Plot4"="green", #
+			"Plot5"="black", "Plot6"="blue", "Plot7"="green", "Plot8"="black", "Plot9"="blue", "Plot10"="green")) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			scale_colour_manual("", values = c("Plot1"="red", "Plot2"="black", "Plot3"="blue", "Plot4"="green", #
+			"Plot5"="black", "Plot6"="blue", "Plot7"="green", "Plot8"="black", "Plot9"="blue", "Plot10"="green")) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			scale_colour_manual("", values = c("Plot1"="red", "Plot2"="black", "Plot3"="blue", "Plot4"="green", #
+			"Plot5"="black", "Plot6"="blue", "Plot7"="green", "Plot8"="black", "Plot9"="blue", "Plot10"="green")) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			scale_colour_manual("", values = c("Plot1"="red", "Plot2"="black", "Plot3"="blue", "Plot4"="green", #
+			"Plot5"="black", "Plot6"="blue", "Plot7"="green", "Plot8"="black", "Plot9"="blue", "Plot10"="green")) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+pts_mds$plots <- factor(pts_mds$plots,levels = pts_mds$plots,ordered = TRUE)
+pts_mds$plots <- factor(pts_mds$plots)
+levels(pts_mds$plots)
+pts_mds <- factor(pts_mds$plots,levels = pts_mds$plots,ordered = TRUE)
+pts_mds <- factor(pts_mds$plots,levels = pts_mds$plots, labels=pts_mds$plot,ordered = TRUE)
+pts_mds <- factor(pts_mds$plots,levels = unique(pts_mds$plots),ordered = TRUE)
+pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots),ordered = TRUE)
+pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))
+pts_mds$plots
+pts_mds
+pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
+pts_mds
+pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			scale_colour_manual("", values = c("Plot1"="red", "Plot2"="black", "Plot3"="blue", "Plot4"="green", #
+			"Plot5"="black", "Plot6"="blue", "Plot7"="green", "Plot8"="black", "Plot9"="blue", "Plot10"="green")) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 5) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle)
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 4) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}#
+#
+mylegend<-g_legend(mdsp)#
+#
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")#
+#
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=8, height=12)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+for (expId in 1:n) {	#
+    # "-by-plot" trigger merge 2 subplots columns#
+    communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.brayBin)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))#
+	# Plot MDS ordination#
+	mdsp <- ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 3) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank()) +#
+			ggtitle(subTitle) #
+#
+   assign(paste('mdsp', expId, sep=''), mdsp)#
+}#
+#
+mylegend<-g_legend(mdsp)#
+#
+mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")#
+mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")#
+mdsp5 <- mdsp5 + theme(legend.position="none")#
+mdsp6 <- mdsp6 + theme(legend.position="none")#
+#
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=6, height=9)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=7, height=10)	   #
+grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3),#
+              ncol=1, nrow=2, heights=c(1/20,19/20))#
+invisible(dev.off())
+mylegend<-g_legend(mdsp)
