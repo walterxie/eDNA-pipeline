@@ -10,6 +10,8 @@ beta1 <- function(communityMatrix) {
 	# including diagonal
     rowsNum <- nrow(communityMatrix) * (nrow(communityMatrix) + 1) / 2  		
 	d.beta1 <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
+	colnames(d.beta1) <- c(rownames(communityMatrix))
+    rownames(d.beta1) <- c(rownames(communityMatrix))
 	count=0
 	for(i in 1:nrow(communityMatrix)){
 		for(k in i:nrow(communityMatrix)){
@@ -83,6 +85,8 @@ for (expId in 1:n) {
    assign(paste('mdsp', expId, sep=''), mdsp)
 }
 
+mylegend<-g_legend(mdsp)
+
 mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")
 mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")
 mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")
@@ -90,8 +94,7 @@ mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(
 mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
-pdf(paste(workingPath, "figures/mds-subplots-beta1-", otuThr, ".pdf", sep = ""), width=8, height=12)	   
-mylegend<-g_legend(mdsp)
+pdf(paste(workingPath, "figures/mds-subplots-beta1-", otuThr, ".pdf", sep = ""), width=7, height=10)	   
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 
 
@@ -131,6 +134,8 @@ for (expId in 1:n) {
    assign(paste('mdsp', expId, sep=''), mdsp)
 }
 
+mylegend<-g_legend(mdsp)
+
 mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")
 mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")
 mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")
@@ -139,7 +144,6 @@ mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
 pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=7, height=10)	   
-mylegend<-g_legend(mdsp)
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 
              
@@ -178,6 +182,8 @@ for (expId in 1:n) {
    assign(paste('mdsp', expId, sep=''), mdsp)
 }
 
+mylegend<-g_legend(mdsp)
+
 mdsp1 <- mdsp1 + theme(axis.title.x=element_blank(), legend.position="none")
 mdsp2 <- mdsp2 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(), legend.position="none")
 mdsp3 <- mdsp3 + theme(axis.title.x=element_blank(), legend.position="none")
@@ -185,7 +191,6 @@ mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(
 mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
-pdf(paste(workingPath, "figures/mds-subplots-Horn-Morisita-", otuThr, ".pdf", sep = ""), width=6, height=9)	
-mylegend<-g_legend(mdsp)
+pdf(paste(workingPath, "figures/mds-subplots-Horn-Morisita-", otuThr, ".pdf", sep = ""), width=7, height=10)	
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 
