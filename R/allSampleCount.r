@@ -1,8 +1,10 @@
+library(ggplot2)
+
 # change config below
 sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
 setwd(sourcePath)
 
-workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
+workingPath <- "~/Projects/NZGO/pilot2010/pipelineDenoised/"
 experiments <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name
 matrixNames <-  experiments
 
