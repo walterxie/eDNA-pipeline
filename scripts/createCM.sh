@@ -11,7 +11,7 @@ for dir in "COI-spun" "COI" "ITS" "trnL" "16S" "18S"; do
 		exit 1
 	fi
 
-	if [ ! -f SraRunTable.txt ]; then
+	if [ ! -f data/SraRunTable.txt ]; then
 		echo "Mapping file SraRunTable.txt not found!"
 		exit 1
 	fi
