@@ -4,13 +4,13 @@ library(ggplot2)
 library(grid)
 library(RColorBrewer)
 
-workingPath <- "~/Subversion/compevol/research/NZGenomicObservatory/Metabarcoding/"
+workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
 matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # "16S", "18S", "trnL", "ITS", "COI", "COI-spun"
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)") # "(a)","(b)","(c)","(d)","(e)","(f)"
 subTitles <- paste(subTitles, matrixNames, sep = " ")
 
 otuThr = 97
-percThr = 0.0001
+percThr = 0.001
 
 taxaAssgFile <- paste(workingPath, "data/taxonomy97phyla.txt", sep="") 
 
@@ -69,8 +69,8 @@ pdf(paste(workingPath, "figures/all-taxa-phyla-OTUs-", otuThr, ".pdf", sep = "")
 
 print( ggplot(taxaAssgOTUseDNA, aes(x = phylumn, y = OTUs, fill = taxagroup)) + geom_bar(stat = "identity", position = "identity") + 
      coord_flip() + scale_y_log10(breaks=c(1, 10, 100, 1000, 10000), expand = c(0, 0)) +
-	 theme_bw() + facet_grid( ~ eDNA) + ylab("OTUs") + xlab(paste("phyla + high-level taxa (", nrow(taxaAssgPer), ")", sep="")) + #expression("phyla (maximum OTUs" >= " 0.1%))"
-	 theme(legend.position=c(0.4, 1.05), legend.direction="horizontal", plot.margin=unit(c(1.2,0.5,0.2,0.2), "cm"), panel.margin = unit(0.8, "lines")) + 
+	 theme_bw() + facet_grid( ~ eDNA) + ylab("OTUs") + xlab(paste(nrow(taxaAssgPer), " phyla + high-level taxa (OTUs >= ", percThr*100, "% of maximum)", sep="")) + #expression("phyla (maximum OTUs" >= " 0.1%))"
+	 theme(legend.position=c(0.4, 1.04), legend.direction="horizontal", plot.margin=unit(c(1.2,0.5,0.2,0.2), "cm"), panel.margin = unit(0.8, "lines")) + 
 	 scale_fill_brewer(name = "Taxa Group : ",palette = "Paired") )
 
 invisible(dev.off()) 
