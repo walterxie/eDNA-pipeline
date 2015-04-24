@@ -1,3 +1,4 @@
+library(vegetarian)
 
 # change config below
 sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
