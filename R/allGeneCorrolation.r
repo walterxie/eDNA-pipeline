@@ -1,6 +1,7 @@
 # "-by-plot" trigger merge 2 subplots columns
 library(vegan)
 library(vegetarian)
+library(xtable)
 
 beta1 <- function(communityMatrix) {    
 	####### beta 1 ########
@@ -27,7 +28,7 @@ workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
 experiments <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name
 matrixNames <-  experiments
 
-matrixNamesNo454 <-  c("seedlings","trees","inverts","birds") # need expId correct for "birds","seedlings" 
+matrixNamesNo454 <-  c("seedlings","trees","invertebrates","birds") # need expId correct for "birds","seedlings" 
 
 n <- length(matrixNames) 
 m <- length(matrixNamesNo454)

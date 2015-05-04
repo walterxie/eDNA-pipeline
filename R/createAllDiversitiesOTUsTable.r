@@ -1,4 +1,3 @@
-library(gplots)
 library(vegan)
 library(Hmisc)
 
