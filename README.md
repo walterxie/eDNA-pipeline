@@ -29,15 +29,15 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 
 ## Folder structure in working path 
 
-1. A working folder, such as ./pipeline
+1. A working folder, such as *./pipeline*
 
-2. Folders for each data set (genes), such as ./pipeline/16S
+2. Folders for each data set (genes), such as *./pipeline/16S*
 
-3. Folders for deconvolution, such as ./pipeline/16S/deconvoluted
+3. Folders for deconvolution, such as *./pipeline/16S/deconvoluted*
 
-4. Folders for quality control, such as ./pipeline/16S/qc
+4. Folders for quality control, such as *./pipeline/16S/qc*
 
-5. Folders for each OTU threshold, such as ./pipeline/16S/otus97
+5. Folders for each OTU threshold, such as *./pipeline/16S/otus97*
 
 
 ## Download 454 sequences 
@@ -55,7 +55,7 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
   ```
   cat *.fastq > 16S.fastq
   ```
-  Alternatively, use scripts downloadData.sh and prepareData.sh as discribed below.
+  Alternatively, use scripts *downloadData.sh* and *prepareData.sh* as discribed below.
 
 
 ## UPARSE 
@@ -67,9 +67,9 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
   ln -s usearch8.0.??? usearch8
   ```
 
-3. Create a working folder, such as ./pipeline
+3. Create a working folder, such as *./pipeline*
 
-4. Copy all scripts in to working folder, such as pipeline/scripts
+4. Copy all scripts in to working folder, such as *pipeline/scripts*
 
 5. Download data
   ```
@@ -79,7 +79,7 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 
 6. We strongly recommend to use error corrector for 454 data. In this pipeline, 
 we choose Acacia (http://www.nature.com/nmeth/journal/v9/n5/abs/nmeth.1990.html). 
-Please install Acacia and change its path in the script **pipelineDerep.sh** before go to step 7.
+Please install Acacia and change its path in the script *pipelineDerep.sh* before go to step 7.
 Note that you need to give enough memory according to the size of the largest cluster from your data. 
 We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and 10 GB for the rest of datasets. 
 
@@ -98,7 +98,7 @@ We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and
 
 ## Generate Community Matrix 
 
-1. Create a data folder under the working folder, such as ./pipeline/data. And download modified SraRunTable.txt from 
+1. Create a data folder under the working folder, such as *./pipeline/data*. And download modified SraRunTable.txt from 
 
 2. Stay in the working folder, such as ./pipeline
   ```
