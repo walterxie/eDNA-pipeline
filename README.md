@@ -93,7 +93,7 @@ We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and
   cd COI
   ../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
   ```
-  Note: the reference dataset gold.fa (http://www.drive5.com/usearch/manual/cmd_uchime_ref.html) is required.
+  Note: the reference dataset gold.fa (http://www.drive5.com/usearch/manual/cmd_uchime_ref.html) is required by *runOTUsRef.sh*.
 
 
 ## Generate Community Matrix 
