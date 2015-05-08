@@ -70,6 +70,7 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -79,7 +80,7 @@ for (expId in 1:n) {
 			geom_point(size = 3) + 
 			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +
 			geom_polygon(aes(group = pts_mds$plots), fill = NA) +
-			theme(legend.position="top", legend.title=element_blank()) +
+			theme(legend.position="top", legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
 			ggtitle(subTitle) 
 
    assign(paste('mdsp', expId, sep=''), mdsp)
@@ -119,6 +120,7 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -128,7 +130,7 @@ for (expId in 1:n) {
 			geom_point(size = 3) + 
 			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +
 			geom_polygon(aes(group = pts_mds$plots), fill = NA) +
-			theme(legend.position="top", legend.title=element_blank()) +
+			theme(legend.position="top", legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
 			ggtitle(subTitle) 
 
    assign(paste('mdsp', expId, sep=''), mdsp)
@@ -167,8 +169,9 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
-	subTitle <- paste(subTitles[expId], matrixNames[expId], "(dissimilarity ", round(stress_mds, 2),")")
+	subTitle <- paste(subTitles[expId], matrixNames[expId], "(stress ", round(stress_mds, 2),")")
 	
 	pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))
 	# Plot MDS ordination
@@ -176,7 +179,7 @@ for (expId in 1:n) {
 			geom_point(size = 3) + 
 			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +
 			geom_polygon(aes(group = pts_mds$plots), fill = NA) +
-			theme(legend.position="top", legend.title=element_blank()) +
+			theme(legend.position="top", legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
 			ggtitle(subTitle) 
 
    assign(paste('mdsp', expId, sep=''), mdsp)

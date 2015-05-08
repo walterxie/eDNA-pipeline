@@ -27,6 +27,7 @@ allStatTable$stat <- c("unique reads","OTUs","alpha","effective alpha")
 
 for (expId in 1:n) {	
     communityMatrix <- init(expId, otuThr, "-by-plot")
+    matrixName <- paste(matrixNames[expId], "-by-plot", sep = "")
     
 	source("TurnoverDist.R", local=TRUE)
 	# need to put on the top
@@ -53,6 +54,7 @@ allStatTable$stat <- c("individuals","OTUs","alpha","effective alpha")
 
 for (expId in 1:m) {    	
     communityMatrix <- initNon454ByPlot(expId, otuThr)
+    matrixName <- matrixNamesNo454[expId]
     
 	source("TurnoverDist.R", local=TRUE)
 	# need to put on the top

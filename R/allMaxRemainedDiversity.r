@@ -125,11 +125,16 @@ for (lev in c("gamma", "beta")) {
 			par(mar=c(4,5,2,1))		
 			plot(allMaxDiv$Rank, yVal, pch=myshape2[expId], col=mypalette2[expId], xlim=c(nrow(allMaxDiv),1), ylim=c(0,1), 
 			   xlab="number of sites remained", ylab=ylab, main="(b)") 				  		
+		} else if (expId == 3) { # 2 sites missing
+			points(allMaxDiv$Rank[-c(1,2)], yVal[-c(9,10)], pch=myshape2[expId], col=mypalette2[expId]) 
+			lines(allMaxDiv$Rank[-c(1,2)], yVal[-c(9,10)], lty=2, col=mypalette2[expId]) 
 		} else {
-			points(allMaxDiv$Rank, yVal, pch=myshape2[expId], col=mypalette2[expId]) 
+		    points(allMaxDiv$Rank, yVal, pch=myshape2[expId], col=mypalette2[expId]) 
 		}
-
-		lines(allMaxDiv$Rank, yVal, lty=2, col=mypalette2[expId]) 
+		
+		if (expId != 3) {
+			lines(allMaxDiv$Rank, yVal, lty=2, col=mypalette2[expId]) 
+		}
 	}
 
 	par(usr=c(0,1,0,1),xpd=NA)  

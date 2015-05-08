@@ -74,13 +74,19 @@ ln -s usearch8.0.??? usearch8
 
 4. Copy all scripts in to working folder, such as pipeline/scripts
 
-5. download data
+5. Download data
 ```
 scripts/downloadData.sh 
 scripts/prepareData.sh
 ```
 
-6. Go into each gene folder to run script for either denovo chimera filtering or reference filtering (16S only), e.g.
+6. We strongly recommend to use error corrector for 454 data. In this pipeline, 
+we choose Acacia (http://www.nature.com/nmeth/journal/v9/n5/abs/nmeth.1990.html). 
+Please install Acacia and change its path in the script pipelineDerep.sh before go to step 7.
+Note that you need to give enough memory according to the size of the largest cluster from your data. 
+We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and 10 GB for the rest of datasets. 
+
+7. Go into each gene folder to run script for either denovo chimera filtering or reference filtering (16S only), e.g.
 ```
 cd 16S
 ../scripts/runOTUsRef.sh ./deconvoluted/16S.fastq 
@@ -90,6 +96,7 @@ or
 cd COI
 ../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
 ```
+Note: the reference dataset gold.fa (http://www.drive5.com/usearch/manual/cmd_uchime_ref.html) is required.
 
 
 ## Generate Community Matrix 

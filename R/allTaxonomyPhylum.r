@@ -43,7 +43,7 @@ if (sum(other)>0) {
 	taxaAssgOTUseDNA <- rbind(taxaAssgOTUseDNA, otherOTUs)
 }
 
-print(paste(names(taxaAssgOTUs)[1], "'s phyla = ", length(which(taxaAssgOTUs[,1] != 0)), ", total OTUs = ", sum(taxaAssgOTUseDNA$OTUs), sep=""))
+print(paste(names(taxaAssgOTUs)[1], "'s phyla = ", length(which(taxaAssgOTUs[,1] != 0)), ", identified OTUs = ", sum(taxaAssgOTUseDNA$OTUs), sep=""))
 
 for (co in 2:nc) {
 	tmpeDNA <- data.frame(phylumn= row.names(taxaAssgOTUs), OTUs= taxaAssgOTUs[,co], eDNA= names(taxaAssgOTUs)[co], taxagroup = taxaAssgOTUs[,ncol(taxaAssgOTUs)], stringsAsFactors = FALSE)
