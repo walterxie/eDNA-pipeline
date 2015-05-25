@@ -45,9 +45,9 @@ For example,
 ```
 pipeline
  |___ 16S
-       |___ deconvoluted
-       |___ qc
-       |___ otu\$THRESHOLD (e.g. 97)
+ |     |___ deconvoluted
+ |     |___ qc
+ |     |___ otu?? (e.g. 97)
  |___ 18S
  ...  
 ```
