@@ -19,7 +19,7 @@ $ACACIA -c denoise.config
 # rename
 cp ./qc/denoise_all_tags.seqOut ./qc/denoised.fasta
 
-$USEARCH -derep_fulllength ./qc/denoised.fasta -fastaout ./qc/derep.fasta -sizeout
+$USEARCH -derep_fulllength ./qc/denoised.fasta -fastaout ./qc/derep.fasta -sizeout -uc ./qc/derep.uc
 
 # minsize 2 to filter out all size 1  
 $USEARCH -sortbysize ./qc/derep.fasta -fastaout ./qc/sorted.fasta -minsize 1

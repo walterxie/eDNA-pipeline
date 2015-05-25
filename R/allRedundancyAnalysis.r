@@ -168,9 +168,11 @@ for (expId in 1:length(experiments)) {
 	
 	anova_table[anova_table == 0] <- ""
 
-	print(xtable(anova_table), sanitize.text.function = function(x){x})
+	print(xtable(anova_table, caption = "Distance-based redundancy analysis and their ANOVA tests in each step", 
+			label = "tab:rdaAnova1"), sanitize.text.function = function(x){x})
 	
-	print(xtable(rda_table), sanitize.text.function = function(x){x})
+	print(xtable(rda_table, caption = "The constrained and unconstrained inertia changes during distance-based redundancy analysis", 
+			label = "tab:rda"), sanitize.text.function = function(x){x})
 
 	rdaReducedList[[ expId ]] <- rda_reduced
 	rdaForwardList[[ expId ]] <- rda_forward

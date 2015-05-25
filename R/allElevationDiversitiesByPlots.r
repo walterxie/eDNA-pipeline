@@ -2,12 +2,15 @@
 library(RColorBrewer)
 library(vegan)
 library(vegetarian)
+library(xtable)
 
 beta1 <- function(communityMatrix) {    
 	####### beta 1 ########
 	# including diagonal
     rowsNum <- nrow(communityMatrix) * (nrow(communityMatrix) + 1) / 2  		
 	d.beta1 <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
+	rownames(d.beta1) <- rownames(communityMatrix)
+	colnames(d.beta1) <- rownames(communityMatrix)
 	count=0
 	for(i in 1:nrow(communityMatrix)){
 		for(k in i:nrow(communityMatrix)){
@@ -19,7 +22,6 @@ beta1 <- function(communityMatrix) {
 	
 	return (as.dist(d.beta1))
 }
-
 
 # change config below
 sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
@@ -66,7 +68,7 @@ for (expId in 1:n) {
     #mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
     
     beta1DisList[[ expId ]] <- d.beta1
-	
+		
 	####### Horn-Morisita ########
     d.hornMorisita <- vegdist(communityMatrix, method="horn", binary=FALSE)
 	#mantel.hornMorisita <- mantel(elevPlotDist, d.hornMorisita, permutations=4999)
@@ -100,7 +102,7 @@ for (expId in 1:m) {
     #mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
     
     beta1No454DisList[[ expId ]] <- d.beta1
-    
+
     ####### Horn-Morisita ########
     d.hornMorisita <- vegdist(communityMatrix, method="horn", binary=FALSE)
 	#mantel.hornMorisita <- mantel(elevPlotDist, d.hornMorisita, permutations=4999)
@@ -111,8 +113,81 @@ for (expId in 1:m) {
 
 }
 
+
+####### beta 1 ########
+print("beta 1 : ")
+mantel_table <- matrix(0,nrow=(n+m),ncol=4)
+rownames(mantel_table) <- c(matrixNames, matrixNamesNo454)
+colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
+
+pdf(paste(workingPath, "figures/all-elevation-beta1-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
+attach(mtcars)
+par(mfrow=c(1,2), oma=c(4,0,0,0)) 
+
+for (expId in 1:n) {	
+    d.beta1 <- beta1DisList[[ expId ]]
+	elevPlotDist <- elevPlotDistList[[ expId ]] 
+    
+    mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
+   
+    # figures
+	if (expId == 1) {
+		par(mar=c(4,5,2,1))		
+		plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3,
+			   xlab="elevation difference (metres)", ylab=expression(paste(""^"1", D[beta], "-1")), main="(a)")	
+	} else {
+		points(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3)
+	}
+	
+	lm.d.beta1 <- lm(as.vector(d.beta1)~as.vector(elevPlotDist))
+	abline(lm.d.beta1, col=mypalette[expId], cex=3) 
+		
+	mantel_table[expId,1] <- round(mantel.beta1$statistic, 3)
+	mantel_table[expId,2] <- mantel.beta1$signif
+	mantel_table[expId,3] <- formatC(signif(summary(lm.d.beta1)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[expId,4] <- formatC(signif(summary(lm.d.beta1)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#    print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.beta1$statistic, 3), "; significance: ", mantel.beta1$signif, "; permutations: ", mantel.beta1$permutations, sep=""))  		
+	
+}
+
+for (expId in 1:m) {
+    d.beta1 <- beta1No454DisList[[ expId ]]
+	elevPlotDist <- elevPlotDistNo454List[[ expId ]] 
+
+    mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
+    
+    # figures
+	if (expId == 1) {
+		par(mar=c(4,5,2,1))		
+		plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3,
+			   xlab="elevation difference (metres)", ylab="", main="(b)")	
+	} else {
+		points(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3)
+	}
+	
+	lm.d.beta1 <- lm(as.vector(d.beta1)~as.vector(elevPlotDist))
+	abline(lm.d.beta1, col=mypalette2[expId], cex=3) 
+	
+	mantel_table[(expId+n),1] <- round(mantel.beta1$statistic, 3)
+	mantel_table[(expId+n),2] <- mantel.beta1$signif
+	mantel_table[(expId+n),3] <- formatC(signif(summary(lm.d.beta1)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[(expId+n),4] <- formatC(signif(summary(lm.d.beta1)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.beta1$statistic, 3), "; significance: ", mantel.beta1$signif, "; permutations: ", mantel.beta1$permutations, sep=""))  		
+	
+}
+
+par(usr=c(0,1,0,1),xpd=NA)  
+legend(-1.38, -0.3, ncol=3, legend=matrixNames, pch=as.numeric(myshape), col=mypalette)
+legend(0.1, -0.3, ncol=2, legend=matrixNamesNo454, pch=as.numeric(myshape2), col=mypalette2)
+invisible(dev.off())  
+
+print(xtable(mantel_table),sanitize.text.function=function(x){x})
+
 ####### Whittaker's beta ########
 print("Whittaker's beta : ")
+mantel_table <- matrix(0,nrow=(n+m),ncol=4)
+rownames(mantel_table) <- c(matrixNames, matrixNamesNo454)
+colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
 
 pdf(paste(workingPath, "figures/all-elevation-brayBin-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
 attach(mtcars)
@@ -136,7 +211,11 @@ for (expId in 1:n) {
 	lm.d.brayBin <- lm(as.vector(d.brayBin)~as.vector(elevPlotDist))
 	abline(lm.d.brayBin, col=mypalette[expId], cex=3) 
 	
-	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
+	mantel_table[expId,1] <- round(mantel.brayBin$statistic, 3)
+	mantel_table[expId,2] <- mantel.brayBin$signif
+	mantel_table[expId,3] <- formatC(signif(summary(lm.d.brayBin)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[expId,4] <- formatC(signif(summary(lm.d.brayBin)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
 	
 }
 
@@ -158,7 +237,11 @@ for (expId in 1:m) {
 	lm.d.brayBin <- lm(as.vector(d.brayBin)~as.vector(elevPlotDist))
 	abline(lm.d.brayBin, col=mypalette2[expId], cex=3) 
 	
-	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
+	mantel_table[(expId+n),1] <- round(mantel.brayBin$statistic, 3)
+	mantel_table[(expId+n),2] <- mantel.brayBin$signif
+	mantel_table[(expId+n),3] <- formatC(signif(summary(lm.d.brayBin)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[(expId+n),4] <- formatC(signif(summary(lm.d.brayBin)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
 	
 }
 
@@ -167,72 +250,20 @@ legend(-1.38, -0.3, ncol=3, legend=matrixNames, pch=as.numeric(myshape), col=myp
 legend(0.1, -0.3, ncol=2, legend=matrixNamesNo454, pch=as.numeric(myshape2), col=mypalette2)
 invisible(dev.off())  
 
-####### beta 1 ########
-print("beta 1 : ")
-
-pdf(paste(workingPath, "figures/all-elevation-beta1-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
-attach(mtcars)
-par(mfrow=c(1,2), oma=c(4,0,0,0)) 
-
-for (expId in 1:n) {	
-    d.beta1 <- beta1DisList[[ expId ]]
-	elevPlotDist <- elevPlotDistList[[ expId ]] 
-    
-    mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
-   
-    # figures
-	if (expId == 1) {
-		par(mar=c(4,5,2,1))		
-		plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3,
-			   xlab="elevation difference (metres)", ylab=expression(paste(""^"1", D[beta], "-1")), main="(a)")	
-	} else {
-		points(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3)
-	}
-	
-	lm.d.beta1 <- lm(as.vector(d.beta1)~as.vector(elevPlotDist))
-	abline(lm.d.beta1, col=mypalette[expId], cex=3) 
-	
-	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.beta1$statistic, 3), "; significance: ", mantel.beta1$signif, "; permutations: ", mantel.beta1$permutations, sep=""))  		
-	
-}
-
-for (expId in 1:m) {
-    d.beta1 <- beta1No454DisList[[ expId ]]
-	elevPlotDist <- elevPlotDistNo454List[[ expId ]] 
-
-    #mantel.beta1 <- mantel(elevPlotDist, d.beta1, permutations=4999)
-    
-    # figures
-	if (expId == 1) {
-		par(mar=c(4,5,2,1))		
-		plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3,
-			   xlab="elevation difference (metres)", ylab="", main="(b)")	
-	} else {
-		points(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3)
-	}
-	
-	lm.d.beta1 <- lm(as.vector(d.beta1)~as.vector(elevPlotDist))
-	abline(lm.d.beta1, col=mypalette2[expId], cex=3) 
-	
-	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.beta1$statistic, 3), "; significance: ", mantel.beta1$signif, "; permutations: ", mantel.beta1$permutations, sep=""))  		
-	
-}
-
-par(usr=c(0,1,0,1),xpd=NA)  
-legend(-1.38, -0.3, ncol=3, legend=matrixNames, pch=as.numeric(myshape), col=mypalette)
-legend(0.1, -0.3, ncol=2, legend=matrixNamesNo454, pch=as.numeric(myshape2), col=mypalette2)
-invisible(dev.off())  
-
+print(xtable(mantel_table),sanitize.text.function=function(x){x})
 
 ####### Horn-Morisita ########
 print("Horn-Morisita : ")
+mantel_table <- matrix(0,nrow=(n+m),ncol=4)
+rownames(mantel_table) <- c(matrixNames, matrixNamesNo454)
+colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
 
 pdf(paste(workingPath, "figures/all-elevation-hornMorisita-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
 attach(mtcars)
 par(mfrow=c(1,2), oma=c(4,0,0,0)) 
 
 for (expId in 1:n) {	
-    d.hornMorisita <- whittakerDisList[[ expId ]]
+    d.hornMorisita <- hornMorisitaDisList[[ expId ]]
 	elevPlotDist <- elevPlotDistList[[ expId ]] 
     
     mantel.hornMorisita <- mantel(elevPlotDist, d.hornMorisita, permutations=4999)
@@ -249,12 +280,16 @@ for (expId in 1:n) {
 	lm.d.hornMorisita <- lm(as.vector(d.hornMorisita)~as.vector(elevPlotDist))
 	abline(lm.d.hornMorisita, col=mypalette[expId], cex=3) 
 	
-	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.hornMorisita$statistic, 3), "; significance: ", mantel.hornMorisita$signif, "; permutations: ", mantel.hornMorisita$permutations, sep=""))  		
+	mantel_table[expId,1] <- round(mantel.hornMorisita$statistic, 3)
+	mantel_table[expId,2] <- mantel.hornMorisita$signif
+	mantel_table[expId,3] <- formatC(signif(summary(lm.d.hornMorisita)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[expId,4] <- formatC(signif(summary(lm.d.hornMorisita)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.hornMorisita$statistic, 3), "; significance: ", mantel.hornMorisita$signif, "; permutations: ", mantel.hornMorisita$permutations, sep=""))  		
 	
 }
 
 for (expId in 1:m) {
-    d.hornMorisita <- whittakerNo454DisList[[ expId ]]
+    d.hornMorisita <- hornMorisitaNo454DisList[[ expId ]]
 	elevPlotDist <- elevPlotDistNo454List[[ expId ]] 
 
     mantel.hornMorisita <- mantel(elevPlotDist, d.hornMorisita, permutations=4999)
@@ -271,7 +306,11 @@ for (expId in 1:m) {
 	lm.d.hornMorisita <- lm(as.vector(d.hornMorisita)~as.vector(elevPlotDist))
 	abline(lm.d.hornMorisita, col=mypalette2[expId], cex=3) 
 	
-	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.hornMorisita$statistic, 3), "; significance: ", mantel.hornMorisita$signif, "; permutations: ", mantel.hornMorisita$permutations, sep=""))  		
+	mantel_table[(expId+n),1] <- round(mantel.hornMorisita$statistic, 3)
+	mantel_table[(expId+n),2] <- mantel.hornMorisita$signif
+	mantel_table[(expId+n),3] <- formatC(signif(summary(lm.d.hornMorisita)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[(expId+n),4] <- formatC(signif(summary(lm.d.hornMorisita)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.hornMorisita$statistic, 3), "; significance: ", mantel.hornMorisita$signif, "; permutations: ", mantel.hornMorisita$permutations, sep=""))  		
 	
 }
 
@@ -279,4 +318,6 @@ par(usr=c(0,1,0,1),xpd=NA)
 legend(-1.38, -0.3, ncol=3, legend=matrixNames, pch=as.numeric(myshape), col=mypalette)
 legend(0.1, -0.3, ncol=2, legend=matrixNamesNo454, pch=as.numeric(myshape2), col=mypalette2)
 invisible(dev.off())  
+
+print(xtable(mantel_table),sanitize.text.function=function(x){x})
 

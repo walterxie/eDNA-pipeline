@@ -3,6 +3,7 @@ library(gplots)
 library(ggplot2)
 library(grid)
 library(RColorBrewer)
+library(xtable)
 
 # change config below
 sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
@@ -66,7 +67,10 @@ for (lev in c("gamma", "beta")) {
 
 	for (expId in 1:m) {    	
 		communityMatrix <- initNon454ByPlot(expId, otuThr)
-	
+
+		rownames(communityMatrix) <- gsub("CM30C30", "Plot9", rownames(communityMatrix), ignore.case = T)
+		rownames(communityMatrix) <- gsub("LB1", "Plot10", rownames(communityMatrix), ignore.case = T)
+
 		# 3 columns: rank, diversity, removedSites
 		maxDiv <- getMaxRemainedDiversity(communityMatrix, level, q)
 	
@@ -91,14 +95,56 @@ for (lev in c("gamma", "beta")) {
 	#write.csv(allRanks, outputMaxDiv, row.names=FALSE)
 
 	######## correlation #######
-	corSp <- cor(allRanks[,-1], use ="everything", method="spearman")
+	corSp <- cor(allRanks[,-1], use ="pairwise.complete.obs", method="spearman")
+	# set upper tri to NA
 	corSp[upper.tri(corSp)] <- NA
+	corSp[corSp=="1"] <- NA
+	corSp <- corSp[-1,-ncol(corSp)]
+	# take significate digits 2
+	corSp <- formatC(signif(corSp,digits=2), digits=2,format="fg", flag="#")
+	
 	outputCor <- paste(workingPath, "plots-rank-correlation-", lev, q, ".txt", sep = "")
 	write.table(corSp, outputCor, na="", sep="\t")
+#	print(xtable(corSp))
 #	cor(allMaxDiv[,-which(names(allMaxDiv) == "Rank" | names(allMaxDiv) == "invertebrates")], use ="everything", method="spearman")
 	
+	######## correlation significance #######
+	sigSp <- matrix(0,nrow=(ncol(allRanks)-1),ncol=(ncol(allRanks)-1)) 
+	colnames(sigSp) <- colnames(allRanks)[-1]
+	rownames(sigSp) <- colnames(allRanks)[-1]
+	for (i in 2:(ncol(allRanks)-1)) { # 1st col is plots name
+		for (j in (i+1):ncol(allRanks)) {	     
+			tmpDf<-allRanks[,c(i,j)]
+			tmpDf<-tmpDf[complete.cases(tmpDf),] # remove NA rows pairwised
+			sigSp[j-1,i-1] <- cor.test(tmpDf[,1], tmpDf[,2], method="spearman")$p.value
+		}
+	}
+	
+	sigSp[upper.tri(sigSp)] <- NA
+	sigSp[sigSp=="0"] <- NA
+	sigSp <- sigSp[-1,-ncol(sigSp)]
+	sigSp <- formatC(signif(sigSp,digits=2), digits=2,format="fg", flag="#")
+	
+	outputSig <- paste(workingPath, "plots-rank-cor-sig-", lev, q, ".txt", sep = "")
+	write.table(sigSp, outputSig, na="", sep="\t")
+	
+	######## all in 1 table #######
+	allSp <- matrix(0,nrow=nrow(corSp),ncol=ncol(corSp)) 
+	colnames(allSp) <- colnames(corSp)
+	rownames(allSp) <- rownames(corSp)
+
+	for (i in 1:ncol(allSp)) {
+		for (j in 1:nrow(allSp)) {	     
+			allSp[i,j] <- paste(corSp[i,j], " (", sigSp[i,j], ")", sep = "")
+		}
+	}
+	
+	print(xtable(allSp, caption = "Spearman correlations and significance", label = paste("tab:corMaxRemained", lev, q, sep = "")), 
+			sanitize.text.function = function(x){x})
+
+	
 	######## figure #######
-    allMaxDiv <- allMaxDiv[,c(2:11,1)] # move Rank col to the last col
+    allMaxDiv <- allMaxDiv[,c(2:ncol(allMaxDiv),1)] # move Rank col to the last col
 
 	pdf(paste(workingPath, "figures/max-remained-", lev, q, ".pdf", sep = ""), width=9, height=5)
 	attach(mtcars)

@@ -26,6 +26,8 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 7. Bird counts:
   birds_pilot_species_1_2_0.csv
 
+8. SraRunTable.txt : 
+  a SRA mapping file to map SRA code to subplot name.
 
 ## Folder structure in working path 
 
@@ -38,6 +40,17 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 4. Folders for quality control, such as ./pipeline/16S/qc
 
 5. Folders for each OTU threshold, such as ./pipeline/16S/otus97
+
+For example,
+```
+pipeline
+ |___ 16S
+       |___ deconvoluted
+       |___ qc
+       |___ otu\$THRESHOLD (e.g. 97)
+ |___ 18S
+ ...  
+```
 
 
 ## Download 454 sequences 
@@ -98,18 +111,30 @@ We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and
 
 ## Generate Community Matrix 
 
-1. Create a data folder under the working folder, such as ./pipeline/data. And download modified SraRunTable.txt from 
+Note: USEARCH 8 has a critical error to mixture all sample-based data into one pool,
+therefore the sample information of each duplicate read would be lost during 
+de-replication process. In *createAllCommunityMatrix.r*, we retrive the sample of each duplicate 
+read from the mapping file derep.uc created by a modified command:
+```
+$USEARCH -derep_fulllength ./qc/denoised.fasta -fastaout ./qc/derep.fasta -sizeout -uc ./qc/derep.uc
+```
+to create the community matrix retaining the correct reads' distribution of samples.   
 
-2. Stay in the working folder, such as ./pipeline
-  ```
-  java -jar CMCreator0.1.jar -working COI/otus97 -out COI-97.csv -chi chimeras.fasta -sra data/SraRunTable.txt -overwrite out.up
-  ```
+
+##  BLAST 
+
+Use *cleanSizeAnnotation.sh* to clean up the size annotation in the sequence label created by USEARCH, 
+which will cause MEGAN input error. 
 
 
 ## Community Matrix Analysis 
 
 1. Change source path for pipeline and working path for data into your local path.
 
-2. Run createAllDiversitiesOTUsTable.r first to get the rarefraction table and OTU threshold table. This is time-consuming.
+2. Run *createAllCommunityMatrix.r* first to create community matrices.
 
-3. Run all*.r one by one to get all figures and tables.
+3. Run *createAllDiversitiesOTUsTable.r* second to get the rarefraction table and OTU threshold table. This is time-consuming.
+If you do not need to clustering through different threshold, you could use faster script *createAllRarefractionTable.r* to generate 
+the rarefraction table at 97% threshold only. 
+
+4. Run *all???.r* one by one to get all figures and tables.

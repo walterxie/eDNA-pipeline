@@ -20,8 +20,5 @@ UPARSE pipeline OTU clustering and denovo chimeras filtering part
 * pipelineOTUsRef.sh
 UPARSE pipeline OTU clustering and reference chimeras filtering part, only applicable to 16S.
 
-* createCM.sh		
-Create community matrix from UP file.
-
 * cleanSizeAnnotation.sh	
 Clean ";size" annotation from label because it will cause a problem for MEGAN.

@@ -66,11 +66,11 @@ for (expId in 1:n) {
 	# Get sample labels/factors
 	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)
 	# convert plot names
-	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)
-	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
-	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots, ignore.case = T)
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -116,11 +116,11 @@ for (expId in 1:n) {
 	# Get sample labels/factors
 	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)
 	# convert plot names
-	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)
-	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
-	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots, ignore.case = T)
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -165,11 +165,11 @@ for (expId in 1:n) {
 	# Get sample labels/factors
 	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)
 	# convert plot names
-	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots)
-	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots)
-	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds))
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots, ignore.case = T)
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
 
 	subTitle <- paste(subTitles[expId], matrixNames[expId], "(stress ", round(stress_mds, 2),")")
 	
