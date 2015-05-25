@@ -111,7 +111,7 @@ We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and
 
 ## Generate Community Matrix 
 
-Note: USEARCH 8 has a critical error to mixture all sample-based data into one pool,
+Note: USEARCH 8 has a critical error to mix all sample-based data into one pool,
 therefore the sample information of each duplicate read would be lost during 
 de-replication process. In *createAllCommunityMatrix.r*, we retrive the sample of each duplicate 
 read from the mapping file derep.uc created by a modified command:
