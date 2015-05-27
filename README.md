@@ -133,8 +133,8 @@ which will cause MEGAN input error.
 
 2. Run *createAllCommunityMatrix.r* first to create community matrices.
 
-3. Run *createAllDiversitiesOTUsTable.r* second to get the rarefraction table and OTU threshold table. This is time-consuming.
-If you do not need clustering through different thresholds, you could use faster script *createAllRarefractionTable.r* to generate 
-the rarefraction table at 97% threshold only. 
+3. Run *createAllDiversitiesOTUsTable.r* second to get the rarefaction table and OTU threshold table. This is time-consuming.
+If you do not need clustering through different thresholds, you could use faster script *createAllRarefactionTable.r* to generate 
+the rarefaction table at 97% threshold only. 
 
 4. Run *all???.r* one by one to get all figures and tables.
