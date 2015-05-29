@@ -28,6 +28,9 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 
 8. SraRunTable.txt : 
   a SRA mapping file to map SRA code to subplot name.
+  
+9. Soil chemistry:
+  LJ12027.txt
 
 ## Folder structure in working path 
 
