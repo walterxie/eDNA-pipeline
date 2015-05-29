@@ -21,7 +21,7 @@ Evaluating a multigene environmental DNA approach for comprehensive biodiversity
 
 6. Vegetation survey data:
   Hauturu (Little Barrier island) in Jan 2011 (http://nvs.landcareresearch.co.nz).
-  trees_pilot_species_1_2_0.csv, seedlings_pilot_species_1_2_0.csv
+  diameters_pilot_species_1_2_0.csv, saplings_pilot_species_1_2_0.csv, seedlings_pilot_species_1_2_0.csv
 
 7. Bird counts:
   birds_pilot_species_1_2_0.csv
