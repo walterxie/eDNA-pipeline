@@ -46,7 +46,7 @@ otuThr = 97
 source("init.R", local=TRUE)
 
 ######## 454 #######
-whittakerDisList <- list()
+jaccardDisList <- list()
 beta1DisList <- list()
 hornMorisitaDisList <- list()
 elevPlotDistList <- list()
@@ -55,11 +55,11 @@ for (expId in 1:n) {
     communityMatrix <- init(expId, otuThr, "-by-plot")
     elevPlotDist <- getElevSampleDist(rownames(communityMatrix)) 
     
-	######## Whittaker's beta #######	
-	d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)
-	#mantel.brayBin <- mantel(elevPlotDist, d.brayBin, permutations=4999)
+	######## jaccard #######	
+	d.jaccard <- vegdist(communityMatrix, method="jaccard")
+	#mantel.jaccard <- mantel(elevPlotDist, d.jaccard, permutations=4999)
     
-    whittakerDisList[[ expId ]] <- d.brayBin
+    jaccardDisList[[ expId ]] <- d.jaccard
 	elevPlotDistList[[ expId ]] <- elevPlotDist	
 	
 	####### beta 1 ########
@@ -80,7 +80,7 @@ for (expId in 1:n) {
 }
 
 ######## non 454 #######	
-whittakerNo454DisList <- list()
+jaccardNo454DisList <- list()
 beta1No454DisList <- list()
 hornMorisitaNo454DisList <- list()
 elevPlotDistNo454List <- list()
@@ -89,11 +89,11 @@ for (expId in 1:m) {
     communityMatrix <- initNon454ByPlot(expId, otuThr)
     elevPlotDist <- getElevSampleDist(rownames(communityMatrix)) 
     
-	######## Whittaker's beta #######	
-	d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)
-	#mantel.brayBin <- mantel(elevPlotDist, d.brayBin, permutations=4999)
+	######## jaccard #######	
+	d.jaccard <- vegdist(communityMatrix, method="jaccard")
+	#mantel.jaccard <- mantel(elevPlotDist, d.jaccard, permutations=4999)
     
-    whittakerNo454DisList[[ expId ]] <- d.brayBin
+    jaccardNo454DisList[[ expId ]] <- d.jaccard
 	elevPlotDistNo454List[[ expId ]] <- elevPlotDist
 	
 	####### beta 1 ########
@@ -183,65 +183,65 @@ invisible(dev.off())
 
 print(xtable(mantel_table),sanitize.text.function=function(x){x})
 
-####### Whittaker's beta ########
-print("Whittaker's beta : ")
+####### jaccard ########
+print("jaccard : ")
 mantel_table <- matrix(0,nrow=(n+m),ncol=4)
 rownames(mantel_table) <- c(matrixNames, matrixNamesNo454)
 colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
 
-pdf(paste(workingPath, "figures/all-elevation-brayBin-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
+pdf(paste(workingPath, "figures/all-elevation-jaccard-", otuThr, "-comparison.pdf", sep = ""), width=9, height=5)
 attach(mtcars)
 par(mfrow=c(1,2), oma=c(4,0,0,0)) 
 
 for (expId in 1:n) {	
-    d.brayBin <- whittakerDisList[[ expId ]]
+    d.jaccard <- jaccardDisList[[ expId ]]
 	elevPlotDist <- elevPlotDistList[[ expId ]] 
     
-    mantel.brayBin <- mantel(elevPlotDist, d.brayBin, permutations=4999)
+    mantel.jaccard <- mantel(elevPlotDist, d.jaccard, permutations=4999)
    
     # figures
 	if (expId == 1) {
 		par(mar=c(4,5,2,1))		
-		plot(as.vector(elevPlotDist), as.vector(d.brayBin), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3,
-			   xlab="elevation difference (metres)", ylab="Whittaker's beta", main="(a)")	
+		plot(as.vector(elevPlotDist), as.vector(d.jaccard), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3,
+			   xlab="elevation difference (metres)", ylab="Jaccard index", main="(a)")	
 	} else {
-		points(as.vector(elevPlotDist), as.vector(d.brayBin), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3)
+		points(as.vector(elevPlotDist), as.vector(d.jaccard), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3)
 	}
 	
-	lm.d.brayBin <- lm(as.vector(d.brayBin)~as.vector(elevPlotDist))
-	abline(lm.d.brayBin, col=mypalette[expId], cex=3) 
+	lm.d.jaccard <- lm(as.vector(d.jaccard)~as.vector(elevPlotDist))
+	abline(lm.d.jaccard, col=mypalette[expId], cex=3) 
 	
-	mantel_table[expId,1] <- round(mantel.brayBin$statistic, 3)
-	mantel_table[expId,2] <- mantel.brayBin$signif
-	mantel_table[expId,3] <- formatC(signif(summary(lm.d.brayBin)$r.squared, digits=3), digits=3,format="fg", flag="#")
-	mantel_table[expId,4] <- formatC(signif(summary(lm.d.brayBin)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
-#	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
+	mantel_table[expId,1] <- round(mantel.jaccard$statistic, 3)
+	mantel_table[expId,2] <- mantel.jaccard$signif
+	mantel_table[expId,3] <- formatC(signif(summary(lm.d.jaccard)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[expId,4] <- formatC(signif(summary(lm.d.jaccard)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.jaccard$statistic, 3), "; significance: ", mantel.jaccard$signif, "; permutations: ", mantel.jaccard$permutations, sep=""))  		
 	
 }
 
 for (expId in 1:m) {
-    d.brayBin <- whittakerNo454DisList[[ expId ]]
+    d.jaccard <- jaccardNo454DisList[[ expId ]]
 	elevPlotDist <- elevPlotDistNo454List[[ expId ]] 
 
-    mantel.brayBin <- mantel(elevPlotDist, d.brayBin, permutations=4999)
+    mantel.jaccard <- mantel(elevPlotDist, d.jaccard, permutations=4999)
     
     # figures
 	if (expId == 1) {
 		par(mar=c(4,5,2,1))		
-		plot(as.vector(elevPlotDist), as.vector(d.brayBin), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3,
+		plot(as.vector(elevPlotDist), as.vector(d.jaccard), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3,
 			   xlab="elevation difference (metres)", ylab="", main="(b)")	
 	} else {
-		points(as.vector(elevPlotDist), as.vector(d.brayBin), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3)
+		points(as.vector(elevPlotDist), as.vector(d.jaccard), pch=myshape2[expId], col=mypalette2[expId], ylim=c(0,1), cex=0.3)
 	}
 	
-	lm.d.brayBin <- lm(as.vector(d.brayBin)~as.vector(elevPlotDist))
-	abline(lm.d.brayBin, col=mypalette2[expId], cex=3) 
+	lm.d.jaccard <- lm(as.vector(d.jaccard)~as.vector(elevPlotDist))
+	abline(lm.d.jaccard, col=mypalette2[expId], cex=3) 
 	
-	mantel_table[(expId+n),1] <- round(mantel.brayBin$statistic, 3)
-	mantel_table[(expId+n),2] <- mantel.brayBin$signif
-	mantel_table[(expId+n),3] <- formatC(signif(summary(lm.d.brayBin)$r.squared, digits=3), digits=3,format="fg", flag="#")
-	mantel_table[(expId+n),4] <- formatC(signif(summary(lm.d.brayBin)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
-#	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.brayBin$statistic, 3), "; significance: ", mantel.brayBin$signif, "; permutations: ", mantel.brayBin$permutations, sep=""))  		
+	mantel_table[(expId+n),1] <- round(mantel.jaccard$statistic, 3)
+	mantel_table[(expId+n),2] <- mantel.jaccard$signif
+	mantel_table[(expId+n),3] <- formatC(signif(summary(lm.d.jaccard)$r.squared, digits=3), digits=3,format="fg", flag="#")
+	mantel_table[(expId+n),4] <- formatC(signif(summary(lm.d.jaccard)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+#	print(paste(matrixNamesNo454[expId],"'s mantel statistic r: ", round(mantel.jaccard$statistic, 3), "; significance: ", mantel.jaccard$signif, "; permutations: ", mantel.jaccard$permutations, sep=""))  		
 	
 }
 

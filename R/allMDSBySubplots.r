@@ -70,7 +70,7 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -95,21 +95,21 @@ mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(
 mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
-pdf(paste(workingPath, "figures/mds-subplots-beta1-", otuThr, ".pdf", sep = ""), width=7, height=10)	   
+pdf(paste(workingPath, "figures/mds-subplots-beta1-", otuThr, ".pdf", sep = ""), width=7, height=10, useDingbats = FALSE)	   
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 
 
 
-######## Bray-Curtis #######
+######## Jaccard #######
 
 for (expId in 1:n) {	
     # "-by-plot" trigger merge 2 subplots columns
     communityMatrix <- init(expId, otuThr, "-by-subplot")    
     matrixName <- matrixNames[expId]
-    d.brayBin <- vegdist(communityMatrix, method="bray", binary=TRUE)
+    d.jaccard <- vegdist(communityMatrix, method="jaccard")
 		
     # Run metaMDS, get points and stress
-	mds <- metaMDS(d.brayBin)
+	mds <- metaMDS(d.jaccard)
 	pts_mds <- as.data.frame(mds$points)
 	stress_mds <- mds$stress
 	
@@ -120,7 +120,7 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
 	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")
 	
@@ -145,7 +145,7 @@ mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(
 mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
-pdf(paste(workingPath, "figures/mds-subplots-Bray-Curtis-", otuThr, ".pdf", sep = ""), width=7, height=10)	   
+pdf(paste(workingPath, "figures/mds-subplots-jaccard-", otuThr, ".pdf", sep = ""), width=7, height=10, useDingbats = FALSE)	   
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 
              
@@ -157,7 +157,7 @@ for (expId in 1:n) {
     matrixName <- matrixNames[expId]
     d.hornMorisita <- vegdist(communityMatrix, method="horn", binary=FALSE)
 		
-        # Run metaMDS, get points and stress
+    # Run metaMDS, get points and stress
 	mds <- metaMDS(d.hornMorisita)
 	pts_mds <- as.data.frame(mds$points)
 	stress_mds <- mds$stress
@@ -169,7 +169,7 @@ for (expId in 1:n) {
 	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)
 	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)
 	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)
-	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds), ignore.case = T)
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))
 
 	subTitle <- paste(subTitles[expId], matrixNames[expId], "(stress ", round(stress_mds, 2),")")
 	
@@ -194,6 +194,6 @@ mdsp4 <- mdsp4 + theme(axis.title.x=element_blank(), axis.title.y=element_blank(
 mdsp5 <- mdsp5 + theme(legend.position="none")
 mdsp6 <- mdsp6 + theme(axis.title.y=element_blank(), legend.position="none")
 
-pdf(paste(workingPath, "figures/mds-subplots-Horn-Morisita-", otuThr, ".pdf", sep = ""), width=7, height=10)	
+pdf(paste(workingPath, "figures/mds-subplots-Horn-Morisita-", otuThr, ".pdf", sep = ""), width=7, height=10, useDingbats = FALSE)	
 grid.arrange(mylegend,arrangeGrob(mdsp1,mdsp2,mdsp3,mdsp4,mdsp5,mdsp6,ncol = 2, nrow=3), ncol=1, nrow=2, heights=c(1/20,19/20))
 invisible(dev.off()) 

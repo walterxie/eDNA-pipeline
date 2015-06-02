@@ -89,7 +89,7 @@ for (expId in 1:length(experiments)) {
 #	plot(rda_1, display = c("wa", "bp")) # Note correlation of biplot arrows
 
 	# Variance inflation factor - indicates highly correlated variables
-	vif.cca(rda_1)
+	print(vif.cca(rda_1))
 
 	rda_table$Inertia <- c(round(rda_1$CCA$tot.chi, 3), round(rda_1$CA$tot.chi, 3))
 	rda_table$Proportion <- c(rda_1$CCA$tot.chi/rda_1$tot.chi, rda_1$CA$tot.chi/rda_1$tot.chi)
@@ -114,10 +114,10 @@ for (expId in 1:length(experiments)) {
 	anova_table$Pr <- add_1$Pr[-1] # 1st row is <none>
     colnames(anova_table)[3] <- "Pr(>F)"
     
-	# Build model after stepwise removal of collinear variables (vif > 10; requires vif_function.R) 
+	# Build model after stepwise removal of collinear variables (vif >= 10; requires vif_function.R) 
 	# variance inflation factor (VIF) quantifies the severity of multicollinearity in an ordinary least squares regression analysis. 
 	env_reduced <- vif_func(in_frame = elev_env)
-	env_reduced # Remaining variables
+	print(env_reduced) # Remaining variables
 
 	# Build model automatically from reduced variable set
 	# (Unsure how to pass env_reduced variables to capscale formula; paste() doesn't work...)
@@ -137,7 +137,7 @@ for (expId in 1:length(experiments)) {
 	colnames(anova_table)[4] <- "Reduced Pr(>F)"
 
     # Choose a Model by Permutation Tests in Constrained Ordination using forward model selection
-	rda_reduced_f <- ordistep(rda_0, scope = formula(rda_reduced), direction = "forward")
+	rda_reduced_f <- ordistep(rda_0, scope = formula(rda_reduced), direction = "forward", permutations = 3999)
 
 	rda_forward <- capscale(formula = as.formula(rda_reduced_f$call), data = elev_env, distance = "jaccard")
 	if (verbose) head(summary(rda_forward))
@@ -152,7 +152,7 @@ for (expId in 1:length(experiments)) {
 	colnames(anova_table)[5] <- "Forward Pr(>F)"
 
 	# Choose a Model by Permutation Tests in Constrained Ordination using backward model selection
-	rda_reduced_b <- ordistep(rda_reduced, scope = formula(rda_0), direction = "backward")
+	rda_reduced_b <- ordistep(rda_reduced, scope = formula(rda_0), direction = "backward", permutations = 3999)
 
 	rda_backward <- capscale(formula = as.formula(rda_reduced_b$call), data = elev_env, distance = "jaccard")
 	if (verbose) head(summary(rda_backward))
@@ -168,10 +168,10 @@ for (expId in 1:length(experiments)) {
 	
 	anova_table[anova_table == 0] <- ""
 
-	print(xtable(anova_table, caption = "Distance-based redundancy analysis and their ANOVA tests in each step", 
+	print(xtable(anova_table, caption = paste("Distance-based redundancy analysis and their ANOVA tests in each step for", experiments[expId]), 
 			label = "tab:rdaAnova1"), sanitize.text.function = function(x){x})
 	
-	print(xtable(rda_table, caption = "The constrained and unconstrained inertia changes during distance-based redundancy analysis", 
+	print(xtable(rda_table, caption = paste("The constrained and unconstrained inertia changes for", experiments[expId]), 
 			label = "tab:rda"), sanitize.text.function = function(x){x})
 
 	rdaReducedList[[ expId ]] <- rda_reduced

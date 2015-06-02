@@ -4,7 +4,7 @@
 # Input: 2) OTU representative sequences "otus.fasta" from USEARCH OTU clustering;
 # Input: 3) Chimeras sequences chimeras.fasta from Uchime; 
 # Input: 4) Duplicate sequences mapping file "derep.uc" from USEARCH de-replication. 
-# Note: USEARCH 8 mixes all sample-based data into one pool,
+# Note: USEARCH 8 has a critical error to mix all sample-based data into one pool,
 #       therefore the sample information of each duplicate read would be lost during 
 #       de-replication process. In this code, we retrive the sample of each duplicate 
 #       read from the mapping file derep.uc created by a modified command:

@@ -48,18 +48,18 @@ for (lev in c("gamma", "beta")) {
 	for (expId in 1:n) {	
 		communityMatrix <- init(expId, otuThr, "-by-plot")
 	
-		# 3 columns: rank, diversity, removedSites
+		# 3 columns: rank, diversity, site
 		maxDiv <- getMaxRemainedDiversity(communityMatrix, level, q)
 			
 		if (expId==1) {		
-			allRanks <- data.frame(Plots= maxDiv[order(maxDiv$removedSites),][,3], stringsAsFactors = FALSE)
+			allRanks <- data.frame(Plots= rownames(maxDiv), stringsAsFactors = FALSE)
 			allMaxDiv <- data.frame(Rank= maxDiv[,1], stringsAsFactors = FALSE)		
 		} else {
-		   if(all(allRanks$Plots != maxDiv[order(maxDiv$removedSites),][,3])) 
-			   stop(paste("Find different plots ", allRanks$Plots, " != ", maxDiv[order(maxDiv$removedSites),][,1], sep=""))
+		   if(!all(allRanks$Plots == rownames(maxDiv))) 
+			   stop(paste("Find different plots ", allRanks$Plots, " != ", rownames(maxDiv), sep=""))
 		}
 	
-		allRanks[,matrixNames[expId]] <- as.numeric(maxDiv[order(maxDiv$removedSites),][,1]) 
+		allRanks[,matrixNames[expId]] <- as.numeric(maxDiv[,1]) 
 		allMaxDiv[,matrixNames[expId]] <- as.numeric(maxDiv[,2])
 	}
 
@@ -71,21 +71,24 @@ for (lev in c("gamma", "beta")) {
 		rownames(communityMatrix) <- gsub("CM30C30", "Plot9", rownames(communityMatrix), ignore.case = T)
 		rownames(communityMatrix) <- gsub("LB1", "Plot10", rownames(communityMatrix), ignore.case = T)
 
-		# 3 columns: rank, diversity, removedSites
+		# 3 columns: rank, diversity, site
 		maxDiv <- getMaxRemainedDiversity(communityMatrix, level, q)
 	
 		#"invertebrates", missing Plot7, Plot8
 		if (expId==3) {
-		   newrow <- c(NA, 0, "Plot7")
+		   newrow <- c(NA, 0)
 		   maxDiv <- rbind(maxDiv,newrow)
-		   newrow <- c(NA, 0, "Plot8")
+		   rownames(maxDiv)[nrow(maxDiv)] <- "Plot7"
+		   newrow <- c(NA, 0)
 		   maxDiv <- rbind(maxDiv,newrow)
+		   rownames(maxDiv)[nrow(maxDiv)] <- "Plot8"
+		   maxDiv <- maxDiv[order(rownames(maxDiv)),]
 		}
 
-		if(all(allRanks$Plots != maxDiv[order(maxDiv$removedSites),][,3])) 
-			stop(paste("Find different plots ", allRanks$Plots, " != ", maxDiv[order(maxDiv$removedSites),][,1], sep=""))
+		if(!all(allRanks$Plots == rownames(maxDiv))) 
+			stop(paste("Find different plots ", allRanks$Plots, " != ", rownames(maxDiv), sep=""))
 
-		allRanks[,matrixNamesNo454[expId]] <- as.numeric(maxDiv[order(maxDiv$removedSites),][,1])
+		allRanks[,matrixNamesNo454[expId]] <- as.numeric(maxDiv[,1])
 		allMaxDiv[,matrixNamesNo454[expId]] <- as.numeric(maxDiv[,2])
 	}
 

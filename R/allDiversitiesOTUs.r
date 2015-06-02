@@ -8,7 +8,7 @@ subTitles <- c(expression(paste("(e) "^"0", D[gamma])),expression(paste("(a) "^"
 n <- length(matrixNames) 
 #mypalette <- rainbow(n)
 mypalette <- c("red", "orange", "green", "purple", "blue", "brown")
-myshape <- seq(15, (15 + n -1))
+myshape <- seq(0, (0 + n-1))
 	
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
@@ -70,10 +70,15 @@ for (dFId in c(2,5,3,6,1,4)) { #length(levels)
 			
 		}
 	
+		lty=2
+		if (expId < 3 | expId == 5) { # 16S, 18S and COI solid 
+		   lty=1
+		}
+	
 		if (levels[dFId] == "beta") {
-			lines(otuThrSeq, rarefractionTable[dFId,], lty=2, col=mypalette[expId]) 
+			lines(otuThrSeq, rarefractionTable[dFId,], lty=lty, col=mypalette[expId]) 
 		} else {
-			lines(otuThrSeq, log10(rarefractionTable[dFId,]), lty=2, col=mypalette[expId]) 			  			
+			lines(otuThrSeq, log10(rarefractionTable[dFId,]), lty=lty, col=mypalette[expId]) 			  			
 		}			
 		
 		abline(v=97, lty=2, col="gray60")
