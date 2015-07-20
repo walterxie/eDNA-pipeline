@@ -37,7 +37,17 @@ If you do not need clustering through different thresholds, this script is faste
 * Input: 1) community matrix file, such as 16S.csv; 
 * Output: 1) rarefaction table to plot rarefaction curves.  
 
-## 2. Community Analysis
+## 2. createAllFiguresTables.r
+This script runs all scripts introduced in 2. and 3. below, which creates all figures and tables. 
+
+* Variable sourcePath : the path to find R code;
+* Variable workingPath : the path to find data and generate figures;
+* Variable rmSingleton : remove all singleton from community matrix if TRUE;
+* Variable verbose : print the details if TRUE.
+* Output: if *rmSingleton* is TRUE, then all images are saved into "figures1" folder, otherwise into "figures" folder; 
+* Output: a Latex file to contain all tables.
+
+## 3. Community Analysis
 
 ### allDiversitiesOTUs.r
 Plots of diversities using cutoff thresholds ranging from 90-100% for OTU classification 
@@ -77,10 +87,13 @@ Box and whisker plots of turnover (normalised pairwise effective beta diversity)
 * Output: 1) the figure of turnover within and between plots.
 
 ### allMDSBySubplots.r
-Multivariate ordination of samples using non-metric multidimensional scaling of effective beta diversity for paired subplots.
+Multivariate ordination of 454 samples using non-metric multidimensional scaling of effective beta diversity for paired subplots.
 
 * Input: 1) community matrix file, such as 16S.csv;
 * Output: 1) the figure of MDS for paired subplots. 
+
+### allProcrustes.r
+
 
 ### allGeneCorrolation.r
 Pairwise community matrix correlations of effective beta diversity between data sets.
@@ -117,7 +130,7 @@ Extension code of *allMaxRemainedDiversity.r*.
 * Output: 1) the table of means and standard deviations of given ranks.
 
 
-## 3. Take Environmental Variables Into Account 
+## 4. Take Environmental Variables Into Account 
 
 ### allElevationAlpha.r
 Regression of effective alpha diversity as a function of elevation.
@@ -134,7 +147,7 @@ Regression of effective beta diversity and difference in elevation.
 * Output: 2) the table of Mantel's test result.
 
 ### allRedundancyAnalysis.r
-Constrained ordination of community data with environmental data as constraining variables, was carried out using the *[capscale](http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/capscale.html)* function, 
+Constrained ordination of 454 community data with environmental data as constraining variables, was carried out using the *[capscale](http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/capscale.html)* function, 
 a non-Euclidean generalization of redundancy analysis, from the R package *vegan*. 
 Three ordination scenarios were tested: 
 
@@ -154,3 +167,7 @@ Three ordination scenarios were tested:
 * Output: 4) the figure of models using backward selection in iii);
 * Output: 5) the result table of distance-based redundancy analysis and their ANOVA tests in each step;
 * Output: 6) the table of constrained and unconstrained inertia changes during analysis.
+
+### allRedundancyAnalysisPlants.r
+Constrained ordination of plants data with environmental data as constraining variables.
+
