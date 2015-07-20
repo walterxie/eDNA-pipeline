@@ -47,6 +47,7 @@ This script runs all scripts introduced in 2. and 3. below, which creates all fi
 * Output: if *rmSingleton* is TRUE, then all images are saved into "figures1" folder, otherwise into "figures" folder; 
 * Output: a Latex file to contain all tables.
 
+
 ## 3. Community Analysis
 
 ### allDiversitiesOTUs.r
@@ -77,7 +78,8 @@ Generate statistical summary of communities regarding sequences and OTUs.
 ### allTaxonomyPhylum.r
 The percentage of OTUs assigned to phyla. 
 
-* Input: 1) a taxonomic identification file from MEGAN but modified by expert, such as taxonomy97phyla.txt; 
+* Input: 1) a taxonomic identification file from MEGAN but modified by expert, such as taxonomy97phyla.txt;
+* Input: 2) singleton OTUs in each data set, such as taxonomy97singleton.txt; 
 * Output: 1) the figure of OTUs assigned to phyla.
 
 ### allWithinBetweenPlots.r
@@ -93,7 +95,11 @@ Multivariate ordination of 454 samples using non-metric multidimensional scaling
 * Output: 1) the figure of MDS for paired subplots. 
 
 ### allProcrustes.r
+Procrustes analysis of effective beta diversity between the eDNA data sets and traditional data sets.
 
+* Input: 1) community matrix file, such as 16S.csv;
+* Output: 1) the figure of Procrustes analysis; 
+* Output: 2) the table of estimated sum of squared differences and their significance.
 
 ### allGeneCorrolation.r
 Pairwise community matrix correlations of effective beta diversity between data sets.
@@ -102,17 +108,11 @@ Pairwise community matrix correlations of effective beta diversity between data 
 * Output: 1) the figure of MDS for correlations;
 * Output: 2) the table of correlations and significances.
 
-### allMaxDiv.r
+### allMaxDivCombOfPlots.r
 The probability of having maximum gamma diversity or maximum effective beta diversity of all possible combinations of 4 plots. 
-The number of plots (4) can be changed in the code.
+The number of plots (e.g. 4) can be changed in the code.
 
 * Input: 1) community matrix file, such as 16S.csv; 
-* Output: 1) the table of probabilities.
-
-### allMaxDivHeatmap.r
-Create heat-map for *allMaxDiv.r*.
-
-* Input: 1) the table of probabilities; 
 * Output: 1) the heat-map.
 
 ### allMaxRemainedDiversity.r
@@ -122,12 +122,7 @@ Maximum remained gamma and effective beta diversity as a function of number of s
 * Input: 1) community matrix file, such as 16S.csv; 
 * Output: 1) the table of ranks;
 * Output: 2) the table of Spearman correlations and their significances.
-
-### avgRanks.r
-Extension code of *allMaxRemainedDiversity.r*.
-
-* Input: 1) the table of ranks; 
-* Output: 1) the table of means and standard deviations of given ranks.
+* Output: 3) the table of means and standard deviations of given ranks.
 
 
 ## 4. Take Environmental Variables Into Account 
@@ -169,5 +164,5 @@ Three ordination scenarios were tested:
 * Output: 6) the table of constrained and unconstrained inertia changes during analysis.
 
 ### allRedundancyAnalysisPlants.r
-Constrained ordination of plants data with environmental data as constraining variables.
+Constrained ordination of plants data with environmental data as constraining variables. Code is similar to *allRedundancyAnalysis.r*.
 

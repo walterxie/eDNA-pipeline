@@ -55,7 +55,6 @@ source("allSampleCount.r", local=TRUE)
 
 source("allStatistics.r", local=TRUE)
 
-if (!rmSingleton)
 source("allTaxonomyPhylum.r", local=TRUE)
 
 #source("createAllDiversitiesOTUsTable.r", local=TRUE)

@@ -145,4 +145,4 @@ which will cause MEGAN input error.
 If you do not need clustering through different thresholds, you could use faster script *createAllRarefactionTable.r* to generate 
 the rarefaction table at 97% threshold only. 
 
-4. Run *all???.r* one by one to get all figures and tables.
+4. Run *createAllFiguresTables.r* to get all figures and tables.
