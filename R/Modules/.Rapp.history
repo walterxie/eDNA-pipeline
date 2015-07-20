@@ -1,0 +1,1472 @@
+tree <- appendNode(node, tree)
+tree
+tree$children[[1]]
+tree$children[[1]]=node
+tree
+node
+list(name = tx, rank = colnames(df)[r], children = list(), elements = c())
+for (tx in newTaxa) {		#
+				parentTaxon <- df[match(tx, df[,r]), r-1]#
+				tree <- addChildTo(parentTaxon, list(name = tx, rank = colnames(df)[r], children = list(), elements = c()), tree)#
+#
+			} # END tx loop
+addChildTo <- function (name="", child=list(), tree=list())  {#
+	for (node in tree$children) {#
+		if (node$name==name) {#
+			tree$children[[length(tree$children)+1]] <- child#
+			return(tree)#
+		}#
+		getNode(name, node)#
+	}#
+	return(NA)#
+}
+for (tx in newTaxa) {		#
+				parentTaxon <- df[match(tx, df[,r]), r-1]#
+				tree <- addChildTo(parentTaxon, list(name = tx, rank = colnames(df)[r], children = list(), elements = c()), tree)#
+#
+			} # END tx loop
+tree
+tree <- list(name = "root", children = list())#
+parentTaxa <- unique(df[,1])#
+		for (tx in parentTaxa) {#
+			tree$children[[length(tree$children)+1]] <- list(name = tx, rank = colnames(df)[1], children = list(), elements = c())#
+		}
+r=4
+taxa <- unique(df[,r])#
+		newTaxa <- setdiff(taxa ,parentTaxa)
+tree
+for (tx in newTaxa) {		#
+				parentTaxon <- df[match(tx, df[,r]), r-1]#
+				tree <- addChildTo(parentTaxon, list(name = tx, rank = colnames(df)[r], children = list(), elements = c()), tree)#
+#
+			} # END tx loop
+tree
+tree$children
+tree <- list(name = "root", children = list())#
+parentTaxa <- unique(df[,1])#
+		for (tx in parentTaxa) {#
+			tree$children[[length(tree$children)+1]] <- list(name = tx, rank = colnames(df)[1], children = list(), elements = c())#
+		}
+tree$children
+node=tree$children[[1]]
+node$children
+child
+list(name = tx, rank = colnames(df)[r], children = list(), elements = c())
+tx
+newTaxa
+tx=newTaxa[1]
+parentTaxon <- df[match(tx, df[,r]), r-1]
+parentTaxon
+child=list(name = tx, rank = colnames(df)[r], children = list(), elements = c())
+node$children
+node$children[[length(node$children)+1]] <- child
+node$children
+node$name
+library(vegetarian)
+?d
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+taxaAssg
+0==0
+###### taxa assignment by reads ######
+		# create taxa table based on the number of reads#
+		taxaAssgReads <- cbind(communityMatrix, taxaPaths[,rankLevel])#
+		colnames(taxaAssgReads)[ncol(taxaAssgReads)] <- rankLevel#
+#
+		if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}
+taxaAssg
+#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))
+taxaAssg
+taxaCol=ncol(taxaAssg)-2
+matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))
+matchTaxaDF
+matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])
+matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])
+matchTaxaDF
+matchTaxaDF[complete.cases(matchTaxaDF),]
+matchTaxaDF[!complete.cases(matchTaxaDF),]
+matchTaxaDF[is.na(matchTaxaDF[,1]),]
+matchTaxaDF[is.na(matchTaxaDF[,1]),2]
+emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]
+emptyParentDF
+matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+		#			taxaAssg[matchTaxaDF[,1],"space"] <- ""		#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+					taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], "--", sep = "")		#
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}
+taxaAssg
+displayEmptyParent=TRUE
+displayEmptyParent && nrow(emptyParentDF) > 0
+0:(nrow(emptyParentDF)-1)
+emptyParentDF[1,]
+# insert row to data frame#
+insertRow <- function(rowDF, taxaAssg, to) {	#
+	if (to == 1) {#
+		return(rbind(rowDF,taxaAssg))#
+	} else if (to > nrow(taxaAssg)) {#
+		return(rbind(taxaAssg,rowDF))#
+	} else {#
+		return( rbind(rbind(taxaAssg[1:(to-1),],rowDF), taxaAssg[to:(nrow(taxaAssg)),]) )#
+	}#
+}
+emptyParentDF[insRow,2]-1
+emptyParentDF[1,2]-1
+insRow=1
+emptyParentDF[insRow,2]
+to <- emptyParentDF[insRow,2]
+taxaAssg[to,]
+rowDF[2:colTotal]
+rowDF <- taxaAssg[to,]
+rowDF[2:colTotal]
+rowDF[2:colTotal]=0
+rowDF[2:colTotal]
+rowDF[taxaCol]
+rowDF[(colTotal+1):taxaCol]
+rowDF[1]=rowDF[taxaCol]#
+			rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]
+rowDF
+rowDF[,"space"]
+substring(rowDF[,"space"], 3)
+taxaAssg <- insertRow(rowDF, to, taxaAssg)
+to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					rowDF[,"space"] <- substring(rowDF[,"space"], 3)
+to
+rowDF
+insertRow(rowDF, to, taxaAssg)
+rbind(rowDF,taxaAssg)
+to == 1
+return(rbind(rowDF,taxaAssg))
+# insert row to data frame#
+insertRow <- function(rowDF, to, taxaAssg) {	#
+	if (to == 1) {#
+		return(rbind(rowDF,taxaAssg))#
+	} else if (to > nrow(taxaAssg)) {#
+		return(rbind(taxaAssg,rowDF))#
+	} else {#
+		return( rbind(rbind(taxaAssg[1:(to-1),],rowDF), taxaAssg[to:(nrow(taxaAssg)),]) )#
+	}#
+}
+x<- insertRow(rowDF, to, taxaAssg)
+x
+# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+		#			taxaAssg[matchTaxaDF[,1],"space"] <- ""		#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+					taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], "--", sep = "")		#
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					rowDF[,"space"] <- substring(rowDF[,"space"], 3)#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}
+taxaAssg
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))
+taxaAssg
+# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+		#			taxaAssg[matchTaxaDF[,1],"space"] <- ""		#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+#					taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], "--", sep = "")		#
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+#					rowDF[,"space"] <- substring(rowDF[,"space"], 3)#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)
+taxaAssg
+(ncol(taxaAssg)-2):(colTotal+1)
+c((ncol(taxaAssg)-2):(colTotal+1),1)
+taxaAssg[1,15]
+colnames(taxaAssg)[15]
+colTaxaGroupLevel
+1:nrow(taxaAssg)
+matchTaxaDF[,1]
+which(taxaAssg[,1]== taxaAssg[,colTotal+1])
+which(taxaAssg[,1]!=taxaAssg[,colTotal+1])
+# add space to "space" column#
+		space <- "--"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+taxaAssg
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+taxaAssg
+colnames(taxaAssg)
+match(c("genus","species"), tolower(colnames(taxaAssg)))
+is.element(c("genus","species"), tolower(colnames(taxaAssg)))
+all( is.element(c("genus","species"), tolower(colnames(taxaAssg))) )
+colSpecies <- which(colnames(taxaAssg)=="species")#
+		colGenus <- which(colnames(taxaAssg)=="genus")
+colSpecies
+taxaAssg[which(taxaAssg[,colSpecies] != taxaAssg[,colGenus]),]
+colGenus
+which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}
+taxaAssg
+all( is.element(c("genus","species"), tolower(colnames(taxaAssg))) )
+colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")
+taxaAssg[which(taxaAssg[,colSpecies] != taxaAssg[,colGenus]),]
+isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])
+isSpecies
+c()
+paste(taxaAssg[isSpecies, colGenus], taxaAssg[isSpecies, colSpecies], sep=".")
+prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+prefix
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+taxaAssg
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+rownames(taxaPaths)
+rownames(taxaPathsMEGAN)
+length(rownames(taxaPathsMEGAN))
+length(rownames(taxaPaths))
+inputCM
+inputTaxa
+inputTaxaManual
+taxaAssgPerSample[,rankLevel] = factor(taxaAssgPerSample[,rankLevel], rev(unique(taxaAssgPerSample[,rankLevel])))
+taxaAssgPerSample
+inputCM <- paste(workingPath, "data/", matrixNames[expId], ".txt", sep="") #
+		communityMatrix <- read.table(inputCM, header=TRUE, row.names=1, sep="\t", stringsAsFactors=FALSE)#
+		communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]#
+		communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]#
+		# U115 = U155 (correct name) and OJ95 = CJ95 (correct name). AL132 is the "difficult" site extracting DNA #
+		colnames(communityMatrix) <- gsub("OJ95", "CJ95", colnames(communityMatrix), ignore.case = T)#
+		colnames(communityMatrix) <- gsub("U115", "U155", colnames(communityMatrix), ignore.case = T)#
+		# taxaPathsMEGAN only for validate rownames here#
+		inputTaxa <- paste(workingPath, "Taxonomy_tables/", taxaFiles[expId], sep="")#
+		taxaPathsMEGAN <- read.table(inputTaxa, header=TRUE, row.names=1, sep = "\t", stringsAsFactors=FALSE)  #
+		taxaPathsMEGAN <- taxaPathsMEGAN[order(rownames(taxaPathsMEGAN)),]#
+#
+		rownames(communityMatrix) <- gsub(";size.*;", "", rownames(communityMatrix))#
+		rownames(taxaPathsMEGAN) <- gsub(";size.*;", "", rownames(taxaPathsMEGAN))#
+#
+		##### filter out rows not belong to given taxa belongTo ##### #
+		taxaPathsMEGAN <- taxaPathsMEGAN[which(grepl(belongTo, taxaPathsMEGAN[,1])),] # taxaPaths[,1] is taxa path separated by ;#
+		# taxaPaths here is manually classified#
+		inputTaxaManual <- paste(workingPath, "data/", taxaManualFiles[expId], sep="")#
+		taxaPaths <- read.table(inputTaxaManual, header=TRUE, row.names=1, sep = "\t", stringsAsFactors=FALSE)#
+		rownames(taxaPaths) <- paste("OTU_", rownames(taxaPaths), sep="") #
+		taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]#
+		colnames(taxaPaths) <- tolower(colnames(taxaPaths))#
+#
+		if ( all( tolower(rownames(taxaPaths)) != tolower(rownames(taxaPathsMEGAN)) ) ) #
+			stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )#
+#
+		# replace empty values with value from the higher rank column#
+		for (cl in 2:ncol(taxaPaths)) {#
+			taxaPaths[ taxaPaths[,cl] == "", cl  ]  <- taxaPaths[ taxaPaths[,cl] == "", cl-1 ]#
+		}#
+#
+		# classified by Viridiplantae from Genbank, but corrected as Fungi by Ben#
+		numFungi <- nrow(taxaPaths[ taxaPaths[,1] == "Fungi", ])#
+		print( paste(numFungi, "OTUs are classified by Viridiplantae from Genbank, but corrected as Fungi by Ben.") )#
+		# remove all Fungi#
+		taxaPaths <- taxaPaths[ taxaPaths[,1] != "Fungi", ]#
+		# not make a plot for the data set whose reads < minReads#
+		if (nrow(taxaPaths) < minReads) {#
+			print( paste("Taxa of", matrixNames[expId], "NOT have classification for", belongTo, ", jump to next in the loop.") )	#
+			next#
+		}#
+#
+		communityMatrix <- communityMatrix[match(rownames(taxaPaths),rownames(communityMatrix)),]#
+#
+		if ( all( tolower(rownames(communityMatrix)) != tolower(rownames(taxaPaths)) ) ) #
+			stop( paste("OTU names in", matrixNames[expId], "community matrix file and taxa path file are not matched !") )#
+#
+		if ( ! rankLevel %in% colnames(taxaPaths) ) #
+			stop( paste("Column name", rankLevel, "not exist in taxa path file for ", matrixNames[expId]) )#
+		if (! groupLevel %in% colnames(taxaPaths) ) #
+			stop( paste("Column name", groupLevel, "not exist in taxa path file for ", matrixNames[expId]) )#
+		###### taxa assignment by reads ######
+		# create taxa table based on the number of reads#
+		taxaAssgReads <- cbind(communityMatrix, taxaPaths[,rankLevel])#
+		colnames(taxaAssgReads)[ncol(taxaAssgReads)] <- rankLevel#
+#
+		if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}#
+#
+		##### add genus to species name regarding taxonomy rule ######
+		if ( all( is.element(c("genus","species"), tolower(colnames(taxaAssg))) ) ) {#
+			colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)#
+			taxaAssg[isSpecies, colSpecies] <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")#
+		}#
+		#####  make "Others" category ######
+		# make "Others" by percThr: percentage threshold of total reads in taxaAssg$Total#
+		if (percThr > 0) {#
+			totalThr <- sum(taxaAssg$Total) * percThr#
+			Others <- colSums(taxaAssg[which(taxaAssg$Total<=totalThr),2:colTotal])#
+			Others <- c("Others",Others,rep("Others", ncol(taxaAssg)-colTotal-1),"")	#
+			taxaAssgId <- which(taxaAssg$Total>totalThr)#
+			# avoid error: invalid factor level, NA generated#
+			taxaAssg <- data.frame(lapply(taxaAssg, as.character), stringsAsFactors=FALSE)#
+			taxaAssg <- rbind(taxaAssg[taxaAssgId,], Others)		#
+		}#
+#
+		# make "Others" by maxNTaxa#
+	#	if (nrow(taxaAssg) > maxNTaxa) {#
+	#		Others <- colSums(taxaAssg[-(1:maxNTaxa),-1])#
+	#		Others <- c("Others",Others)#
+	#		taxaAssg <- data.frame(lapply(taxaAssg, as.character), stringsAsFactors=FALSE)#
+	#		taxaAssg <- rbind(taxaAssg[1:maxNTaxa,], Others)		#
+	#	}#
+#
+		#####  prepare data frame for chart ######
+		print( paste( "Select", length(unique(taxaPaths[,rankLevel])), "taxa from the total of", rankLevel, "+ high-level taxa", nrow(taxaAssg), #
+				", selected taxa groups =", length(unique(taxaAssg$taxagroup)), #
+				", total OTUs =", nrow(taxaAssgReads), ", total reads =",  sum(taxaAssgReads[,-ncol(taxaAssgReads)]) ) )  #
+#
+		if (percThr > 0) {#
+			xlab <- xlab( paste(nrow(taxaAssg), " (of ", length(unique(taxaPaths[,rankLevel])), ") ",  #
+							rankLevel, " + high-level taxa (reads > ", percThr*100, "% of total) ", sep = "") )#
+		} else {#
+			if (belongTo == "Metazoa") { # non Arthropoda#
+				xlab <- xlab( paste(nrow(taxaAssg), " ", rankLevel, " + high-level taxa (excluding Arthropoda)", sep = "") )#
+			} else {#
+				xlab <- xlab( paste(nrow(taxaAssg), " ", rankLevel, " + high-level taxa", sep = "") )#
+			}#
+		}#
+#
+		taxaAssg[,1] <- paste(taxaAssg[,1], taxaAssg[,"space"], sep = "")#
+#
+		# MEAGEN bug: show Eukaryota in all rank columns for Viridiplantae, whose taxa path contains Viridiplantae #
+		taxaAssg[,1] <- gsub("Eukaryota", "Viridiplantae", taxaAssg[,1])
+taxaAssgPerSample <- gather(taxaAssg[,1:colTotal], plot, reads, 2:colTotal)#
+#
+		if ( nrow(taxaAssgPerSample) != (colTotal-1)*nrow(taxaAssg) ) #
+			stop( paste("taxaAssgPerSample rows", nrow(taxaAssgPerSample), "should be", (colTotal-2)*nrow(taxaAssg), "!") )#
+#
+		# assign taxa group to taxaAssgPerSample, including total column #
+		taxaAssgPerSample$taxagroup <- rep(taxaAssg$taxagroup, colTotal-1)#
+#
+		print(paste(length(unique(taxaAssg$taxagroup)), "taxa group from data :"))#
+		print(unique(taxaAssg$taxagroup))#
+#
+		# remove grey if no highLevel#
+		if (!is.element(highLevel, taxaAssg[,"taxagroup"])) #
+			myPalette <- myPalette [! myPalette %in% "#999999"]#
+#
+		# choose the colours for taxagroup based on the union of all taxagroup found across all the markers#
+		if (length(taxaGroupUnion)==0) {#
+			platteeUsedId <- c()#
+			taxaUsedId <- c()#
+			# also use grey for "high level"#
+	#		hLId <- which(unique(taxaAssg$taxagroup)==highLevel)#
+	#		if (hLId == 1) {#
+				platteeId <- 1:length(unique(taxaAssg$taxagroup))#
+	#		} else if (hLId == length(unique(taxaAssg$taxagroup))) {#
+	#			platteeId <- c(2:hLId,1)#
+	#		} else {#
+	#			platteeId <- c(2:hLId,1,(hLId+1):length(unique(taxaAssg$taxagroup)))	#
+	#		}		#
+			newPlatteeId <- platteeId			#
+		} else {#
+			# match previous union of taxa groups, if NA then the group not used previously#
+			platteeId <- match(unique(taxaAssg$taxagroup), taxaGroupUnion)	#
+			taxaUsedId <- platteeId[!is.na(platteeId)]#
+			platteeId[!is.na(platteeId)] <- platteeUsedId[taxaUsedId]#
+#
+			if (is.na(all(platteeId))) {#
+				newPlatteeId <- 1:length(myPalette)#
+				newPlatteeId <- newPlatteeId[! newPlatteeId %in% platteeUsedId[taxaUsedId]]	#
+				# reuse the rest of group ids not being used by multi-makers		#
+				newPlatteeId <- newPlatteeId[1:length(platteeId[is.na(platteeId)])] #
+				platteeId[is.na(platteeId)] <- newPlatteeId[1:length(platteeId[is.na(platteeId)])]#
+			} else {#
+				newPlatteeId <- c()#
+			}#
+		}#
+#
+		taxaGroupUnion <- union(taxaGroupUnion, unique(taxaAssg$taxagroup))#
+		platteeUsedId <- c(platteeUsedId, newPlatteeId)#
+		if ( length(taxaGroupUnion) != length(platteeUsedId) ) #
+			stop( paste("length of platteeUsedId ", length(platteeUsedId), "! = length of taxaGroupUnion", length(taxaGroupUnion), "!") )#
+		print(paste(length(taxaUsedId), "taxa group ids used previously :"))#
+		print(taxaUsedId)#
+#
+		print(paste(length(taxaGroupUnion), "taxa group in current union set :"))#
+		print(taxaGroupUnion)#
+#
+		# taxaGroupId only choose new id matched in taxaGroupUnion when the group is reused by >1 markers #
+		print(paste(length(platteeId), "taxa group and their colour palette ids :"))#
+		print(platteeId)
+taxaAssgPerSample
+taxaAssg
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+taxaAssg
+if ( all( is.element(c("genus","species"), tolower(colnames(taxaAssg))) ) ) {#
+			colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)#
+			taxaAssg[isSpecies, colSpecies] <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")#
+		}
+taxaAssg
+prefix
+paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+taxaAssg[isSpecies, colSpecies]
+isSpecies
+taxaAssg[isSpecies, colSpecies]
+taxaAssg[isSpecies, colGenus]
+isSpecies
+colSpecies
+taxaAssg[33, 1]
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+taxaAssg[33, 1]
+colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+prefix
+taxaAssg[,colSpecies]
+taxaAssg[isSpecies, colSpecies]
+paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+taxaAssg[isSpecies, colSpecies] <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+apply(prefix, taxaAssg[isSpecies, colSpecies], paste, sep=".")
+sapply(prefix, taxaAssg[isSpecies, colSpecies], paste, sep=".")
+paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+newSpName <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+taxaAssg[isSpecies, colSpecies]
+taxaAssg[isSpecies, colSpecies] <- newSpName
+typeof( taxaAssg[isSpecies, colSpecies])
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+typeof( taxaAssg[isSpecies, colSpecies])
+taxaAssg[isSpecies, colSpecies]
+str(taxaAssg[isSpecies, colSpecies])
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0), stringsAsFactors=FALSE)#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum, stringsAsFactors=FALSE)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1])
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1])
+taxaAssg <- data.frame(taxaAssg, stringsAsFactors=FALSE)
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+taxaAssg <- data.frame(taxaAssg, stringsAsFactors=FALSE)#
+			colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+taxaAssg[isSpecies, colSpecies] <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+taxaAssg
+if (ylab=="OTU abundance") {#
+			#ylab <- "OTU abundance" # alpha 0#
+			# equivalent to d(x,lev=alpha,q=0)#
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) sum(x>0))#
+#		} else if (ylab=="Effective OTU abundance") {#
+			#ylab <- "Effective OTU abundance" # alpha 1	#
+#TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, function(x) d(t(x),lev="gamma",q=1))	#
+		} else {#
+			#ylab <- "Read abundance" #
+			taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= taxaAssgReads, FUN=sum)		#
+		}#
+		taxaAssg$Total <- rowSums(taxaAssg[,-1]) #
+#
+		# colnames(taxaPaths): "division" "order"    "family"   "genus"    "species"#
+		colRanks <- match(ranks, colnames(taxaPaths))#
+		colRanks <- colRanks[!is.na(colRanks)] #
+		colRankLevel <- which(colnames(taxaPaths)==rankLevel)#
+		colGroupLevel <- which(colnames(taxaPaths)==groupLevel)#
+		if (colRankLevel <= colGroupLevel || colGroupLevel < colRanks[1]) #
+			stop( paste("groupLevel (", groupLevel, ") must be higher than rankLevel (", rankLevel, #
+				", and lower than colRanks[1] (", colRanks[1], ") !") )#
+#
+		# add all higher taxa groups than rankLevel	#
+		for ( taxaCol in sort(colRanks[colRanks<colRankLevel], decreasing = T) ) {#
+			matchTaxa <- match(taxaAssg[,1], taxaPaths[,rankLevel])	#
+			taxaAssg[,colnames(taxaPaths)[taxaCol]] <- taxaPaths[matchTaxa,taxaCol]#
+		}#
+		#####  sort by each level of taxa group ######
+		colTotal <- which(colnames(taxaAssg)=="Total")#
+		colTaxaGroupLevel <- which(colnames(taxaAssg)==groupLevel)#
+		if ((colTotal+1) >= ncol(taxaAssg)) #
+			stop( paste("Taxa groups should have more than 2 columns : ", ncol(taxaAssg)-colTotal, " !") )#
+#
+		# taxaAssg[order(taxaAssg[,15],taxaAssg[,14],taxaAssg[,13],taxaAssg[,12],-taxaAssg$Total),]#
+		# taxaAssg <- taxaAssg[order(taxaAssg$Total, decreasing = T),]#
+		taxaAssg <- eval(parse( text=paste("taxaAssg[order(taxaAssg[,", #
+						paste(ncol(taxaAssg):(colTotal+1), collapse="],taxaAssg[,"), "],-taxaAssg$Total),]", sep="") ))#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# 2nd last col taxagroup for colouring#
+		taxaAssg$taxagroup <- taxaAssg[,colTaxaGroupLevel]#
+		# last col space to show taxa label as rank hierarchy#
+		taxaAssg$space <- rep("", nrow(taxaAssg))#
+		# move the higher classification to the top of each taxa group and create taxagroup for colouring#
+		for ( taxaCol in (ncol(taxaAssg)-2):(colTotal+1) ) {#
+			matchTaxaDF <- data.frame(row.names=unique(taxaAssg[,taxaCol]))#
+			matchTaxaDF$match1stcol <- match(rownames(matchTaxaDF),taxaAssg[,1])#
+			matchTaxaDF$matchtaxacol <- match(rownames(matchTaxaDF),taxaAssg[, taxaCol])#
+			# get empty parent#
+			emptyParentDF <- matchTaxaDF[is.na(matchTaxaDF[,1]),]#
+			# remove rows with NAs in data.frame#
+			matchTaxaDF <- matchTaxaDF[complete.cases(matchTaxaDF),]#
+			# category "high level" taxa higher than groupLevel#
+			if (nrow(matchTaxaDF) > 0) {#
+				if (taxaCol > colTaxaGroupLevel) {#
+					taxaAssg[matchTaxaDF[,1],"taxagroup"] <- highLevel#
+				} else {#
+					# add characters to 1st column taxa to build the rank hierarchy in axis label #
+					notMatched <- setdiff(1:nrow(taxaAssg), matchTaxaDF[,1]) #
+				}#
+				# remove rows with same taxa match index for simplification#
+				matchTaxaDF <- matchTaxaDF[matchTaxaDF[,1]!=matchTaxaDF[,2],]#
+				if (nrow(matchTaxaDF) > 0) {#
+					for ( mt in 1:nrow(matchTaxaDF) ) {#
+						taxaAssg <- mvRow(taxaAssg, matchTaxaDF[mt,1], matchTaxaDF[mt,2])#
+					}#
+				}#
+			}#
+			# insert empty parent#
+			if (displayEmptyParent && nrow(emptyParentDF) > 0) {#
+				for ( insRow in 1:nrow(emptyParentDF) ) {#
+					to <- emptyParentDF[insRow,2]+insRow-1#
+					rowDF <- taxaAssg[to,]#
+					# hard code#
+					rowDF[2:colTotal]=0#
+					rowDF[1]=rowDF[taxaCol]#
+					rowDF[(colTotal+1):taxaCol]=rowDF[taxaCol]#
+					taxaAssg <- insertRow(rowDF, to, taxaAssg)			#
+				}			#
+			}#
+		}#
+		rownames(taxaAssg) <- 1:nrow(taxaAssg)#
+		# add space to "space" column#
+		space <- " -"#
+		for ( taxaCol in colTaxaGroupLevel:(colTotal+1) ) {#
+			if (taxaCol == (colTotal+1)) {#
+				notMatched <- which(taxaAssg[,1]!=taxaAssg[,colTotal+1]) #
+			} else {#
+				notMatched <- which(taxaAssg[,taxaCol]!=taxaAssg[,taxaCol-1]) #
+			}#
+			taxaAssg[notMatched,"space"] <- paste(taxaAssg[notMatched,"space"], space, sep = "")	#
+		}
+colSpecies <- which(colnames(taxaAssg)=="species")#
+			colGenus <- which(colnames(taxaAssg)=="genus")#
+			taxaAssg[, colSpecies] <- sapply(taxaAssg[, colSpecies], as.character)#
+			isSpecies <- which(taxaAssg[,colSpecies] != taxaAssg[,colGenus])#
+			# keep at most 10 characters from genus#
+			prefix <- substring(taxaAssg[isSpecies, colGenus], 1, 10)
+taxaAssg[isSpecies, colSpecies] <- paste(prefix, taxaAssg[isSpecies, colSpecies], sep=".")
+taxaAssg
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+taxaPathsMEGAN
+source('~/svn/compevol/research/NZGenomicObservatory/MiSeq/DOCt1/R/allTaxonomyViridiplantae.r', chdir = TRUE)
+library(ShortRead)
+otus.fasta <- readFasta(paste(workingPath, "data/Viridiplantae-26S-otus.fasta", sep=""))
+length(id(otus.fasta))
+nrow(taxaPathsMEGAN)
+nrow(taxaPaths)
+expId
+expId=1
+##### load data ######
+		inputCM <- paste(workingPath, "data/", matrixNames[expId], ".txt", sep="") #
+		communityMatrix <- read.table(inputCM, header=TRUE, row.names=1, sep="\t", stringsAsFactors=FALSE)#
+		communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]#
+		communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]#
+		# U115 = U155 (correct name) and OJ95 = CJ95 (correct name). AL132 is the "difficult" site extracting DNA #
+		colnames(communityMatrix) <- gsub("OJ95", "CJ95", colnames(communityMatrix), ignore.case = T)#
+		colnames(communityMatrix) <- gsub("U115", "U155", colnames(communityMatrix), ignore.case = T)#
+		# taxaPathsMEGAN only for validate rownames here#
+		inputTaxa <- paste(workingPath, "Taxonomy_tables/", taxaFiles[expId], sep="")#
+		taxaPathsMEGAN <- read.table(inputTaxa, header=TRUE, row.names=1, sep = "\t", stringsAsFactors=FALSE)  #
+		taxaPathsMEGAN <- taxaPathsMEGAN[order(rownames(taxaPathsMEGAN)),]#
+#
+		rownames(communityMatrix) <- gsub(";size.*;", "", rownames(communityMatrix))#
+		rownames(taxaPathsMEGAN) <- gsub(";size.*;", "", rownames(taxaPathsMEGAN))#
+#
+		##### filter out rows not belong to given taxa belongTo ##### #
+		taxaPathsMEGAN <- taxaPathsMEGAN[which(grepl(belongTo, taxaPathsMEGAN[,1])),] # taxaPaths[,1] is taxa path separated by ;#
+		# taxaPaths here is manually classified#
+		inputTaxaManual <- paste(workingPath, "data/", taxaManualFiles[expId], sep="")#
+		taxaPaths <- read.table(inputTaxaManual, header=TRUE, row.names=1, sep = "\t", stringsAsFactors=FALSE)#
+		rownames(taxaPaths) <- paste("OTU_", rownames(taxaPaths), sep="") #
+		taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]#
+		colnames(taxaPaths) <- tolower(colnames(taxaPaths))#
+#
+		if ( all( tolower(rownames(taxaPaths)) != tolower(rownames(taxaPathsMEGAN)) ) ) #
+			stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )
+nrow(taxaPaths)
+nrow(taxaPathsMEGAN)
+match(rownames(taxaPaths),rownames(taxaPathsMEGAN))
+rownames(taxaPathsMEGAN[match(rownames(taxaPaths),rownames(taxaPathsMEGAN)),])
+rownames(taxaPaths)
+match(c(1,2), c(1,2,3,4))
+match(c(1,5), c(1,2,3,4))
+if (nrow(taxaPaths) == nrow(taxaPathsMEGAN)) {#
+			if ( all( tolower(rownames(taxaPaths)) != tolower(rownames(taxaPathsMEGAN)) ) ) #
+				stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )#
+		} else if (nrow(taxaPaths) > nrow(taxaPathsMEGAN)) {#
+			stop( paste("Manual classification file cannot have more OTUs than MEGAN file in", matrixNames[expId], " !") )#
+		} else {#
+			if ( is.na( match(rownames(taxaPaths),rownames(taxaPathsMEGAN)) ) ) #
+				stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )		#
+		}
+match(rownames(taxaPaths),rownames(taxaPathsMEGAN))
+is.na( match(rownames(taxaPaths),rownames(taxaPathsMEGAN)) )
+any( is.na( match(rownames(taxaPaths),rownames(taxaPathsMEGAN)) ) )
+if (nrow(taxaPaths) == nrow(taxaPathsMEGAN)) {#
+			if ( all( tolower(rownames(taxaPaths)) != tolower(rownames(taxaPathsMEGAN)) ) ) #
+				stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )#
+		} else if (nrow(taxaPaths) > nrow(taxaPathsMEGAN)) {#
+			stop( paste("Manual classification file cannot have more OTUs than MEGAN file in", matrixNames[expId], " !") )#
+		} else {#
+			if ( any( is.na( match(rownames(taxaPaths),rownames(taxaPathsMEGAN)) ) ) ) #
+				stop( paste("OTU names in", matrixNames[expId], "two taxa path files are not matched !") )		#
+		}
+library(ggplot2)#
+library(vegan)#
+library(vegetarian)#
+library(grid)#
+library(gridExtra)#
+#
+# change config below#
+sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"#
+setwd(sourcePath)#
+#
+workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"#
+experiments <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name#
+matrixNames <-  experiments#
+subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")#
+#
+n <- length(matrixNames) #
+mypalette <- c("red", "orange", "green", "purple", "blue", "brown")#
+myshape <- seq(0, (0 + n-1))#
+#
+otuThr = 97#
+#
+source("init.R", local=TRUE)#
+#extract legend#
+#https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs#
+g_legend<-function(a.gplot){#
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))#
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")#
+  legend <- tmp$grobs[[leg]]#
+  return(legend)}
+expId=1
+communityMatrix <- init(expId, otuThr, "-by-subplot")    #
+    matrixName <- matrixNames[expId]#
+    d.beta1 <- beta1(communityMatrix)#
+    # Run metaMDS, get points and stress#
+	mds <- metaMDS(d.beta1)#
+	pts_mds <- as.data.frame(mds$points)#
+	stress_mds <- mds$stress#
+	# Get sample labels/factors#
+	pts_mds$plots <- sapply(strsplit(rownames(pts_mds), "-"), "[", 1)#
+	# convert plot names#
+	pts_mds$plots <- gsub("CM30C30", "Plot9", pts_mds$plots, ignore.case = T)#
+	pts_mds$plots <- gsub("LB1", "Plot10", pts_mds$plots, ignore.case = T)#
+	rownames(pts_mds) <- gsub("CM30C30", "Plot9", rownames(pts_mds), ignore.case = T)#
+	rownames(pts_mds) <- gsub("LB1", "Plot10", rownames(pts_mds), ignore.case = T)#
+	rownames(pts_mds) <- gsub("[Plot]", "", rownames(pts_mds))#
+#
+	subTitle <- paste(subTitles[expId], " ", matrixNames[expId], " (stress ", round(stress_mds, 2),")", sep = "")#
+	pts_mds$plots <- factor(pts_mds$plots,levels = unique(pts_mds$plots))
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 3) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) +#
+			theme(legend.position="top", legend.title=element_blank(), panel.grid.major = element_blank(), #
+				panel.grid.minor = element_blank(), panel.background = element_blank()) +#
+			ggtitle(subTitle) + theme_bw()
+ggplot(pts_mds, aes(x = MDS1, y = MDS2, color = plots)) + #
+			geom_point(size = 3) + #
+			geom_text(aes(label = rownames(pts_mds)), size = 3, vjust = 2) +#
+			geom_polygon(aes(group = pts_mds$plots), fill = NA) + theme_bw() +#
+			theme(legend.position="top", legend.title=element_blank(), panel.grid.major = element_blank(), #
+				panel.grid.minor = element_blank(), panel.background = element_blank()) +#
+			ggtitle(subTitle)
+search()
+parent.env(env)
+workingPath
+workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
+workingPath
+workingPath <<- "~/Projects/NZGO/pilot2010/pipeline/"
+workingPath
+workingPath <<- "~/Projects/NZGO/pilot2010/pipeline"
+workingPath
+workingPath <- "~/Projects/NZGO/pilot2010/pipeline"
+workingPath
+if () {}
+if (override) {}
+override=T
+if (override) {t=1}
+if (override) {t=2}
+t
+override=F
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/exampleAgurs.r', chdir = TRUE)
+source('~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/exampleAgurs.r 11 xxx 100', chdir = TRUE)
+ls
+ls90
+ls()
+ls()
+communityMatrix[,1:2]
+communityMatrix[,which(colSums(communityMatrix)==1)]
+ncol(communityMatrix[,which(colSums(communityMatrix)==1)])
+ncol(communityMatrix)
+singletons <- which(colSums(communityMatrix)==1)
+ncol(communityMatrix[,-singletons])
+?rrarefy
