@@ -137,12 +137,12 @@ which will cause MEGAN input error.
 
 ## Community Matrix Analysis 
 
-1. Change source path for pipeline and working path for data into your local path.
+The detail is in [R/README.md](R/README.md).
 
-2. Run *createAllCommunityMatrix.r* first to create community matrices.
+1. Run *createAllCommunityMatrix.r* first to create community matrices.
 
-3. Run *createAllDiversitiesOTUsTable.r* second to get the rarefaction table and OTU threshold table. This is time-consuming.
+2. Run *createAllDiversitiesOTUsTable.r* second to get the rarefaction table and OTU threshold table. This is time-consuming.
 If you do not need clustering through different thresholds, you could use faster script *createAllRarefactionTable.r* to generate 
 the rarefaction table at 97% threshold only. 
 
-4. Run *createAllFiguresTables.r* to get all figures and tables.
+3. Change source path for pipeline and working path for data into your local path. Run *createAllFiguresTables.r* to get all figures and tables.
