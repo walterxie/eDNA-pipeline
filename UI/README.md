@@ -1,5 +1,5 @@
 
-[Modules](Modules) folder contains all functions used in the following [R code](./).
+[Modules](Modules) folder contains all functions used in the following R code.
 
 ## 1. Create Community Matrix and Rarefaction Table
 
