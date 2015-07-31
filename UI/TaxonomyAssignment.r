@@ -34,7 +34,7 @@ mylog_trans <- function(base=exp(1), from=0) {
 #ranks <- c("superkingdom", "kingdom", "phylum", "class", "order", "family", "genus")
 rankLevel="Taxa" 
 groupLevel="Group" # gives colour, and must higher than rankLevel
-ylabTxt="Species abundance"
+#barValueType="Species abundance"
 
 # "#CCCCCC", "#999999", 
 myPalette <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", 
@@ -44,9 +44,10 @@ myPalette <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C",
 				"#b2df8a", "#a6cee3", "#ffff33", "#006600")
 
 #taxaGroupUnion <- c()
-#, rankLevel=rankLevel, groupLevel=groupLevel, ylabTxt=ylabTxt
-TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, plotTitle=plotTitle, legend_nrow=1) {
-  cat("Set percentage threshold percThr =", percThr, ".\n") 
+#TODO: , rankLevel=rankLevel, groupLevel=groupLevel, plotTitle=NULL
+TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, legend_nrow=1, 
+                               barValueType="Species abundance") {
+  cat("\nSet percentage threshold percThr =", percThr, ", and the value in bar represents,\'", barValueType, "\'.\n") 
   
   # rm white space
 	colnames(taxaAssg) <- gsub(" ", "", colnames(taxaAssg), ignore.case = T)
@@ -60,17 +61,19 @@ TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, plotTitle=plotT
 	colGroupLevel <- which(colnames(taxaAssg)==groupLevel)
 	taxaAssg <- taxaAssg[,c(1:(colGroupLevel-1),ncol(taxaAssg),colGroupLevel)]
 	
-	# rm rows rowSums==0 
-	cat("Remove rows whose total is 0 :\n")
-	print(taxaAssg[taxaAssg$Total < 1,])
-	
-	taxaAssg <- taxaAssg[taxaAssg$Total > 0,]
+	if (nrow(taxaAssg[taxaAssg$Total < 1,]) > 0) {
+	  # rm rows rowSums==0 
+	  cat("Warning: remove rows whose total is 0 :\n")
+	  print(taxaAssg[taxaAssg$Total < 1,])
+	  
+	  taxaAssg <- taxaAssg[taxaAssg$Total > 0,]
+	}
 	
 	cat("Input non-zero community matrix with", nrow(taxaAssg), "taxa, assigned to", length(unique(taxaAssg[,groupLevel])), 
 			"taxa groups, total individuals/reads =",  sum(taxaAssg$Total), ".\n")  
 		
 	xlab <- xlab( paste(nrow(taxaAssg), " taxa", sep = "") )
-	ylab <- ylab(ylabTxt)		
+	ylab <- ylab(barValueType)		
 
 	colTotal <- which(colnames(taxaAssg)=="Total")
 	    
@@ -84,7 +87,7 @@ TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, plotTitle=plotT
 
 		cat( "Filter out", nrow(taxaAssg)-length(taxaAssgId), "taxa to Others category whose total <=", percThr, "of the total of whole matrix.\n")  
 
-		xlab <- xlab( paste(length(taxaAssgId), " of ", nrow(taxaAssg), " taxa (", tolower(ylabTxt), " > ", percThr*100, "% of total) ", sep = "") )		
+		xlab <- xlab( paste(length(taxaAssgId), " of ", nrow(taxaAssg), " taxa (", tolower(barValueType), " > ", percThr*100, "% of total) ", sep = "") )		
 		
 		# avoid error: invalid factor level, NA generated
 		taxaAssg <- data.frame(lapply(taxaAssg, as.character), check.names=FALSE, stringsAsFactors=FALSE)
@@ -123,9 +126,9 @@ TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, plotTitle=plotT
 	taxaAssgPerSample[,rankLevel] = factor(taxaAssgPerSample[,rankLevel], rev(unique(taxaAssgPerSample[,rankLevel])))
 	taxaAssgPerSample[,groupLevel] = factor(taxaAssgPerSample[,groupLevel], unique(taxaAssgPerSample[,groupLevel]))
 
-#	pdfHeight=2+nrow(taxaAssg)*0.12
-# maxLabelLen=max(nchar(taxaAssg[,rankLevel])) 
+	maxLabelLen=max(nchar( as.character(taxaAssg[,rankLevel]) )) 
 #	pdfWidth=0.1+maxLabelLen/10+(ncol(taxaAssg)-2)*1.5 
+#	pdfHeight=2+nrow(taxaAssg)*0.12
 	
 #	pdf(paste("figures/", "taxa-", plotTitle, ".pdf", sep = ""), width=pdfWidth, height=pdfHeight)	
 
@@ -152,4 +155,15 @@ TaxonomyAssignment <- function(taxaAssg=taxaAssg, percThr=0.001, plotTitle=plotT
 			scale_fill_manual(name = paste(groupLevel, ":"),values = myPalette) 
 #	print(p)
 #	invisible(dev.off()) 
+	
+	cat("Return nrow =", nrow(taxaAssg), ", ncol =", ncol(taxaAssg), ", ngroup =", length(unique(taxaAssg[,groupLevel])), 
+	    ", maxlablen =", maxLabelLen, ".\n") 
+	# Return a list containing the filename
+	list(
+	  nrow = nrow(taxaAssg),
+	  ncol = ncol(taxaAssg), # include 'taxa' and 'group' col
+	  ngroup = length(unique(taxaAssg[,groupLevel])), # include Other
+	  maxlablen = maxLabelLen, # max length of characters in label
+	  plot = p
+	)
 }

@@ -165,4 +165,3 @@ Three ordination scenarios were tested:
 
 ### allRedundancyAnalysisPlants.r
 Constrained ordination of plants data with environmental data as constraining variables. Code is similar to *allRedundancyAnalysis.r*.
-

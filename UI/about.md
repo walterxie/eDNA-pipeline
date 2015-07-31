@@ -2,7 +2,7 @@
 
 ### Copyright:
 
-Dong Xie, Andrew Dopheide, Alexei Drummond
+[Dong Xie](https://www.cs.auckland.ac.nz/~walter/), Andrew Dopheide, [Alexei Drummond](http://compevol.auckland.ac.nz/dr-alexei-drummond/)
 
 ### Citation:
 

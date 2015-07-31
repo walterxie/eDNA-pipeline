@@ -20,7 +20,7 @@ shinyServer(function(input, output, session) {
     taxaAssg[is.na(taxaAssg)] <- 0
     
     # rm rows rowSums==0 
-    taxaAssg <- taxaAssg[rowSums(taxaAssg[,-c(1,ncol(taxaAssg))]) > 0,]
+#    taxaAssg <- taxaAssg[rowSums(taxaAssg[,-c(1,ncol(taxaAssg))]) > 0,]
     
     taxaAssg
   })
@@ -28,21 +28,21 @@ shinyServer(function(input, output, session) {
   output$cmTaxaTable <- DT::renderDataTable(data())
   
   # taxonomy assignment bar chart
-  p <- reactive({
+  ta <- reactive({
     percThr = input$percThr / 100
-    TaxonomyAssignment(taxaAssg = data(), percThr, "community matrix", input$legend_nrow)
+    TaxonomyAssignment(taxaAssg = data(), percThr=percThr, legend_nrow=input$legend_nrow, barValueType=input$bar_vt)
   }) 
   
   # not easy to use pdf in web UI
   output$imageTA <- renderImage({
     if (!is.null(data())) {
-      height = 10 + input$legend_nrow * 20 + nrow(data()) * 4
-      maxLabelLen = max(nchar(data()[1]))
-      width = maxLabelLen/2 + (ncol(data()) - 2) * 80
+      maxLabelLen = ta()$maxlablen
+      width = 20 + maxLabelLen * 6 + (ta()$ncol-2) * 120
+      height = 20 + input$legend_nrow * 30 + ta()$nrow * 10
       
       outfile <- tempfile(fileext = '.png')
       png(outfile, width = width, height = height)
-      print(p())
+      print(ta()$plot)
       invisible(dev.off())
       
       width = width * input$zoom / 100
@@ -54,17 +54,17 @@ shinyServer(function(input, output, session) {
         contentType = 'image/png',
         width = width,
         height = height,
-        alt = "This is alternate text"
+        alt = "Taxonomy assignment bar chart"
       )
     }
   }, deleteFile = TRUE)
   
   # console output TODO: not reacted properly with input$percThr
-  values <- reactiveValues()
-  output$ta_info <- renderPrint({
-    values[["log"]] <- invisible(capture.output(data <- p()))
-    return( print(unlist(lapply(values[["log"]], paste, collapse=" ")), quote = F) ) 
-  })
+#  values <- reactiveValues()
+#  output$ta_info <- renderPrint({
+#    values[["log"]] <- invisible(capture.output(data <- p()))
+#    return( print(unlist(lapply(values[["log"]], paste, collapse=" ")), quote = F) ) 
+#  })
   
   # TODO: size chaos
   output$downloadTA <- downloadHandler(
@@ -75,13 +75,12 @@ shinyServer(function(input, output, session) {
       
       if (is.null(data()))
         return(NULL)
-      
-      pdfHeight = 2 + nrow(data()) * 0.12
-      maxLabelLen = max(nchar(data()[1]))
-      pdfWidth = 0.1 + maxLabelLen / 10 + (ncol(data()) - 2) * 1.5
+      maxLabelLen = ta()$maxlablen
+      pdfWidth = 0.1 + maxLabelLen / 10 + (ta()$ncol-2) * 1.5
+      pdfHeight = 1 + input$legend_nrow * 1 + ta()$nrow * 0.12
       
       pdf(temp, width = pdfWidth, height = pdfHeight)
-      print(p())
+      print(ta()$plot)
       invisible(dev.off())
       
       bytes <- readBin(temp, "raw", file.info(temp)$size)

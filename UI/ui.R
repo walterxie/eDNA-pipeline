@@ -46,13 +46,15 @@ shinyUI(navbarPage(
                    "percThr", "Percentage threshold:", min = 0,
                    max = 1, value = 0.1, step = 0.1, post = "%"
                  ),
-                 numericInput(
-                   "legend_nrow", "Set legend row:", 1, min=1
-                 )
+                 selectInput("bar_vt", "Values in bar represent:", 
+                    choices = c("Species abundance", "Species richness", "OTU abundance", "individuals", "reads", "OTUs"))
                ),
                column(
                  4,
                  #helpText("Only png avaible for web UI. Download pdf for a high resolution image."),
+                 numericInput(
+                   "legend_nrow", "Set legend row:", 1, min=1
+                 ),
                  sliderInput(
                    "zoom", "Zoom in/out", min = 50,
                    max = 200, value = 100, step = 50, post = "%"
@@ -64,10 +66,10 @@ shinyUI(navbarPage(
              hr(),
              mainPanel(imageOutput("imageTA"))
            )),
+  tabPanel("Summary",
+           verbatimTextOutput("summary")),
   navbarMenu(
     "More",
-    tabPanel("Summary",
-             verbatimTextOutput("summary")),
     tabPanel("RCode",
              includeMarkdown("../R/README.md")),
     tabPanel("ReadMe",
