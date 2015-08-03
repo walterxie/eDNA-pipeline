@@ -14,6 +14,7 @@ library(RColorBrewer)
 #rmSingleton <- FALSE 
 
 if(!exists("figDir")) stop("figure folder name is missing !")
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 otuThr = 97
 

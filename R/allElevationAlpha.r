@@ -16,7 +16,7 @@ if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
 if(!exists("matrixNamesNo454")) stop("matrix names of traditional methods are missing !")
-
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 n <- length(matrixNames) 
 mypalette <- c("red", "orange", "green", "purple", "blue", "brown")

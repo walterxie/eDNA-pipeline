@@ -16,6 +16,7 @@ if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
 if(!exists("levels")) stop("levels of Jost diversity are missing !")
 if(!exists("qs")) stop("qs of Jost diversity are missing !")
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 

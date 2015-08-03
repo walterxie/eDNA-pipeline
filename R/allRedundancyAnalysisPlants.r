@@ -14,6 +14,7 @@ library(scales)
 
 if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("figDir")) stop("figure folder name is missing !")
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 plantMatrixNames <-  c("seedlings", "trees") 
 

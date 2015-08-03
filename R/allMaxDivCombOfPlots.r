@@ -20,6 +20,7 @@ if(!exists("matrixNames")) stop("matrix names are missing !")
 if(!exists("matrixNamesNo454")) stop("matrix names of traditional methods are missing !")
 if(!exists("levels")) stop("levels of Jost diversity are missing !")
 if(!exists("qs")) stop("qs of Jost diversity are missing !")
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 n <- length(matrixNames) 
 m <- length(matrixNamesNo454)

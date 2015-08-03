@@ -16,6 +16,7 @@ library(scales)
 if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
+if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
 stringBySubOrPlot <- "-by-subplot"
 otuThr <- 97
