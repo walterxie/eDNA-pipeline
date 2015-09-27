@@ -7,7 +7,7 @@ Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelso
 
 Supporting data in GigaScience Database: http://dx.doi.org/10.5524/100144
 
-## Dataset
+## Data
 
 1. BioProject in NCBI:
   http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737
