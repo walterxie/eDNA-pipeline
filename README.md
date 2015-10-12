@@ -5,6 +5,8 @@ Joseph Heled, Howard A Ross, Leah Tooman, Stefanie Grosser, Duckchul Park, Nicho
 Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelson, (2015): 
 "Evaluating a multigene environmental DNA approach for biodiversity assessment", GigaScience.
 
+The online version of this article (doi:[10.1186/s13742-015-0086-1](http://dx.doi.org/10.1186/s13742-015-0086-1)) 
+
 Supporting data in GigaScience Database: http://dx.doi.org/10.5524/100144
 
 ## Data
