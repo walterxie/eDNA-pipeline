@@ -1,43 +1,28 @@
 # eDNA-pipeline
 
-Alexei J Drummond, Richard D Newcomb, Thomas R Buckley, Dong Xie, Andrew Dopheide, Benjamin CM Potter, 
-Joseph Heled, Howard A Ross, Leah Tooman, Stefanie Grosser, Duckchul Park, Nicholas J Demetras, 
-Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelson, (2015): 
-"Evaluating a multigene environmental DNA approach for biodiversity assessment", GigaScience.
-
-The online version of this article (doi:[10.1186/s13742-015-0086-1](http://dx.doi.org/10.1186/s13742-015-0086-1)) or http://link.springer.com/article/10.1186/s13742-015-0086-1
-
-Supporting data in GigaScience Database: http://dx.doi.org/10.5524/100144
+In development
 
 ## Data
 
 1. BioProject in NCBI:
-  http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737
-
-2. 20 BioSamples (including lat-long, elevation, temperature):
-  http://www.ncbi.nlm.nih.gov/biosample?Db=biosample&DbFrom=bioproject&Cmd=Link&LinkName=bioproject_biosample&LinkReadableName=BioSample&ordinalpos=1&IdsFromResult=267737
-
+  
+2.  BioSamples (including lat-long, elevation, temperature):
+  
 3. Soil environmental sequences (454) in SRA:
-  http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103
+  
 
 4. Elevations:
-  plot_elevations.txt
+  
 
-5. Invertebrate (leaf litter + pitfall traps):
-  CO1_Invertebrate_Pitfall_1526_OTUs.csv, CO1_Leaf_Litter_1526_OTUs.csv
 
 6. Vegetation survey data:
-  Hauturu (Little Barrier island) in Jan 2011 (http://nvs.landcareresearch.co.nz).
-  diameters_pilot_species_1_2_0.csv, saplings_pilot_species_1_2_0.csv, seedlings_pilot_species_1_2_0.csv
 
-7. Bird counts:
-  birds_pilot_species_1_2_0.csv
 
 8. SraRunTable.txt : 
   a SRA mapping file to map SRA code to subplot name.
   
 9. Soil chemistry:
-  LJ12027.txt
+
 
 ## Folder structure in working path 
 
