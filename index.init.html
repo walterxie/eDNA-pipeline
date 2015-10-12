@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>eDNA-pipeline by walterxie</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>eDNA-pipeline</h1>
+        <h2>eDNA data pipeline 2015</h2>
+        <a href="https://github.com/walterxie/eDNA-pipeline" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="edna-pipeline" class="anchor" href="#edna-pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>eDNA-pipeline</h1>
+
+<p>Alexei J Drummond, Richard D Newcomb, Thomas R Buckley, Dong Xie, Andrew Dopheide, Benjamin CM Potter, 
+Joseph Heled, Howard A Ross, Leah Tooman, Stefanie Grosser, Duckchul Park, Nicholas J Demetras, 
+Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelson, (2015): 
+"Evaluating a multigene environmental DNA approach for biodiversity assessment", GigaScience.</p>
+
+<p>The online version of this article (doi:<a href="http://dx.doi.org/10.1186/s13742-015-0086-1">10.1186/s13742-015-0086-1</a>) or <a href="http://link.springer.com/article/10.1186/s13742-015-0086-1">http://link.springer.com/article/10.1186/s13742-015-0086-1</a></p>
+
+<p>Supporting data in GigaScience Database: <a href="http://dx.doi.org/10.5524/100144">http://dx.doi.org/10.5524/100144</a></p>
+
+<h2>
+<a id="data" class="anchor" href="#data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data</h2>
+
+<ol>
+<li><p>BioProject in NCBI:
+<a href="http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737">http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA267737</a></p></li>
+<li><p>20 BioSamples (including lat-long, elevation, temperature):
+<a href="http://www.ncbi.nlm.nih.gov/biosample?Db=biosample&amp;DbFrom=bioproject&amp;Cmd=Link&amp;LinkName=bioproject_biosample&amp;LinkReadableName=BioSample&amp;ordinalpos=1&amp;IdsFromResult=267737">http://www.ncbi.nlm.nih.gov/biosample?Db=biosample&amp;DbFrom=bioproject&amp;Cmd=Link&amp;LinkName=bioproject_biosample&amp;LinkReadableName=BioSample&amp;ordinalpos=1&amp;IdsFromResult=267737</a></p></li>
+<li><p>Soil environmental sequences (454) in SRA:
+<a href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103">http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103</a></p></li>
+<li><p>Elevations:
+plot_elevations.txt</p></li>
+<li><p>Invertebrate (leaf litter + pitfall traps):
+CO1_Invertebrate_Pitfall_1526_OTUs.csv, CO1_Leaf_Litter_1526_OTUs.csv</p></li>
+<li><p>Vegetation survey data:
+Hauturu (Little Barrier island) in Jan 2011 (<a href="http://nvs.landcareresearch.co.nz">http://nvs.landcareresearch.co.nz</a>).
+diameters_pilot_species_1_2_0.csv, saplings_pilot_species_1_2_0.csv, seedlings_pilot_species_1_2_0.csv</p></li>
+<li><p>Bird counts:
+birds_pilot_species_1_2_0.csv</p></li>
+<li><p>SraRunTable.txt : 
+a SRA mapping file to map SRA code to subplot name.</p></li>
+<li><p>Soil chemistry:
+LJ12027.txt</p></li>
+</ol>
+
+<h2>
+<a id="folder-structure-in-working-path" class="anchor" href="#folder-structure-in-working-path" aria-hidden="true"><span class="octicon octicon-link"></span></a>Folder structure in working path</h2>
+
+<ol>
+<li><p>A working folder, such as ./pipeline</p></li>
+<li><p>Folders for each data set (genes), such as ./pipeline/16S</p></li>
+<li><p>Folders for deconvolution, such as ./pipeline/16S/deconvoluted</p></li>
+<li><p>Folders for quality control, such as ./pipeline/16S/qc</p></li>
+<li><p>Folders for each OTU threshold, such as ./pipeline/16S/otus97</p></li>
+</ol>
+
+<p>For example,</p>
+
+<pre><code>pipeline
+ |___ 16S
+ |     |___ deconvoluted
+ |     |___ qc
+ |     |___ otu?? (e.g. 97)
+ |___ 18S
+ ...  
+</code></pre>
+
+<h2>
+<a id="download-454-sequences" class="anchor" href="#download-454-sequences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download 454 sequences</h2>
+
+<ol>
+<li><p>Download soil environmental sequences (454) from SRA:
+<a href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103">http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103</a></p></li>
+<li>
+<p>Convert sra format into fastq using SRA Toolkit, such as:</p>
+
+<pre><code>/sratoolkit.2.4.3-mac64/bin/fastq-dump SRR1720812.sra
+</code></pre>
+
+<p>SRR1720812.fastq will be ready in the same folder.</p>
+</li>
+<li>
+<p>Combine all fastq files from the same marker into one file:</p>
+
+<pre><code>cat *.fastq &gt; 16S.fastq
+</code></pre>
+
+<p>Alternatively, use scripts <em>downloadData.sh</em> and <em>prepareData.sh</em> as discribed below.</p>
+</li>
+</ol>
+
+<h2>
+<a id="uparse" class="anchor" href="#uparse" aria-hidden="true"><span class="octicon octicon-link"></span></a>UPARSE</h2>
+
+<ol>
+<li><p>Download USEARCH (<a href="http://www.drive5.com/usearch/download.html">http://www.drive5.com/usearch/download.html</a>)</p></li>
+<li>
+<p>Setup USEARCH by copying it to /Applications, and create a link:</p>
+
+<pre><code>ln -s usearch8.0.??? usearch8
+</code></pre>
+</li>
+<li><p>Create a working folder, such as ./pipeline</p></li>
+<li><p>Copy all scripts in to working folder, such as pipeline/scripts</p></li>
+<li>
+<p>Download data</p>
+
+<pre><code>scripts/downloadData.sh 
+scripts/prepareData.sh
+</code></pre>
+</li>
+<li><p>We strongly recommend to use error corrector for 454 data. In this pipeline, 
+we choose Acacia (<a href="http://www.nature.com/nmeth/journal/v9/n5/abs/nmeth.1990.html">http://www.nature.com/nmeth/journal/v9/n5/abs/nmeth.1990.html</a>). 
+Please install Acacia and change its path in the script <em>pipelineDerep.sh</em> before go to step 7.
+Note that you need to give enough memory according to the size of the largest cluster from your data. 
+We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and 10 GB for the rest of datasets. </p></li>
+<li>
+<p>Go into each gene folder to run script for either denovo chimera filtering or reference filtering (16S only), e.g.</p>
+
+<pre><code>cd 16S
+../scripts/runOTUsRef.sh ./deconvoluted/16S.fastq 
+</code></pre>
+
+<p>or </p>
+
+<pre><code>cd COI
+../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
+</code></pre>
+
+<p>Note: the reference dataset gold.fa (<a href="http://www.drive5.com/usearch/manual/cmd_uchime_ref.html">http://www.drive5.com/usearch/manual/cmd_uchime_ref.html</a>) is required by <em>runOTUsRef.sh</em>.</p>
+</li>
+</ol>
+
+<h2>
+<a id="generate-community-matrix" class="anchor" href="#generate-community-matrix" aria-hidden="true"><span class="octicon octicon-link"></span></a>Generate Community Matrix</h2>
+
+<p>Note: USEARCH 8 mixes all sample-based data into one pool,
+therefore the sample information of each duplicate read would be lost during 
+de-replication process. In <em>createAllCommunityMatrix.r</em>, we retrive the sample of each duplicate 
+read from the mapping file derep.uc created by a modified command:</p>
+
+<pre><code>$USEARCH -derep_fulllength ./qc/denoised.fasta -fastaout ./qc/derep.fasta -sizeout -uc ./qc/derep.uc
+</code></pre>
+
+<p>to create the community matrix retaining the correct reads' distribution of samples.   </p>
+
+<h2>
+<a id="blast" class="anchor" href="#blast" aria-hidden="true"><span class="octicon octicon-link"></span></a>BLAST</h2>
+
+<p>Use <em>cleanSizeAnnotation.sh</em> to clean up the size annotation in the sequence label created by USEARCH, 
+which will cause MEGAN input error. </p>
+
+<h2>
+<a id="community-matrix-analysis" class="anchor" href="#community-matrix-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Community Matrix Analysis</h2>
+
+<p>The detail is in <a href="R/README.md">R/README.md</a>.</p>
+
+<ol>
+<li><p>Run <em>createAllCommunityMatrix.r</em> first to create community matrices.</p></li>
+<li><p>Run <em>createAllDiversitiesOTUsTable.r</em> second to get the rarefaction table and OTU threshold table. This is time-consuming.
+If you do not need clustering through different thresholds, you could use faster script <em>createAllRarefactionTable.r</em> to generate 
+the rarefaction table at 97% threshold only. </p></li>
+<li><p>Change source path for pipeline and working path for data into your local path. Run <em>createAllFiguresTables.r</em> to get all figures and tables.</p></li>
+</ol>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/walterxie/eDNA-pipeline/archive/v1.0.0.zip" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/walterxie/eDNA-pipeline/archive/v1.0.0.tar.gz" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/walterxie/eDNA-pipeline"></a> is maintained by <a href="https://github.com/walterxie">walterxie</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
