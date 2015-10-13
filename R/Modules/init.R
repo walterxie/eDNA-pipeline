@@ -19,11 +19,13 @@ source("Modules/IO.R")
 source("Modules/Utils.R")
 source("Modules/UtilsCM.R")
 # fundmental functions
-source("Modules/JostDiversities.R")
+source("Modules/Diversities.R")
 
 ######## load community matrix #######
 # expId = 1:6
-getCommunityMatrixT <- function(expId, isPlot) {    
+# isPlot determines to use which matrix file, by subplot or plot 
+# min2 = rmSingleton, whether remove all singletons
+getCommunityMatrixT <- function(expId, isPlot, min2) {    
 	matrixName <- matrixNames[expId]
 	
 	if (isPlot) {
@@ -38,9 +40,9 @@ getCommunityMatrixT <- function(expId, isPlot) {
 	
 	communityMatrixT <- transposeCM(communityMatrix)
 	
-	if (rmSingleton) {
+	if (min2) {
 		singletons <- which(colSums(communityMatrixT)==1)
-		print(paste("Remove", length(singletons) ,"singletons from ", matrixName, " ! "))
+		cat("Remove", length(singletons) ,"singletons from ", matrixName, " !\n"))
 		communityMatrixT <- communityMatrixT[,-singletons]
 		rm(singletons)		
 	}

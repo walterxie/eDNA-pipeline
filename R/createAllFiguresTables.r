@@ -40,7 +40,6 @@ mkdir(file.path(workingPath, figDir))
 matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCO1", "ShCO1") # only for cm file name and folder name
 
 otuThr = 97
-
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
 

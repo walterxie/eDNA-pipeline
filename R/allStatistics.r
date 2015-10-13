@@ -10,14 +10,14 @@
 
 if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("levels")) stop("levels of Jost diversity are missing !")
-if(!exists("qs")) stop("qs of Jost diversity are missing !")
-if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
+
+if(!exists("rmSingleton")) rmSingleton = TRUE
+if(!exists("isPlot")) isPlot = TRUE # by plot
+if(!exists("otuThr")) otuThr = 97
+if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
+if(!exists("qs")) qs = rep(0:2,each=3)
 
 n <- length(matrixNames) 
-m <- length(matrixNamesNo454)
-
-otuThr = 97
 
 source("Modules/init.R", local=TRUE)
 
@@ -35,8 +35,10 @@ allOTUs <- matrix(0,nrow=length(otusRowNames),ncol=(n+1))
 colnames(allOTUs) <- c(matrixNames, "Total")
 rownames(allOTUs) <- otusRowNames
 
-######## 454 #######
-		
+######## summary #######
+
+cat("Table: data summary: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
+
 for (expId in 1:n) {
 	# "-by-plot" trigger merge 2 subplots columns	
     communityMatrix <- init(expId, otuThr, "-by-plot")

@@ -10,12 +10,12 @@ library(Hmisc)
 #qs = rep(0:2,each=3)
 
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("levels")) stop("levels of Jost diversity are missing !")
-if(!exists("qs")) stop("qs of Jost diversity are missing !")
 
+if(!exists("rmSingleton")) rmSingleton = TRUE
+if(!exists("isPlot")) isPlot = FALSE # by subplot
 if(!exists("otuThr")) otuThr = 97
-
-isPlot <- FALSE # by subplot
+if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
+if(!exists("qs")) qs = rep(0:2,each=3)
 
 source("Modules/init.r")
 
@@ -24,10 +24,12 @@ getMinSizeAllSites <- function(communityMatrix) {
 	minSample <- min(99999, min(rowSums(communityMatrix)))  		
 
 	sampleSize <- minSample#floor(minSample/100) * 100 # make sure subsampling run  
-	print(paste("Community matrix: min sample size per site =", minSample, ", take sample size per site =", sampleSize)) 
+	cat("Community matrix: min sample size per site =", minSample, ", take sample size per site =", sampleSize, "/n") 
     
     return (sampleSize)
 }
+
+cat("Analysis: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
 
 # main
 for (expId in 1:length(matrixNames)) {	
@@ -37,7 +39,7 @@ for (expId in 1:length(matrixNames)) {
 	if (rmSingleton) 
 		matrixName <- paste(matrixName, "min2", sep = "-")
 			
-	communityMatrix <- getCommunityMatrixT(expId, isPlot)
+	communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
 	sampleSize <- getMinSizeAllSites(communityMatrix) 
 
 	source("Modules/RarefactionTable.R", local=TRUE)

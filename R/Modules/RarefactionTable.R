@@ -55,7 +55,7 @@ writeRdiversityTable <- function(communityMatrix, outputRFTable, rareReps = 10, 
       rdiversityTableSe <- cbind(rdiversityTableSe, tmpRDT)
     }  
     
-    cat("Rarefaction take sample size ", sS, ", max = ", sampleSizesSeq[length(sampleSizesSeq)], ".\n") 
+    cat("Rarefaction take sample size ", sS, ", max = ", sampleSizesSeq[length(sampleSizesSeq)], "\n") 
   }
   colnames(rdiversityTableMean) <- paste("size.", sampleSizesSeq, sep="")
   colnames(rdiversityTableSe) <- paste("size.", sampleSizesSeq, sep="")
@@ -64,7 +64,7 @@ writeRdiversityTable <- function(communityMatrix, outputRFTable, rareReps = 10, 
   
   #LM.rdt <- lm(rdiversityTableMean[1,]~sampleSizesSeq, rdiversityTableMean[1,])
   
-  cat("write rarefaction table file to ", outputRFTable, ".\n")
+  cat("write rarefaction table file to ", outputRFTable, "\n")
 }
 
 

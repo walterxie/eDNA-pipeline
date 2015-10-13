@@ -12,32 +12,33 @@ library(ggplot2)
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("communityMatrixList")) stop("Community matrices list is missing !")
-if(!exists("otuThr")) stop("OTU clustering threshold is missing !")
-if(!exists("levels")) stop("levels of Jost diversity are missing !")
-if(!exists("qs")) stop("qs of Jost diversity are missing !")
-if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
+
+if(!exists("rmSingleton")) rmSingleton = TRUE
+if(!exists("isPlot")) isPlot = FALSE # by subplot
+if(!exists("otuThr")) otuThr = 97
+if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
+if(!exists("qs")) qs = rep(0:2,each=3)
 
 n <- length(matrixNames) 
 mypalette <- rainbow(n)
 myshape <- seq(0, (0 + n-1))
 
-######## Reads OTUs #######
 individualName <- "read"
 sampleName <- "site"
 speciesName <- "OTU"
 speciesNamePlural <- "OTUs"
 
+source("Modules/init.R", local=TRUE)
+
+######## Reads OTUs #######
 labls = c("reads rest", "150 most abundant OTUs", "OTUs 1 read", "OTUs 2 reads", "OTUs >= 3")
 cat=c(rep("reads",2), rep("OTUs",3))
 myPalette <- c("#fdbb84", "#e34a33", "#e0f3db", "#a8ddb5", "#43a2ca")
 
-source("Modules/init.R", local=TRUE)
-
+cat("Graph: reads counts percentage bar chart: rmSingleton =", TRUE, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
 # always plot singleton
 for (expId in 1:n) {	
-	# "-by-plot" trigger merge 2 subplots columns    
-	communityMatrix <- communityMatrixList[[expId]]
+	communityMatrix <- getCommunityMatrixT(expId, isPlot, TRUE)
 
 	source("Modules/SampleCounts.R", local=TRUE)
 
@@ -73,15 +74,17 @@ invisible(dev.off())
 
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
+cat("Graph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
+
 pdf(paste(workingPath, figDir, "/sample-counts-", otuThr, ".pdf", sep = ""), width=6, height=9)	
 attach(mtcars)
 par(mfrow=c(3,2))	
 
 for (expId in 1:n) {	
-    # "-by-plot" trigger merge 2 subplots columns
-    communityMatrix <- communityMatrixList[[expId]]
+  # isPlot determines to use which matrix file in init
+  communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
     
-    source("Modules/SampleCounts.R", local=TRUE)
+  source("Modules/SampleCounts.R", local=TRUE)
     
 	if (expId > 4) {		
 		xlab=paste("Number of ",sampleName,"s crossed", sep="")
@@ -97,9 +100,9 @@ for (expId in 1:n) {
 		ylab=""
 	}
 			
-    barplot(log10(table(sampleCounts)), xlab=xlab, ylab=ylab, main=paste(subTitles[expId], matrixNames[expId], sep = " "), yaxt="n")   
+  barplot(log10(table(sampleCounts)), xlab=xlab, ylab=ylab, main=paste(subTitles[expId], matrixNames[expId], sep = " "), yaxt="n")   
     
-    aty <- axTicks(2)
+  aty <- axTicks(2)
 	ylabels <- sapply(aty,function(i) 10^i)
 	#labels <- sapply(aty,function(i) as.expression(bquote(2^ .(i)))  )
 	axis(2,at=aty,labels=ylabels)    
