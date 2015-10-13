@@ -10,13 +10,14 @@ library(Hmisc)
 #qs = rep(0:2,each=3)
 
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("communityMatrixList")) stop("Community matrices list is missing !")
 if(!exists("levels")) stop("levels of Jost diversity are missing !")
 if(!exists("qs")) stop("qs of Jost diversity are missing !")
 
 if(!exists("otuThr")) otuThr = 97
 
-stringBySubOrPlot <- "-by-subplot"
+isPlot <- FALSE # by subplot
+
+source("Modules/init.r")
 
 ######## get min size all sites for rdiversityTable each gene #######
 getMinSizeAllSites <- function(communityMatrix) {
@@ -32,25 +33,18 @@ getMinSizeAllSites <- function(communityMatrix) {
 for (expId in 1:length(matrixNames)) {	
     print(paste("experiment = ", matrixNames[expId], ", matrixName = ", matrixNames[expId], sep=""))
     	
-	# add "by-plot" to merge 2 nearby columns 
-	matrixName <- paste(matrixNames[expId], stringBySubOrPlot, sep = "")
+	matrixName <- matrixNames[expId]
 	if (rmSingleton) 
-		matrixName <- paste("nonsingleton", matrixName, sep = "-")
+		matrixName <- paste(matrixName, "min2", sep = "-")
 			
-	communityMatrix <- communityMatrixList[[expId]]
-	sampleSize <- getMinSizeAllSites(expId, otuThre) 
-	
-	print(paste("Rarefaction at otuThre =", otuThre))
-	
-	source("Modules/TurnoverDist.R", local=TRUE)
-	# need to put on the top
-	source("Modules/SampleCounts.R", local=TRUE)
+	communityMatrix <- getCommunityMatrixT(expId, isPlot)
+	sampleSize <- getMinSizeAllSites(communityMatrix) 
 
-	source("Modules/RarefactionDiversitiesTable.R", local=TRUE)
+	source("Modules/RarefactionTable.R", local=TRUE)
 
-	# create rarefaction table file which is calculated by RarefactionDiversitiesTable.R	
-	outputRFTable <- paste(workingPath, matrixNames[expId], "/", matrixName, "-", otuThre, "-rarefaction-table.csv", sep = "")
-	source("Modules/Rarefaction.R", local=TRUE) 
+	# create rarefaction table file which is calculated by RarefactionTable.R	
+	outputRFTable <- paste(workingPath, "data/", matrixName, "-rarefaction-table.csv", sep = "")
+	writeRdiversityTable(communityMatrix, outputRFTable)
 } 
 
 

@@ -5,7 +5,7 @@ rm(list=ls())
 # change config below
 sourcePath <<- "~/WorkSpace/eDNA-pipeline/R/"
 setwd(sourcePath)
-workingPath <<- "~/Projects/NZGO/LBI/"
+workingPath <<- "~/Projects/NZGO/Miseq/"
 
 cat("\nConfig : set R source path", sourcePath, "\n")
 cat("\nConfig : set working path", workingPath, "\n")
@@ -33,11 +33,11 @@ cat("\nConfig :", tit, "!\n")
 source("Modules/init.r")
 
 # create folder for figures in workingPath
-mkdir(file.path((workingPath, figDir))    
+mkdir(file.path(workingPath, figDir))    
 
 
 ######## set up analysis #######
-matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCOI", "ShCOI") # only for cm file name and folder name
+matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCO1", "ShCO1") # only for cm file name and folder name
 
 otuThr = 97
 

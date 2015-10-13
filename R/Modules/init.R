@@ -23,28 +23,29 @@ source("Modules/JostDiversities.R")
 
 ######## load community matrix #######
 # expId = 1:6
-init <- function(expId, otuThr, stringBySubOrPlot) {    
+getCommunityMatrixT <- function(expId, isPlot) {    
 	matrixName <- matrixNames[expId]
 	
-	# e.g. otus97/16S_97_cm.csv
-	inputCM <- paste(workingPath, matrixName, "/otus", otuThr, "/", matrixName, "-", otuThr, ".csv", sep="")
+	if (isPlot) {
+		inputCM <- paste(workingPath, "data/", matrixName, "_by_plot.txt", sep="")
+	} else {
+		# e.g. data/16S.txt
+		inputCM <- paste(workingPath, "data/", matrixName, ".txt", sep="")
+	}
 	
-	#print(paste("expId = ", expId, ", matrixName = ", matrixName, ", inputCM = ", inputCM, sep=""))  
+	communityMatrix <- readFile(inputCM)
+	cat("\nUpload community matrix : ", ncol(communityMatrix), "columns,", nrow(communityMatrix), "rows, from", inputCM, "\n") 
 	
-	matrixName <- paste(matrixName, stringBySubOrPlot, sep = "")
-
-	source("Modules/InputBySubplot.R", local=TRUE)
-	
-	source("Modules/CommunityTransposeFilter.R", local=TRUE)
+	communityMatrixT <- transposeCM(communityMatrix)
 	
 	if (rmSingleton) {
-		singletons <- which(colSums(communityMatrix)==1)
+		singletons <- which(colSums(communityMatrixT)==1)
 		print(paste("Remove", length(singletons) ,"singletons from ", matrixName, " ! "))
-		communityMatrix <- communityMatrix[,-singletons]
+		communityMatrixT <- communityMatrixT[,-singletons]
 		rm(singletons)		
 	}
 	
-	return (communityMatrix)
+	return (communityMatrixT)
 }
 
 
