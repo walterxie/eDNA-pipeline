@@ -10,14 +10,23 @@ library(Hmisc)
 #qs = rep(0:2,each=3)
 
 if(!exists("matrixNames")) stop("matrix names are missing !")
+if(!exists("communityMatrixList")) stop("Community matrices list is missing !")
 if(!exists("levels")) stop("levels of Jost diversity are missing !")
 if(!exists("qs")) stop("qs of Jost diversity are missing !")
 
-otuThr = 97
+if(!exists("otuThr")) otuThr = 97
 
 stringBySubOrPlot <- "-by-subplot"
 
-source("Modules/init.R", local=TRUE)
+######## get min size all sites for rdiversityTable each gene #######
+getMinSizeAllSites <- function(communityMatrix) {
+	minSample <- min(99999, min(rowSums(communityMatrix)))  		
+
+	sampleSize <- minSample#floor(minSample/100) * 100 # make sure subsampling run  
+	print(paste("Community matrix: min sample size per site =", minSample, ", take sample size per site =", sampleSize)) 
+    
+    return (sampleSize)
+}
 
 # main
 for (expId in 1:length(matrixNames)) {	
@@ -28,15 +37,11 @@ for (expId in 1:length(matrixNames)) {
 	if (rmSingleton) 
 		matrixName <- paste("nonsingleton", matrixName, sep = "-")
 			
-	# use same sample size for all OTU threshold, but diff for each gene
+	communityMatrix <- communityMatrixList[[expId]]
 	sampleSize <- getMinSizeAllSites(expId, otuThre) 
 	
-	#sampleSize = 1100
-	print(paste(matrixNames[expId], " takes sampleSize = ", sampleSize, sep=""))  
-
 	print(paste("Rarefaction at otuThre =", otuThre))
-	communityMatrix <- init(expId, otuThre, stringBySubOrPlot)
-
+	
 	source("Modules/TurnoverDist.R", local=TRUE)
 	# need to put on the top
 	source("Modules/SampleCounts.R", local=TRUE)

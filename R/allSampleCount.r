@@ -12,6 +12,8 @@ library(ggplot2)
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
+if(!exists("communityMatrixList")) stop("Community matrices list is missing !")
+if(!exists("otuThr")) stop("OTU clustering threshold is missing !")
 if(!exists("levels")) stop("levels of Jost diversity are missing !")
 if(!exists("qs")) stop("qs of Jost diversity are missing !")
 if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
@@ -19,8 +21,6 @@ if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 n <- length(matrixNames) 
 mypalette <- rainbow(n)
 myshape <- seq(0, (0 + n-1))
-
-otuThr = 97
 
 ######## Reads OTUs #######
 individualName <- "read"
@@ -34,52 +34,52 @@ myPalette <- c("#fdbb84", "#e34a33", "#e0f3db", "#a8ddb5", "#43a2ca")
 
 source("Modules/init.R", local=TRUE)
 
-if (!rmSingleton) {
-	for (expId in 1:n) {	
-		# "-by-plot" trigger merge 2 subplots columns    
-		communityMatrix <- init(expId, otuThr, "-by-subplot")
+# always plot singleton
+for (expId in 1:n) {	
+	# "-by-plot" trigger merge 2 subplots columns    
+	communityMatrix <- communityMatrixList[[expId]]
+
+	source("Modules/SampleCounts.R", local=TRUE)
+
+	if (expId == 1) {
+		readsOTUs <- data.frame(cat=cat, labls=labls,
+			value=c((individual_count-threshold_individual_count) / individual_count * 100, threshold_individual_count / individual_count * 100, 
+			length(cs[cs == 1]) / length(cs) * 100, length(cs[cs == 2]) / length(cs) * 100, length(cs[cs != 1 & cs != 2]) / length(cs) * 100))
+		readsOTUs$region <- matrixNames[expId]
 	
-		source("Modules/SampleCounts.R", local=TRUE)
-	
-		if (expId == 1) {
-			readsOTUs <- data.frame(cat=cat, labls=labls,
-				value=c((individual_count-threshold_individual_count) / individual_count * 100, threshold_individual_count / individual_count * 100, 
-				length(cs[cs == 1]) / length(cs) * 100, length(cs[cs == 2]) / length(cs) * 100, length(cs[cs != 1 & cs != 2]) / length(cs) * 100))
-			readsOTUs$region <- matrixNames[expId]
-		
-		} else {
-			readsOTUs_tmp <- data.frame(cat=cat, labls=labls,
-				value=c((individual_count-threshold_individual_count) / individual_count * 100, threshold_individual_count / individual_count * 100, 
-				length(cs[cs == 1]) / length(cs) * 100, length(cs[cs == 2]) / length(cs) * 100, length(cs[cs != 1 & cs != 2]) / length(cs) * 100))
-			readsOTUs_tmp$region <- matrixNames[expId]
-			readsOTUs <- rbind(readsOTUs, readsOTUs_tmp) 
-		}
-	
+	} else {
+		readsOTUs_tmp <- data.frame(cat=cat, labls=labls,
+			value=c((individual_count-threshold_individual_count) / individual_count * 100, threshold_individual_count / individual_count * 100, 
+			length(cs[cs == 1]) / length(cs) * 100, length(cs[cs == 2]) / length(cs) * 100, length(cs[cs != 1 & cs != 2]) / length(cs) * 100))
+		readsOTUs_tmp$region <- matrixNames[expId]
+		readsOTUs <- rbind(readsOTUs, readsOTUs_tmp) 
 	}
 
-	readsOTUs$region = factor(readsOTUs$region,matrixNames)
-	readsOTUs$labls = factor(readsOTUs$labls,labls)
-
-	pdf(paste(workingPath, figDir, "/all-reads-counts-", otuThr, ".pdf", sep = ""), width=8, height=5)	
-
-	print( ggplot(readsOTUs, aes(x = region, y = value, fill = labls)) + geom_bar(stat="identity", position='stack') +
-		 theme_bw() + facet_grid( ~ cat) + ylab("Percentage") + scale_fill_manual(breaks=rev(labls), values= myPalette) + 
-		 theme(legend.position="top", legend.title=element_blank(), axis.title.x=element_blank()) )
-
-	invisible(dev.off()) 
 }
+
+readsOTUs$region = factor(readsOTUs$region,matrixNames)
+readsOTUs$labls = factor(readsOTUs$labls,labls)
+
+pdf(paste(workingPath, figDir, "/reads-counts-", otuThr, ".pdf", sep = ""), width=8, height=5)	
+
+print( ggplot(readsOTUs, aes(x = region, y = value, fill = labls)) + geom_bar(stat="identity", position='stack') +
+	 theme_bw() + facet_grid( ~ cat) + ylab("Percentage") + scale_fill_manual(breaks=rev(labls), values= myPalette) + 
+	 theme(legend.position="top", legend.title=element_blank(), axis.title.x=element_blank()) )
+
+invisible(dev.off()) 
+
 
 ######## Sample counts #######
 
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
-pdf(paste(workingPath, figDir, "/all-sample-counts-", otuThr, ".pdf", sep = ""), width=6, height=9)	
+pdf(paste(workingPath, figDir, "/sample-counts-", otuThr, ".pdf", sep = ""), width=6, height=9)	
 attach(mtcars)
 par(mfrow=c(3,2))	
 
 for (expId in 1:n) {	
     # "-by-plot" trigger merge 2 subplots columns
-    communityMatrix <- init(expId, otuThr, "-by-subplot")
+    communityMatrix <- communityMatrixList[[expId]]
     
     source("Modules/SampleCounts.R", local=TRUE)
     

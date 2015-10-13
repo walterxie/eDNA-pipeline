@@ -3,9 +3,9 @@
 rm(list=ls()) 
 
 # change config below
-sourcePath <<- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/"
+sourcePath <<- "~/WorkSpace/eDNA-pipeline/R/"
 setwd(sourcePath)
-workingPath <<- "~/Projects/NZGO/pilot2010/pipeline/"
+workingPath <<- "~/Projects/NZGO/LBI/"
 
 cat("\nConfig : set R source path", sourcePath, "\n")
 cat("\nConfig : set working path", workingPath, "\n")
@@ -14,33 +14,37 @@ cat("\nConfig : set working path", workingPath, "\n")
 verbose <<- FALSE 
 
 # remove all singleton from community matrix if TRUE
-rmSingleton <<- FALSE 
-#rmSingleton <<- TRUE  
+#rmSingleton <<- FALSE 
+rmSingleton <<- TRUE  
 
 if (rmSingleton) {
-	figDir <<- "figures1"
-	# write tables to a file in workingPath
-	tableFile <<- paste(workingPath, "report-no-singleton.tex", sep="")
-	tit <<- "remove all singletons in community matrix"	
-} else {
 	figDir <<- "figures"
 	# write tables to a file in workingPath
 	tableFile <<- paste(workingPath, "report.tex", sep="")
+	tit <<- "remove all singletons in community matrix"	
+} else {
+	figDir <<- "figures1"
+	# write tables to a file in workingPath
+	tableFile <<- paste(workingPath, "report-singleton.tex", sep="")
 	tit <<- "keep all singletons in community matrix"
 }
 cat("\nConfig :", tit, "!\n")
 
+source("Modules/init.r")
+
 # create folder for figures in workingPath
-if (!file.exists(paste(workingPath, figDir, sep="")))    
-    dir.create(paste(workingPath, figDir, sep=""))    
+mkdir(file.path((workingPath, figDir))    
 
-cat("\nConfig : set figures path", paste(workingPath, figDir, sep=""), "\n\n")
 
-matrixNames <<-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name
-matrixNamesNo454 <<-  c("seedlings","trees","invertebrates","birds") # need expId correct for "birds","seedlings" 
+######## set up analysis #######
+matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCOI", "ShCOI") # only for cm file name and folder name
+
+otuThr = 97
 
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
+
+
 
 ######## set up report latex #######
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
@@ -57,7 +61,6 @@ source("allStatistics.r", local=TRUE)
 
 source("allTaxonomyPhylum.r", local=TRUE)
 
-#source("createAllDiversitiesOTUsTable.r", local=TRUE)
 #source("createAllRarefactionTable.r", local=TRUE) # only for otuThr = 97
 
 source("allDiversitiesOTUs.r", local=TRUE)
