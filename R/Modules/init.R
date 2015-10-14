@@ -10,6 +10,7 @@ library(gplots)
 library(ggplot2)
 library(RColorBrewer)
 library(colorspace)
+library(Matrix)
 
 if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
 if(!exists("workingPath")) stop("working path containing data is missing !")
@@ -21,11 +22,26 @@ source("Modules/UtilsCM.R")
 # fundmental functions
 source("Modules/Diversities.R")
 
+# most abundant 150 OTUs
+threshold = 150
+
+# add postfix for figure name or table label
+postfix <- function(name, isPlot, min2, sep) {
+	if (isPlot) 
+	  name <- paste(name, "byplot", sep = sep) 
+	if (min2) 
+	  name <- paste(name, "min2", sep = sep)
+	
+	return(name)
+}
+
 ######## load community matrix #######
 # expId = 1:6
 # isPlot determines to use which matrix file, by subplot or plot 
 # min2 = rmSingleton, whether remove all singletons
-getCommunityMatrixT <- function(expId, isPlot, min2) {    
+getCommunityMatrixT <- function(expId, isPlot, min2) {
+	if(!exists("verbose")) verbose <- FALSE 
+    
 	matrixName <- matrixNames[expId]
 	
 	if (isPlot) {
@@ -36,22 +52,33 @@ getCommunityMatrixT <- function(expId, isPlot, min2) {
 	}
 	
 	communityMatrix <- readFile(inputCM)
-	cat("\nUpload community matrix : ", ncol(communityMatrix), "columns,", nrow(communityMatrix), "rows, from", inputCM, "\n") 
+	if(verbose) 
+		cat("\nUpload community matrix : ", ncol(communityMatrix), "columns,", nrow(communityMatrix), "rows, from", inputCM, "\n") 
 	
 	communityMatrixT <- transposeCM(communityMatrix)
 	
 	if (min2) {
 		singletons <- which(colSums(communityMatrixT)==1)
-		cat("Remove", length(singletons) ,"singletons from ", matrixName, " !\n"))
+		if(verbose) 
+			cat("Remove", length(singletons) ,"singletons from ", matrixName, " !\n")
 		communityMatrixT <- communityMatrixT[,-singletons]
 		rm(singletons)		
 	}
 	
-	return (communityMatrixT)
+	return(communityMatrixT)
 }
 
-
-
+# table to plot Rarefaction
+getRarefactionTable <- function(expId, isPlot, min2) {
+    matrixName <- matrixNames[expId]
+	if (isPlot) 
+	  matrixName <- paste(matrixName, "byplot", sep = "-") 
+	if (rmSingleton) 
+	  matrixName <- paste(matrixName, "min2", sep = "-")  
+			
+	inputRDT <- paste(workingPath, "data/", matrixName, "-rarefaction-table.csv", sep = "")    
+    rarefactionTable <- read.csv(file=inputRDT, head=TRUE, sep=",", row.names=paste(levels, qs, sep=""), check.names=FALSE)
+}
 
 
 ######## elevations #######

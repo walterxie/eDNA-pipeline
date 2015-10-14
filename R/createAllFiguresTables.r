@@ -10,9 +10,6 @@ workingPath <<- "~/Projects/NZGO/Miseq/"
 cat("\nConfig : set R source path", sourcePath, "\n")
 cat("\nConfig : set working path", workingPath, "\n")
 
-# print detail if TRUE
-verbose <<- FALSE 
-
 # remove all singleton from community matrix if TRUE
 #rmSingleton <<- FALSE 
 rmSingleton <<- TRUE  
@@ -30,11 +27,11 @@ if (rmSingleton) {
 }
 cat("\nConfig :", tit, "!\n")
 
-source("Modules/init.r")
+######## initialise #######
+source("Modules/init.r", local=TRUE)
 
 # create folder for figures in workingPath
 mkdir(file.path(workingPath, figDir))    
-
 
 ######## set up analysis #######
 matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCO1", "ShCO1") # only for cm file name and folder name
@@ -42,7 +39,6 @@ matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCO1", "ShCO1") # only for cm 
 otuThr = 97
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
-
 
 
 ######## set up report latex #######
@@ -53,17 +49,19 @@ cat("\\title{Report to", tit, "}\n\n", file=tableFile, append=TRUE)
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
 ######## figures and tables #######
-
+# print detail if TRUE
+verbose <<- TRUE # only print "Upload community matrix" 1st time 
+isPlot <<- FALSE # by subplot
 source("allSampleCount.r", local=TRUE)
 
+verbose <<- FALSE
+isPlot <<- TRUE # by plot
 source("allStatistics.r", local=TRUE)
 
 source("allTaxonomyPhylum.r", local=TRUE)
 
-#source("createAllRarefactionTable.r", local=TRUE) # only for otuThr = 97
-
-source("allDiversitiesOTUs.r", local=TRUE)
-
+isPlot <<- FALSE
+#source("createAllRarefactionTable.r", local=TRUE)
 source("allRarefactions.r", local=TRUE)
 
 source("allWithinBetweenPlots.r", local=TRUE)

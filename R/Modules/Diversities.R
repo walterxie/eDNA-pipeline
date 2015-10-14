@@ -35,7 +35,7 @@ diversity.df <- function(communityMatrix=communityMatrix) {
 
 # abundance (reads, gamme0) per sample
 # return 1-column data frame
-abundancePerSample <- function(communityMatrix=communityMatrix, hasTotal) {
+abundancePerSample <- function(communityMatrix, hasTotal) {
   if(missing(hasTotal)) hasTotal=TRUE
   
   # gamme0
@@ -52,7 +52,7 @@ abundancePerSample <- function(communityMatrix=communityMatrix, hasTotal) {
 
 # richness (OTUs/species) per sample
 # return 1-column data frame
-richnessPerSample <- function(communityMatrix=communityMatrix, hasTotal) {
+richnessPerSample <- function(communityMatrix, hasTotal) {
   if(missing(hasTotal)) hasTotal=TRUE
   
   # richness
@@ -69,7 +69,7 @@ richnessPerSample <- function(communityMatrix=communityMatrix, hasTotal) {
 
 # Shannon index (gamma1) per sample
 # return 1-column data frame
-shannonPerSample <- function(communityMatrix=communityMatrix, digits = 2) {
+shannonPerSample <- function(communityMatrix, digits = 2) {
   # Shannon
   #  gamma1 <- function(r) d(r,lev="gamma",q=1)
   #  perSample <- data.frame(Shannon=apply(communityMatrix, 1, gamma1), stringsAsFactors=FALSE)

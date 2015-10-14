@@ -6,13 +6,11 @@ library(ggplot2)
 #setwd(sourcePath)
 #workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
 #matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
-#levels = rep(c("gamma","alpha","beta"),3)
-#qs = rep(0:2,each=3)
-#rmSingleton <- FALSE 
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
 
+if(!exists("verbose")) verbose = TRUE
 if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("isPlot")) isPlot = FALSE # by subplot
 if(!exists("otuThr")) otuThr = 97
@@ -28,17 +26,17 @@ sampleName <- "site"
 speciesName <- "OTU"
 speciesNamePlural <- "OTUs"
 
-source("Modules/init.R", local=TRUE)
+#source("Modules/init.R", local=TRUE)
 
 ######## Reads OTUs #######
 labls = c("reads rest", "150 most abundant OTUs", "OTUs 1 read", "OTUs 2 reads", "OTUs >= 3")
 cat=c(rep("reads",2), rep("OTUs",3))
 myPalette <- c("#fdbb84", "#e34a33", "#e0f3db", "#a8ddb5", "#43a2ca")
 
-cat("Graph: reads counts percentage bar chart: rmSingleton =", TRUE, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
+cat("\nGraph: reads counts percentage bar chart including singletons: isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 # always plot singleton
 for (expId in 1:n) {	
-	communityMatrix <- getCommunityMatrixT(expId, isPlot, TRUE)
+	communityMatrix <- getCommunityMatrixT(expId, isPlot, FALSE)
 
 	source("Modules/SampleCounts.R", local=TRUE)
 
@@ -61,7 +59,7 @@ for (expId in 1:n) {
 readsOTUs$region = factor(readsOTUs$region,matrixNames)
 readsOTUs$labls = factor(readsOTUs$labls,labls)
 
-pdf(paste(workingPath, figDir, "/reads-counts-", otuThr, ".pdf", sep = ""), width=8, height=5)	
+pdf(paste(workingPath, figDir, "/", postfix("reads-counts", isPlot, FALSE, sep="-"), ".pdf", sep = ""), width=8, height=5)	
 
 print( ggplot(readsOTUs, aes(x = region, y = value, fill = labls)) + geom_bar(stat="identity", position='stack') +
 	 theme_bw() + facet_grid( ~ cat) + ylab("Percentage") + scale_fill_manual(breaks=rev(labls), values= myPalette) + 
@@ -74,9 +72,9 @@ invisible(dev.off())
 
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
-cat("Graph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
+cat("\nGraph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
-pdf(paste(workingPath, figDir, "/sample-counts-", otuThr, ".pdf", sep = ""), width=6, height=9)	
+pdf(paste(workingPath, figDir, "/", postfix("sample-counts", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)	
 attach(mtcars)
 par(mfrow=c(3,2))	
 

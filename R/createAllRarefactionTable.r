@@ -11,6 +11,7 @@ library(Hmisc)
 
 if(!exists("matrixNames")) stop("matrix names are missing !")
 
+if(!exists("verbose")) verbose = TRUE
 if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("isPlot")) isPlot = FALSE # by subplot
 if(!exists("otuThr")) otuThr = 97
@@ -24,28 +25,24 @@ getMinSizeAllSites <- function(communityMatrix) {
 	minSample <- min(99999, min(rowSums(communityMatrix)))  		
 
 	sampleSize <- minSample#floor(minSample/100) * 100 # make sure subsampling run  
-	cat("Community matrix: min sample size per site =", minSample, ", take sample size per site =", sampleSize, "/n") 
+	cat("Community matrix: min sample size per site =", minSample, ", take sample size per site =", sampleSize, "\n") 
     
     return (sampleSize)
 }
 
-cat("Analysis: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "/n") 
+cat("Analysis: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
 # main
 for (expId in 1:length(matrixNames)) {	
-    print(paste("experiment = ", matrixNames[expId], ", matrixName = ", matrixNames[expId], sep=""))
-    	
-	matrixName <- matrixNames[expId]
-	if (rmSingleton) 
-		matrixName <- paste(matrixName, "min2", sep = "-")
-			
+  cat("Calculate rarefaction table for", matrixNames[expId], ".\n")
+  
 	communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
 	sampleSize <- getMinSizeAllSites(communityMatrix) 
 
 	source("Modules/RarefactionTable.R", local=TRUE)
 
 	# create rarefaction table file which is calculated by RarefactionTable.R	
-	outputRFTable <- paste(workingPath, "data/", matrixName, "-rarefaction-table.csv", sep = "")
+	outputRFTable <- paste(workingPath, "data/", postfix(matrixNames[expId], isPlot, rmSingleton, sep="-"), "-rarefaction-table.csv", sep = "")
 	writeRdiversityTable(communityMatrix, outputRFTable)
 } 
 
