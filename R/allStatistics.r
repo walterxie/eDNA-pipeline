@@ -1,9 +1,4 @@
 
-# change config below
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
 
 if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
@@ -15,12 +10,12 @@ if(!exists("otuThr")) otuThr = 97
 if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
 if(!exists("qs")) qs = rep(0:2,each=3)
 
-n <- length(matrixNames) 
-
 otusRowNames <- c("Reads", "OTUs", "Singleton", "Coupleton") # cannot get unique reads from CM
 divRowNames <- c("$^0D_\\gamma$","$^0D_\\alpha$","$^0D_\\beta$","$^1D_\\gamma$","$^1D_\\alpha$","$^1D_\\beta$",
 				"$^2D_\\gamma$","$^2D_\\alpha$","$^2D_\\beta$")
 lotus = length(otusRowNames)
+
+n <- length(matrixNames) 
 
 #source("Modules/init.R", local=TRUE)
 
@@ -32,7 +27,11 @@ cat("\nTable: summary by datasets including singletons: isPlot =", isPlot, ", ot
 by.datasets <- data.frame(row.names=c(otusRowNames, divRowNames), stringsAsFactors=FALSE)
 
 for (expId in 1:n) {	
-  communityMatrix <- getCommunityMatrixT(expId, isPlot, FALSE)
+  isP <- isPlot
+  if (expId == n) {
+    isP <- TRUE
+  } 
+  communityMatrix <- getCommunityMatrixT(expId, isP, FALSE) # always including singletons
   
   diversity_table <- diversity.df(communityMatrix)
   
@@ -64,9 +63,13 @@ print(xtable(by.datasets, caption = paste("Table of sequence statistics for eDNA
 cat("\nTable: summary by plots/subplot: isPlot =", isPlot, "rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
 
 for (expId in 1:n) {	
-  communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
-  
-  # TODO: 
+  isP <- isPlot
+  min2 <- rmSingleton
+  if (expId == n) {
+    isP <- TRUE
+    min2 <- FALSE
+  } 
+  communityMatrix <- getCommunityMatrixT(expId, isP, min2)
   source("Modules/Diversities.R")
   
   # reads
@@ -97,6 +100,6 @@ for (expId in 1:n) {
   perSample <- format(perSample, big.mark=",", scientific=F)
 
   print(xtable(perSample, caption = paste("Table of biodiversities per sample for", matrixNames[expId]),
-               label = postfix(paste("tab:perSample", matrixNames[expId], sep=":"), isPlot, rmSingleton, sep=":"), 
+               label = postfix(paste("tab:perSample", matrixNames[expId], sep=":"), isP, min2, sep=":"), 
                caption.placement = "top"), sanitize.text.function = function(x){x}, file=tableFile, append=TRUE)
 }

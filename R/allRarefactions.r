@@ -1,11 +1,5 @@
 library(RColorBrewer)
 
-# change config below
-#figDir <- "figures"
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
@@ -33,7 +27,7 @@ for (dFId in c(2,5,3,6,1,4)) { #length(levels)
   maxX <- 0
   maxY <- 0
   
-  for (expId in 1:n) {
+  for (expId in 1:(n-1)) {
     rarefactionTable <- getRarefactionTable(expId, isPlot, rmSingleton)
     # remove prefix size.
     sampleSizesSeq <- gsub("^.*?\\.","",colnames(rarefactionTable)) 
@@ -42,7 +36,7 @@ for (dFId in c(2,5,3,6,1,4)) { #length(levels)
     maxY <- max(maxY, max(as.numeric(rarefactionTable[dFId,])))
   }
   
-  for (expId in 1:n) {
+  for (expId in 1:(n-1)) {
     rarefactionTable <- getRarefactionTable(expId, isPlot, rmSingleton)
     # remove prefix size.
     sampleSizesSeq <- gsub("^.*?\\.","",colnames(rarefactionTable)) 

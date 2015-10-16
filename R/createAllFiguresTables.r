@@ -18,12 +18,12 @@ if (rmSingleton) {
 	figDir <<- "figures"
 	# write tables to a file in workingPath
 	tableFile <<- paste(workingPath, "report.tex", sep="")
-	tit <<- "remove all singletons in community matrix"	
+	tit <<- "remove all singletons"	
 } else {
 	figDir <<- "figures1"
 	# write tables to a file in workingPath
 	tableFile <<- paste(workingPath, "report-singleton.tex", sep="")
-	tit <<- "keep all singletons in community matrix"
+	tit <<- "keep all singletons"
 }
 cat("\nConfig :", tit, "!\n")
 
@@ -34,7 +34,9 @@ source("Modules/init.r", local=TRUE)
 mkdir(file.path(workingPath, figDir))    
 
 ######## set up analysis #######
-matrixNames <<-  c("16S", "18S", "26S", "ITS", "FolCO1", "ShCO1") # only for cm file name and folder name
+matrixNames <<-  c("16S", "18S", "26S", "ITS", "ShCO1", "FolCO1", "Vegetation") # for file name and dataset names in figures and tables
+taxaFiles <<- c("16S_taxonomy_table.txt", "18S_taxonomy_table.txt", "26S_taxonomy_table.txt", "ITS_taxonomy_table.txt", 
+				"ShCO1_taxonomy_table.txt", "FolCO1_taxonomy_table.txt") # only eDNA
 
 otuThr = 97
 levels = rep(c("gamma","alpha","beta"),3)
@@ -45,7 +47,7 @@ qs = rep(0:2,each=3)
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
 # add packages here
 cat("\\usepackage[utf8]{inputenc}","\\usepackage{graphicx}","\\usepackage{caption}","\n", file=tableFile, append=TRUE, sep = "\n")
-cat("\\title{Report to", tit, "}\n\n", file=tableFile, append=TRUE)
+cat("\\title{eDNA data pipeline report to", tit, "}\n\n", file=tableFile, append=TRUE)
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
 ######## figures and tables #######

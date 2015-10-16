@@ -1,13 +1,6 @@
 library(vegan)
 library(Hmisc)
 
-# change config below
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
-#levels = rep(c("gamma","alpha","beta"),3)
-#qs = rep(0:2,each=3)
 
 if(!exists("matrixNames")) stop("matrix names are missing !")
 
@@ -32,11 +25,18 @@ getMinSizeAllSites <- function(communityMatrix) {
 
 cat("Analysis: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
+n <- length(matrixNames)
 # main
-for (expId in 1:length(matrixNames)) {	
-  cat("Calculate rarefaction table for", matrixNames[expId], ".\n")
-  
-	communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
+for (expId in 1:n) {	
+  isP <- isPlot
+  min2 <- rmSingleton
+	if (expId == n) {
+	  isP <- TRUE
+	  min2 <- FALSE
+	} 
+  cat("Analysis: create rarefaction diversity table for", matrixNames[expId], 
+      ", rmSingleton =", min2, ", isPlot =", isP, ", otuThr =", otuThr, ".\n")
+  communityMatrix <- getCommunityMatrixT(expId, isP, min2)
 	sampleSize <- getMinSizeAllSites(communityMatrix) 
 
 	source("Modules/RarefactionTable.R", local=TRUE)

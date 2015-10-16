@@ -1,11 +1,5 @@
 library(ggplot2)
 
-# change config below
-#figDir <- "figures"
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
@@ -33,9 +27,10 @@ labls = c("reads rest", "150 most abundant OTUs", "OTUs 1 read", "OTUs 2 reads",
 cat=c(rep("reads",2), rep("OTUs",3))
 myPalette <- c("#fdbb84", "#e34a33", "#e0f3db", "#a8ddb5", "#43a2ca")
 
-cat("\nGraph: reads counts percentage bar chart including singletons: isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 # always plot singleton
-for (expId in 1:n) {	
+cat("\neDNA Graph: reads counts percentage bar chart including singletons: isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
+
+for (expId in 1:(n-1)) { # MiSeq only 	
 	communityMatrix <- getCommunityMatrixT(expId, isPlot, FALSE)
 
 	source("Modules/SampleCounts.R", local=TRUE)
@@ -72,16 +67,15 @@ invisible(dev.off())
 
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
-cat("\nGraph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
+cat("\neDNA Graph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
 pdf(paste(workingPath, figDir, "/", postfix("sample-counts", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)	
 attach(mtcars)
 par(mfrow=c(3,2))	
 
-for (expId in 1:n) {	
+for (expId in 1:(n-1)) {	
   # isPlot determines to use which matrix file in init
   communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton)
-    
   source("Modules/SampleCounts.R", local=TRUE)
     
 	if (expId > 4) {		
@@ -107,4 +101,22 @@ for (expId in 1:n) {
 }
 invisible(dev.off()) 
 
+######## Sample counts #######
+cat("\nVege Graph: sample counts bar chart: otuThr =", otuThr, "\n") 
 
+pdf(paste(workingPath, figDir, "/sample-counts-vege.pdf", sep = ""), width=5, height=5.5)	
+
+communityMatrix <- getCommunityMatrixT(n, TRUE, FALSE)
+source("Modules/SampleCounts.R", local=TRUE)
+
+xlab=paste("Number of ",sampleName,"s crossed", sep="")
+ylab=paste("Number of ",speciesNamePlural, "", sep="")	
+
+barplot(log10(table(sampleCounts)), xlab=xlab, ylab=ylab, main=matrixNames[n], yaxt="n")   
+
+aty <- axTicks(2)
+ylabels <- sapply(aty,function(i) 10^i)
+#labels <- sapply(aty,function(i) as.expression(bquote(2^ .(i)))  )
+axis(2,at=aty,labels=ylabels)    
+
+invisible(dev.off())     

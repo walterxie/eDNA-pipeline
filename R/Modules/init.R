@@ -42,9 +42,15 @@ postfix <- function(name, isPlot, min2, sep) {
 getCommunityMatrixT <- function(expId, isPlot, min2) {
 	if(!exists("verbose")) verbose <- FALSE 
     
+    n <- length(matrixNames)
 	matrixName <- matrixNames[expId]
 	
-	if (isPlot) {
+	# hard code to get Vegetation
+	if (expId==n) {
+	    if (!isPlot)
+			stop("Vegetation only has plot based community matrix !")
+		inputCM <- paste(workingPath, "data/trees_saplings_by_plot.txt", sep="")
+	} else if (isPlot) {
 		inputCM <- paste(workingPath, "data/", matrixName, "_by_plot.txt", sep="")
 	} else {
 		# e.g. data/16S.txt
@@ -67,18 +73,73 @@ getCommunityMatrixT <- function(expId, isPlot, min2) {
 	
 	return(communityMatrixT)
 }
+# rownames(communityMatrix) <- gsub("-(.*)|", "\\1", rownames(communityMatrix))
 
-# table to plot Rarefaction
+###### table to plot Rarefaction ##### 
 getRarefactionTable <- function(expId, isPlot, min2) {
+    n <- length(matrixNames) 
     matrixName <- matrixNames[expId]
-	if (isPlot) 
+	# hard code for Vegetation that only has plot and always keep singletons
+	if (isPlot || expId == n) 
 	  matrixName <- paste(matrixName, "byplot", sep = "-") 
-	if (rmSingleton) 
+	if (min2 && expId < n) 
 	  matrixName <- paste(matrixName, "min2", sep = "-")  
 			
 	inputRDT <- paste(workingPath, "data/", matrixName, "-rarefaction-table.csv", sep = "")    
     rarefactionTable <- read.csv(file=inputRDT, head=TRUE, sep=",", row.names=paste(levels, qs, sep=""), check.names=FALSE)
 }
+
+###### taxa assignment by reads #####
+unclassTaxa <- c("Not assigned", "No hits", "cellular organisms", "root")
+# rankLevel: the taxa level in each bar
+# groupLevel: used to assign colour for each group, and must higher than rankLevel
+# belongTo: keep OTU rows contain given taxa belongTo, if NULL, keep all
+# return CM + rankLevel + groupLevel
+getTaxaAssgReads <- function(expId, min2, rankLevel, groupLevel, belongTo) {
+	if(missing(belongTo)) belongTo<-NULL
+
+    cat("Create taxonomy assignment for", matrixNames[expId], ".\n")
+    
+	##### load data #####
+	communityMatrix <- getCommunityMatrixT(expId, TRUE, min2)  
+	# rotate to make rows to be OTUs to match taxa file
+	communityMatrix <- transposeCM(communityMatrix) 
+	
+	communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
+	communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]
+	
+	inputTaxa <- paste(workingPath, "taxonomy_tables/", matrixNames[expId], "_taxonomy_table.txt", sep="")
+	taxaPaths <- readTaxaFile(inputTaxa)	
+	taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
+	# make lower case to match ranks
+	colnames(taxaPaths) <- tolower(colnames(taxaPaths))
+	# define unclassified
+	taxaPaths[taxaPaths==unclassTaxa[1] | taxaPaths==unclassTaxa[2] | taxaPaths==unclassTaxa[3] | is.na(taxaPaths)] <- "unclassified"
+
+	if ( ! tolower(rankLevel) %in% tolower(colnames(taxaPaths)) ) 
+		stop( paste("Column name", rankLevel, "not exist in taxa path file for ", matrixNames[expId]) )
+	if (! tolower(groupLevel) %in% tolower(colnames(taxaPaths)) ) 
+		stop( paste("Column name", groupLevel, "not exist in taxa path file for ", matrixNames[expId]) )
+
+	##### keep OTU rows contain given taxa belongTo ##### 
+	if (!is.null(belongTo)) {
+		taxaPaths <- taxaPaths[which(grepl(belongTo, taxaPaths[,1])),] # taxaPaths[,1] is taxa path separated by ;
+		if (belongTo == "Metazoa")  # non Arthropoda
+			taxaPaths <- taxaPaths[-which(grepl("Arthropoda", taxaPaths[,1])),]		
+	}
+	
+	###### taxa assignment by reads #####
+	colRankLevel <- which(tolower(colnames(taxaPaths))==tolower(rankLevel))
+	colGroupLevel <- which(tolower(colnames(taxaPaths))==tolower(groupLevel))
+	
+	taxaAssgReads <- merge(communityMatrix, taxaPaths[,c(colRankLevel, colGroupLevel)], by = "row.names")
+
+    cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "in matrix to", 
+		nrow(taxaPaths), "taxa classification.\n")
+
+	return(taxaAssgReads)
+}
+
 
 
 ######## elevations #######
