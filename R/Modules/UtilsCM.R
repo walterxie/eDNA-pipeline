@@ -84,7 +84,7 @@ rmVectorFromCM <- function(communityMatrix, vectorThr, MARGIN) {
   
   if (row.count != nrow(communityMatrix)) 
     cat("Warning : remove", row.count-nrow(communityMatrix), "row(s) whose sum <=", vectorThr, "!\n")
-  if (sample.count != ncol(communityMatrix)) 
+  if (column.count != ncol(communityMatrix)) 
     cat("Warning : remove", column.count-ncol(communityMatrix), "column(s) whose sum <=", vectorThr, "!\n")
   
   return(communityMatrix)

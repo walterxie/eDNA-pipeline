@@ -48,8 +48,11 @@ trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 # get plural for report
 getPlural <- function (singular) {
-  plural = singular
-  if (tolower(singular)!="species") {
+  if (tolower(singular)=="species") {
+    plural = singular
+  } else if (tolower(singular)!="phylumn") {
+    plural = "phyla"
+  } else {
     plural = paste(singular,"s",sep="")
   }
   return(plural) 

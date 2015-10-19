@@ -23,7 +23,7 @@ getMinSizeAllSites <- function(communityMatrix) {
     return (sampleSize)
 }
 
-cat("Analysis: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
+cat("Intermediate data: create rarefaction diversity table using rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
 n <- length(matrixNames)
 # main
@@ -34,7 +34,7 @@ for (expId in 1:n) {
 	  isP <- TRUE
 	  min2 <- FALSE
 	} 
-  cat("Analysis: create rarefaction diversity table for", matrixNames[expId], 
+  cat("Create rarefaction diversity table for", matrixNames[expId], 
       ", rmSingleton =", min2, ", isPlot =", isP, ", otuThr =", otuThr, ".\n")
   communityMatrix <- getCommunityMatrixT(expId, isP, min2)
 	sampleSize <- getMinSizeAllSites(communityMatrix) 

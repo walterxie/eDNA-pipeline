@@ -1,31 +1,33 @@
-library(vegetarian)
-
-# change config below
-#figDir <- "figures"
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
-#levels = rep(c("gamma","alpha","beta"),3)
-#qs = rep(0:2,each=3)
+library(reshape2)
 
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("levels")) stop("levels of Jost diversity are missing !")
-if(!exists("qs")) stop("qs of Jost diversity are missing !")
-if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
+
+if(!exists("verbose")) verbose = TRUE
+if(!exists("rmSingleton")) rmSingleton = TRUE
+if(!exists("otuThr")) otuThr = 97
 
 n <- length(matrixNames) 
-
-otuThr = 97
 
 source("Modules/init.R", local=TRUE)
 
 ######## within plots vs between plots #######	
-for (expId in 1:n) {	
-    # "-by-plot" trigger merge 2 subplots columns
-    communityMatrix <- init(expId, otuThr, "-by-subplot")
+for (expId in 1:(n-1)) {	
+  beta1_1 <- getBeta1Minus1(expId, FALSE, rmSingleton)
     
+  beta1_1.melt <- melt(as.matrix(beta1_1))
+  
+  if (expId == 1) {	  
+    
+    diverBetweenPlot <- data.frame(gamma0=as.vector(d.between.plot[,1]))
+
+    
+  } else {
+    
+
+    diverInAPlot <- rbind(diverInAPlot, diverInAPlot_tmp) 	
+  }
+  
     # by subplots
     rowsNum <- nrow(communityMatrix)		
 	d.subplot<-matrix(0,nrow=rowsNum,ncol=length(levels))

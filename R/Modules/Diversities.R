@@ -104,11 +104,11 @@ beta1minus1.pair <- function(communityMatrix, r1, r2) {
 
 # return a dist object 
 # printProgressBar = TRUE/FALSE, if missing, =nrow(row.pairs)>100
-beta1minus1.dist <- function(communityMatrix, printProgressBar) {    
+beta1minus1 <- function(communityMatrix, printProgressBar) {    
   # including diagonal
-  d.beta1minus1 <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
-  colnames(d.beta1minus1) <- c(rownames(communityMatrix))
-  rownames(d.beta1minus1) <- c(rownames(communityMatrix))
+  beta1minus1 <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
+  colnames(beta1minus1) <- c(rownames(communityMatrix))
+  rownames(beta1minus1) <- c(rownames(communityMatrix))
   # row.pairs : each row is a pair of row number of communityMatrix
   row.pairs <- t(combn(nrow(communityMatrix),2))
   
@@ -122,11 +122,11 @@ beta1minus1.dist <- function(communityMatrix, printProgressBar) {
   
   for (n in 1:nrow(row.pairs)) {
     if (printProgressBar) setTxtProgressBar(pb, n)
-    d.beta1minus1[row.pairs[n,2], row.pairs[n,1]] <- d(communityMatrix[row.pairs[n,],],lev="beta",q=1)-1
+    beta1minus1[row.pairs[n,2], row.pairs[n,1]] <- d(communityMatrix[row.pairs[n,],],lev="beta",q=1)-1
   }
   if (printProgressBar) close(pb)
   
-  return (as.dist(d.beta1minus1))
+  return (beta1minus1)
 }
 
 # Returns a distance matrix composed of pair-wise turnovers

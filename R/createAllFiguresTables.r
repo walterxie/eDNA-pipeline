@@ -63,11 +63,16 @@ source("allStatistics.r", local=TRUE)
 source("allTaxonomyPhylum.r", local=TRUE)
 
 isPlot <<- FALSE
+# create all rarefaction table
 #source("createAllRarefactionTable.r", local=TRUE)
 source("allRarefactions.r", local=TRUE)
 
+# create all beta1-1 matrix for the rest of analyses 
+#source("createAllBeta1Minus1.r", local=TRUE)
+
 source("allWithinBetweenPlots.r", local=TRUE)
 
+isPlot <<- TRUE
 source("allElevationDiversitiesByPlots.r", local=TRUE)
 
 source("allMDSBySubplots.r", local=TRUE)
