@@ -14,7 +14,7 @@ if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("otuThr")) otuThr = 97
 
 n <- length(matrixNames) 
-mypalette <- c("red", "orange", "green", "purple", "blue", "brown", "black")
+mypalette <- c("red", "green", "brown", "orange", "blue", "purple", "dark green")
 myshape <- seq(0, (0 + n-1))
 
 source("Modules/init.R", local=TRUE)
@@ -23,7 +23,7 @@ env.plot <- getSampleMetaData(TRUE) # by plot
 
 
 cat("Analysis: elevation difference corresponding to beta1 - 1 ")
-mantel_table <- data.frame(0,nrow=n,ncol=4)
+mantel_table <- matrix(0,nrow=n,ncol=4)
 rownames(mantel_table) <- c(matrixNames)
 colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
 
@@ -47,29 +47,30 @@ for (expId in 1:n) {
   if (expId == 1) {
     ######## eDNA #######
     par(mar=c(4,5,2,1))		
-    plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3,
+    plot(as.vector(d.elev.plot), as.vector(d.beta1_1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.2,
          xlab="elevation difference (metres)", ylab=expression(paste(""^"1", D[beta], "-1")), main="(a)")	
   } else if (expId == n) {
     ######## vegetation #######
     par(mar=c(4,5,2,1))		
-    plot(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=myshape[expId], ylim=c(0,1), cex=0.3,
+    plot(as.vector(d.elev.plot), as.vector(d.beta1_1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.2,
          xlab="elevation difference (metres)", ylab="", main="(b)")	
   } else {
-    points(as.vector(elevPlotDist), as.vector(d.beta1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.3)
+    points(as.vector(d.elev.plot), as.vector(d.beta1_1), pch=myshape[expId], col=mypalette[expId], ylim=c(0,1), cex=0.2)
   }
   
-  lm.d.beta1 <- lm(as.vector(d.beta1)~as.vector(elevPlotDist))
-  abline(lm.d.beta1, col=mypalette[expId], cex=3) 
+  lm.d.beta1_1 <- lm(as.vector(d.beta1_1)~as.vector(d.elev.plot))
+  abline(lm.d.beta1_1, col=mypalette[expId], cex=3) 
   
-  mantel_table[expId,1] <- round(mantel.beta1$statistic, 3)
-  mantel_table[expId,2] <- mantel.beta1$signif
-  mantel_table[expId,3] <- formatC(signif(summary(lm.d.beta1)$r.squared, digits=3), digits=3,format="fg", flag="#")
-  mantel_table[expId,4] <- formatC(signif(summary(lm.d.beta1)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
-  # print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.beta1$statistic, 3), "; significance: ", mantel.beta1$signif, "; permutations: ", mantel.beta1$permutations, sep=""))  		
+  mantel_table[expId,1] <- round(mantel.beta1_1$statistic, 3)
+  mantel_table[expId,2] <- mantel.beta1_1$signif
+  mantel_table[expId,3] <- formatC(signif(summary(lm.d.beta1_1)$r.squared, digits=3), digits=3,format="fg", flag="#")
+  mantel_table[expId,4] <- formatC(signif(summary(lm.d.beta1_1)$coefficients[2,4],digits=3), digits=3,format="fg", flag="#")
+  # print(paste(matrixNames[expId],"'s mantel statistic r: ", round(mantel.beta1_1$statistic, 3), "; significance: ", mantel.beta1_1$signif, "; permutations: ", mantel.beta1_1$permutations, sep=""))  		
 }
 
 ######## combine 2 subfigures #######
-legend(-1.38, -0.3, ncol=1, legend=matrixNames, pch=as.numeric(myshape), col=mypalette)
+par(usr=c(0,1,0,1),xpd=NA)
+legend(-1.28, -0.1, ncol=n, legend=matrixNames, pch=as.numeric(myshape), col=mypalette)
 invisible(dev.off())  
 
 ######## table #######

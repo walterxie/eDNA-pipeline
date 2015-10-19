@@ -23,6 +23,9 @@ for (expId in 1:n) {
         ", rmSingleton =", min2, ", otuThr =", otuThr, ".\n")
     communityMatrix <- getCommunityMatrixT(expId, FALSE, min2)
     
+    # make sure beta1-1 matrix has sample names in the same order
+    communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
+    
     #beta1_1 <- beta1minus1(communityMatrix, printProgressBar=TRUE)
     beta1_1 <- beta1minus1(communityMatrix)
     

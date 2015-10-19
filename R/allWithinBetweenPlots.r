@@ -21,7 +21,7 @@ for (expId in 1:(n-1)) {
   beta1_1.melt$dataset <- matrixNames[expId]
   beta1_1.melt$comp <- "between" 
   # plot-subplot
-  rownames(beta1_1.melt) %in% beta1_1.melt$varaible
+  beta1_1.melt[,1] %in% beta1_1.melt[,2]
   beta1_1.melt[, "comp"] <- "within"
 
   

@@ -168,8 +168,6 @@ getBeta1Minus1 <- function(expId, isPlot, min2) {
     cat("\nUpload beta1-1 matrix : from", inputB, "\n") 
   
   beta1_1 <- readFile(file=inputB, sep=",")
-  beta1_1 <- beta1_1[order(rownames(beta1_1)),]
-  beta1_1 <- beta1_1[,order(colnames(beta1_1))]
   
   return(beta1_1)
 }
@@ -197,7 +195,8 @@ getElevPlotDist <- function(plot.names, env.plot) {
   # match 
   env.plot.match <- env.plot[matched.id, ]
 
-  cat("community matrix has", length(plot.names), "plots.\n")
+  cat("Find", nrow(env.plot.match), "plots having elevations, community matrix has", 
+      length(plot.names), "plots, meta-data file has", nrow(env.plot), "plots.\n")
 
   return(dist(env.plot.match[,colElev]))
 }
