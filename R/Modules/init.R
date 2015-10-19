@@ -188,50 +188,22 @@ getSampleMetaData <- function(isPlot) {
 }
 
 
-
 ######## elevations #######
-getElevSampleDist <- function(cmRowNames) { 
-  colSample = 1
-  colElev = 2
+getElevPlotDist <- function(plot.names, env.plot) { 
+  colElev = 1
   
-  sample_count <- length(cmRowNames)
-  print(paste("sample_count = ", sample_count, sep=""))
-  
-  inputElevation <- paste(workingPath, "data/plot_elevations.txt", sep="")	
-  elev <- read.table(inputElevation, header=TRUE, stringsAsFactors=FALSE)
-  
-  # keep elev for easy debug
-  elevTmp <- elev
-  
-  # hard code to fit in given data
-  if (sample_count <= 10) {
-    # 2 subplots within the plot should be next each other 
-    for (i in seq(1,nrow(elevTmp),by=2)) {
-      elevTmp[i,colSample] <- unlist(strsplit(as.character(elevTmp[i,colSample]), "-", fixed = TRUE))[1] # hard code for names Plot1-B
-      elevTmp[i+1,colSample] <- unlist(strsplit(as.character(elevTmp[i+1,colSample]), "-", fixed = TRUE))[1] 
-      if(elevTmp[i,colSample]  != elevTmp[i+1,colSample] ) stop("Two subplots within the same plot should be next each other in the meta data file !") 
-    }
-    
-    # map subplots meta data to plots
-    elevTmp <- elevTmp[-seq(1,nrow(elevTmp), by=2),]		
-  } 
-  
-  # missing data from traditional method
-  if (sample_count == 8) {
-    print(paste("Remove sample ", elevTmp[c(7,8),colSample], " from meta data file due to miss data."))
-    elevTmp <- elevTmp[c(-7,-8),]
-  } 
-  
-  # remove not mapped samples from tmpEnvData
-  if ( all(cmRowNames != elevTmp[,colSample]) ) {
-    stop(paste("Incorrect plots mapping between CM and meta data :  cm = ", cmRowNames, ", meta data =", elevTmp[,colSample]))
-  } 
-  
-  elevPlotDist <- dist(elevTmp[,colElev]) # 2nd col Elevation.m
+  matched.id <- match(plot.names, rownames(env.plot))
+  matched.id <- matched.id[!is.na(matched.id)]
+  # match 
+  env.plot.match <- env.plot[matched.id, ]
+
+  cat("community matrix has", length(plot.names), "plots.\n")
+
+  return(dist(env.plot.match[,colElev]))
 }
 
 getElevSample <- function(cmRowNames) { 
-  colSample = 1
+  colPlot = 1
   colElev = 2
   
   sample_count <- length(cmRowNames)
@@ -247,9 +219,9 @@ getElevSample <- function(cmRowNames) {
   if (sample_count <= 10) {
     # 2 subplots within the plot should be next each other 
     for (i in seq(1,nrow(elevTmp),by=2)) {
-      elevTmp[i,colSample] <- unlist(strsplit(as.character(elevTmp[i,colSample]), "-", fixed = TRUE))[1] # hard code for names Plot1-B
-      elevTmp[i+1,colSample] <- unlist(strsplit(as.character(elevTmp[i+1,colSample]), "-", fixed = TRUE))[1] 
-      if(elevTmp[i,colSample]  != elevTmp[i+1,colSample] ) stop("Two subplots within the same plot should be next each other in the meta data file !") 
+      elevTmp[i,colPlot] <- unlist(strsplit(as.character(elevTmp[i,colPlot]), "-", fixed = TRUE))[1] # hard code for names Plot1-B
+      elevTmp[i+1,colPlot] <- unlist(strsplit(as.character(elevTmp[i+1,colPlot]), "-", fixed = TRUE))[1] 
+      if(elevTmp[i,colPlot]  != elevTmp[i+1,colPlot] ) stop("Two subplots within the same plot should be next each other in the meta data file !") 
     }
     
     # map subplots meta data to plots
@@ -258,13 +230,13 @@ getElevSample <- function(cmRowNames) {
   
   # missing data from traditional method
   if (sample_count == 8) {
-    print(paste("Remove sample ", elevTmp[c(7,8),colSample], " from meta data file due to miss data."))
+    print(paste("Remove sample ", elevTmp[c(7,8),colPlot], " from meta data file due to miss data."))
     elevTmp <- elevTmp[c(-7,-8),]
   } 
   
   # remove not mapped samples from tmpEnvData
-  if ( all(cmRowNames != elevTmp[,colSample]) ) {
-    stop(paste("Incorrect plots mapping between CM and meta data :  cm = ", cmRowNames, ", meta data =", elevTmp[,colSample]))
+  if ( all(cmRowNames != elevTmp[,colPlot]) ) {
+    stop(paste("Incorrect plots mapping between CM and meta data :  cm = ", cmRowNames, ", meta data =", elevTmp[,colPlot]))
   } 
   
   elevPlot <- data.frame(row.names=cmRowNames)
