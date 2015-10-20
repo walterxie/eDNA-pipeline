@@ -42,6 +42,7 @@ otuThr = 97
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
 
+verbose <<- TRUE # only print "Upload community matrix" 1st time 
 
 ######## set up report latex #######
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
@@ -52,7 +53,6 @@ cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append
 
 ######## figures and tables #######
 # print detail if TRUE
-verbose <<- TRUE # only print "Upload community matrix" 1st time 
 isPlot <<- FALSE # by subplot
 source("allSampleCount.r", local=TRUE)
 

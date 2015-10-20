@@ -35,6 +35,11 @@ postfix <- function(name, isPlot, min2, sep) {
   return(name)
 }
 
+# get plot names from subplots vector separated by sep
+getPlot <- function(subplots, sep="-") {
+  sapply(strsplit(as.character(subplots), sep), "[[", 1)
+}
+
 ######## load community matrix #######
 # expId = 1:6
 # isPlot determines to use which matrix file, by subplot or plot 

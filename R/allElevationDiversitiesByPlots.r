@@ -21,14 +21,14 @@ source("Modules/init.R", local=TRUE)
 
 env.plot <- getSampleMetaData(TRUE) # by plot
 
+cat("Analysis: elevation difference corresponding to beta1 - 1. \n")
 
-cat("Analysis: elevation difference corresponding to beta1 - 1 ")
 mantel_table <- matrix(0,nrow=n,ncol=4)
 rownames(mantel_table) <- c(matrixNames)
 colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-value")
 
 ####### beta 1 - 1 vs elevation ########
-pdf(paste(workingPath, figDir, "/all-elev-diff-beta1-1.pdf", sep = ""), width=9, height=5)
+pdf(paste(workingPath, figDir, "/", postfix("all-elev-diff", TRUE, rmSingleton, sep="-"), "-beta1-1.pdf", sep = ""), width=9, height=5)
 attach(mtcars)
 par(mfrow=c(1,2), oma=c(4,0,0,0)) 
 
