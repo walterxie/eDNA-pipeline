@@ -11,6 +11,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(colorspace)
 #library(Matrix)
+library(reshape2)
 
 if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
 if(!exists("workingPath")) stop("working path containing data is missing !")
@@ -156,6 +157,28 @@ getTaxaAssgReads <- function(expId, min2, rankLevel, groupLevel, belongTo) {
   
   return(taxaAssgReads)
 }
+
+# Dissimilarity matrix of paired samples
+# diss.fun = "beta1-1", "jaccard", "horn.morisita"
+getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1") {
+  n <- length(matrixNames) 
+  matrixName <- matrixNames[expId]
+  # hard code for Vegetation that only has plot and always keep singletons
+  if (expId == n) {
+    matrixName <- postfix(matrixName, TRUE, FALSE, sep="-")
+  } else {
+    matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
+  }
+  
+  inputB <- paste(workingPath, "data/", matrixName, "-", diss.fun, ".csv", sep = "")
+  if(verbose) 
+    cat("\nUpload", diss.fun, "matrix : from", inputB, "\n") 
+  
+  diss.matrix <- readFile(file=inputB, sep=",")
+  
+  return(diss.matrix)
+}
+
 
 ######## beta1-1 #######
 getBeta1Minus1 <- function(expId, isPlot, min2) {

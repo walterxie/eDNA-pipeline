@@ -37,7 +37,7 @@ for (expId in 1:n) {
   if (expId == n) {
     min2 <- FALSE
   } 
-  beta1_1 <- getBeta1Minus1(expId, TRUE, min2)
+  beta1_1 <- getDissimilarityMatrix(expId, TRUE, min2)
   d.beta1_1 <- as.dist(beta1_1)
   d.elev.plot <- getElevPlotDist(rownames(beta1_1), env.plot)
   

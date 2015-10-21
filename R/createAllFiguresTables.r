@@ -75,6 +75,7 @@ source("allWithinBetweenPlots.r", local=TRUE)
 isPlot <<- TRUE
 source("allElevationDiversitiesByPlots.r", local=TRUE)
 
+isPlot <<- FALSE
 source("allMDSBySubplots.r", local=TRUE)
 
 source("allProcrustes.r", local=TRUE)

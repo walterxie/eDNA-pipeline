@@ -15,7 +15,7 @@ cat("Analysis: beta1 - 1 of within plots vs between plots. \n")
 
 ######## within plots vs between plots #######	
 for (expId in 1:(n-1)) {	
-  beta1_1 <- getBeta1Minus1(expId, FALSE, rmSingleton)
+  beta1_1 <- getDissimilarityMatrix(expId, FALSE, rmSingleton)
     
   beta1_1.melt <- melt(as.matrix(beta1_1))
   beta1_1.melt <- beta1_1.melt[beta1_1.melt$value>0,]

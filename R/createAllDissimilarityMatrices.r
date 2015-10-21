@@ -6,6 +6,8 @@ if(!exists("verbose")) verbose = TRUE
 if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("otuThr")) otuThr = 97
 
+if(!exists("diss.fun")) diss.fun="beta1-1"
+
 source("Modules/init.r")
 
 cat("Intermediate data: create all beta1-1 matrix, rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
@@ -19,32 +21,32 @@ for (expId in 1:n) {
   
   #### by subplot
   if (expId < n) {
-    cat("Create beta1-1 matrix by subplot for", matrixNames[expId],
+    cat("Intermediate data: create", diss.fun, "matrix by subplot for", matrixNames[expId],
         ", rmSingleton =", min2, ", otuThr =", otuThr, ".\n")
     communityMatrix <- getCommunityMatrixT(expId, FALSE, min2)
     
     # make sure beta1-1 matrix has sample names in the same order
     communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
     
-    #beta1_1 <- beta1minus1(communityMatrix, printProgressBar=TRUE)
-    beta1_1 <- beta1minus1(communityMatrix)
+    #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
+    diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
     
     # create file for intermediate data beta1-1 matrix
-    outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], FALSE, min2, sep="-"), "-beta1-1.csv", sep = "")
-    write.cm(beta1_1, outputFile)
+    outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], FALSE, min2, sep="-"), "-", diss.fun, ".csv", sep = "")
+    write.cm(diss.matrix, outputFile)
   }
   
   #### by plot
-  cat("Create beta1-1 matrix by plot for", matrixNames[expId],
+  cat("Intermediate data: create", diss.fun, "matrix by plot for", matrixNames[expId],
       ", rmSingleton =", min2, ", otuThr =", otuThr, ".\n")
   communityMatrix <- getCommunityMatrixT(expId, TRUE, min2)
   
-  #beta1_1 <- beta1minus1(communityMatrix, printProgressBar=TRUE)
-  beta1_1 <- beta1minus1(communityMatrix)
+  #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
+  diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
   
   # create file for intermediate data beta1-1 matrix
-  outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], TRUE, min2, sep="-"), "-beta1-1.csv", sep = "")
-  write.cm(beta1_1, outputFile)
+  outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], TRUE, min2, sep="-"), "-", diss.fun, ".csv", sep = "")
+  write.cm(diss.matrix, outputFile)
 } 
 
 

@@ -97,18 +97,13 @@ alpha1 <- function(communityMatrix) {
 ######## Pair-wise turnovers #######
 # communityMatrix = t(communityMatrix), row is sample
 
-# beta1-1 of one pair of samples r1, r2 from communityMatrix
-beta1minus1.pair <- function(communityMatrix, r1, r2) {
-  d(communityMatrix[c(r1, r2),],lev="beta",q=1)-1
-}
-
-# return a dist object 
+# return a matrix cols and rows are sample names 
 # printProgressBar = TRUE/FALSE, if missing, =nrow(row.pairs)>100
-beta1minus1 <- function(communityMatrix, printProgressBar) {    
+calculateDissimilarityMatrix <- function(communityMatrix, diss.fun="beta1-1", printProgressBar) {    
   # including diagonal
-  beta1minus1 <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
-  colnames(beta1minus1) <- c(rownames(communityMatrix))
-  rownames(beta1minus1) <- c(rownames(communityMatrix))
+  diss.matrix <- matrix(0,nrow=nrow(communityMatrix),ncol=nrow(communityMatrix))
+  colnames(diss.matrix) <- c(rownames(communityMatrix))
+  rownames(diss.matrix) <- c(rownames(communityMatrix))
   # row.pairs : each row is a pair of row number of communityMatrix
   row.pairs <- t(combn(nrow(communityMatrix),2))
   
@@ -122,11 +117,20 @@ beta1minus1 <- function(communityMatrix, printProgressBar) {
   
   for (n in 1:nrow(row.pairs)) {
     if (printProgressBar) setTxtProgressBar(pb, n)
-    beta1minus1[row.pairs[n,2], row.pairs[n,1]] <- d(communityMatrix[row.pairs[n,],],lev="beta",q=1)-1
+    if (diss.fun=="jaccard") {
+      # Jaccard
+      diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- vegdist(communityMatrix[row.pairs[n,],], method="jaccard")
+    } else if (diss.fun=="horn.morisita") {
+      # Horn-Morisita
+      diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- vegdist(communityMatrix, method="horn", binary=FALSE)
+    } else { # diss.fun="beta1-1"
+      # beta1-1
+      diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- d(communityMatrix[row.pairs[n,],],lev="beta",q=1)-1
+    }
   }
   if (printProgressBar) close(pb)
   
-  return (beta1minus1)
+  return (diss.matrix)
 }
 
 # Returns a distance matrix composed of pair-wise turnovers
