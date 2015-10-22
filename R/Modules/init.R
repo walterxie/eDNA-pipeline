@@ -16,6 +16,8 @@ library(reshape2)
 if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
 if(!exists("workingPath")) stop("working path containing data is missing !")
 
+if(!exists("verbose")) verbose <- TRUE
+
 # utils, run them before analysis
 source("Modules/IO.R")
 source("Modules/Utils.R")
@@ -45,9 +47,8 @@ getPlot <- function(subplots, sep="-") {
 # expId = 1:6
 # isPlot determines to use which matrix file, by subplot or plot 
 # min2 = rmSingleton, whether remove all singletons
+# may contain empty rows cols
 getCommunityMatrix <- function(expId, isPlot, min2) {
-  if(!exists("verbose")) verbose <- FALSE 
-  
   n <- length(matrixNames)
   matrixName <- matrixNames[expId]
   
@@ -76,18 +77,14 @@ getCommunityMatrix <- function(expId, isPlot, min2) {
   }
 }
 
-getCommunityMatrixT <- function(expId, isPlot, min2) {
-  if(!exists("verbose")) verbose <- FALSE 
-  
-  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
-  
+prepCommunityMatrix <- function(communityMatrix) {
   # filter column first to avoid empty rows after columns remvoed if vectorThr>0
   if(any(colSums(communityMatrix)== 0)) {
     nc <- ncol(communityMatrix)
     communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=0, MARGIN=2)
     if(nc > ncol(communityMatrix)) 
       cat("Warning: remove", nc-ncol(communityMatrix), "empty columns from community matrix.\n") 
-  #stop("Invalid input: community matrix has empty samples !")
+    #stop("Invalid input: community matrix has empty samples !")
   }
   if(any(rowSums(communityMatrix)== 0)) {
     nr <- nrow(communityMatrix)
@@ -96,6 +93,17 @@ getCommunityMatrixT <- function(expId, isPlot, min2) {
       cat("Warning: remove", nr-nrow(communityMatrix), "empty rows from community matrix.\n") 
     #stop("Invalid input: community matrix has empty OTUs !")
   }
+  
+  return(communityMatrix)
+}
+
+# transposed CM for vegan, and remove empty rows cols 
+getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group) {
+  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
+  communityMatrix <- prepCommunityMatrix(communityMatrix)
+  
+  if (!missing(taxa.group))
+    communityMatrix <- getCommunityMatrixTaxaGroup(expId, isPlot, min2, taxa.group)
   
   communityMatrixT <- transposeCM(communityMatrix)
   
@@ -123,30 +131,16 @@ getRarefactionTable <- function(expId, isPlot, min2) {
 
 ###### taxa assignment by reads #####
 unclassTaxa <- c("Not assigned", "No hits", "cellular organisms", "root")
-# rankLevel: the taxa level in each bar
-# groupLevel: used to assign colour for each group, and must higher than rankLevel
-# taxa.group: keep OTU rows contain given taxa group, if "all", keep all
-# return taxaAssgReads = CM + rankLevel + groupLevel
-getTaxaAssgReads <- function(expId, min2, rankLevel, groupLevel, taxa.group="all") {
-  if(missing(taxa.group)) taxa.group<-NULL
-  
-  cat("Create taxonomy assignment for", matrixNames[expId], ".\n")
-  
-  ##### load data #####
-  communityMatrix <- getCommunityMatrixT(expId, TRUE, min2)  
-  # rotate to make rows to be OTUs to match taxa file
-  communityMatrix <- transposeCM(communityMatrix) 
-  
-  communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
-  communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]
-  
+
+getTaxaPaths <- function(expId, taxa.group="all") {
   inputTaxa <- paste(workingPath, "taxonomy_tables/", matrixNames[expId], "_taxonomy_table.txt", sep="")
   taxaPaths <- readTaxaFile(inputTaxa)	
   taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
   # make lower case to match ranks
   colnames(taxaPaths) <- tolower(colnames(taxaPaths))
   # define unclassified
-  taxaPaths[taxaPaths==unclassTaxa[1] | taxaPaths==unclassTaxa[2] | taxaPaths==unclassTaxa[3] | is.na(taxaPaths)] <- "unclassified"
+  taxaPaths[taxaPaths==unclassTaxa[1] | taxaPaths==unclassTaxa[2] | 
+              taxaPaths==unclassTaxa[3] | is.na(taxaPaths)] <- "unclassified"
   
   ##### keep OTU rows contain given taxa belongTo ##### 
   if (taxa.group == "assigned") {
@@ -156,6 +150,47 @@ getTaxaAssgReads <- function(expId, min2, rankLevel, groupLevel, taxa.group="all
     #if (tolower(taxa.group) == "metazoa")  # non Arthropoda
     #  taxaPaths <- taxaPaths[-which(grepl("Arthropoda", taxaPaths[,1])),]		
   }
+  
+  if (nrow(taxaPaths) < 1)
+    stop(paste("Error: cannot find", taxa.group, "from taxa path file", inputTaxa, "!"))
+  
+  return(taxaPaths)
+}
+
+# return CM filtered by given taxa.group 
+getCommunityMatrixTaxaGroup <- function(expId, isPlot, min2, taxa.group) {
+  ##### load data #####
+  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
+  communityMatrix <- prepCommunityMatrix(communityMatrix)
+  
+  communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
+  communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]
+  
+  taxaPaths <- getTaxaPaths(expId, taxa.group)
+  
+  taxaAssgReads <- merge(communityMatrix, taxaPaths[,1], by = "row.names")
+  
+  cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "OTUs in matrix to", 
+      nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n")
+  
+  return(taxaAssgReads[,-ncol(taxaAssgReads)])
+}
+
+# rankLevel: the taxa level in each bar
+# groupLevel: used to assign colour for each group, and must higher than rankLevel
+# taxa.group: keep OTU rows contain given taxa group, if "all", keep all
+# return taxaAssgReads = CM + rankLevel + groupLevel
+getTaxaAssgReads <- function(expId, isPlot, min2, rankLevel, groupLevel, taxa.group="all") {
+  cat("Create taxonomy assignment for", matrixNames[expId], ".\n")
+  
+  ##### load data #####
+  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
+  communityMatrix <- prepCommunityMatrix(communityMatrix)
+  
+  communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
+  communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]
+  
+  taxaPaths <- getTaxaPaths(expId, taxa.group)
   
   ###### taxa assignment by reads #####
   if ( ! tolower(rankLevel) %in% tolower(colnames(taxaPaths)) ) 
@@ -168,8 +203,8 @@ getTaxaAssgReads <- function(expId, min2, rankLevel, groupLevel, taxa.group="all
   
   taxaAssgReads <- merge(communityMatrix, taxaPaths[,c(colRankLevel, colGroupLevel)], by = "row.names")
   
-  cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "in matrix to", 
-      nrow(taxaPaths), "taxa classification.\n")
+  cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "OTUs in matrix to", 
+      nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n")
   
   return(taxaAssgReads)
 }

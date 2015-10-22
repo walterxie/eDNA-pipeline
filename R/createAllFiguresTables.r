@@ -42,6 +42,8 @@ otuThr = 97
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
 
+taxa.group <<- "assigned"
+
 verbose <<- TRUE # only print "Upload community matrix" 1st time 
 
 ######## set up report latex #######
@@ -68,7 +70,7 @@ isPlot <<- FALSE
 source("allRarefactions.r", local=TRUE)
 
 # create all beta1-1 matrix for the rest of analyses 
-#source("createAllBeta1Minus1.r", local=TRUE)
+#source("createAllDissimilarityMatrices.r", local=TRUE)
 
 source("allWithinBetweenPlots.r", local=TRUE)
 
@@ -78,25 +80,26 @@ source("allElevationDiversitiesByPlots.r", local=TRUE)
 isPlot <<- FALSE
 source("allMDSBySubplots.r", local=TRUE)
 
-source("allProcrustes.r", local=TRUE)
+#source("allProcrustes.r", local=TRUE)
 
-source("allGeneCorrolation.r", local=TRUE)
+#source("allGeneCorrolation.r", local=TRUE)
 
-######## supplementary #######
+#source("allRedundancyAnalysis.r", local=TRUE)
 
-source("allElevationAlpha.r", local=TRUE)
+######## by taxa group #######
 
-source("allMaxDivCombOfPlots.r", local=TRUE)
+#cat("\n\n\\clearpage\n\n", file=tableFile, append=TRUE) # too much floating table/figures
 
-cat("\n\n\\clearpage\n\n", file=tableFile, append=TRUE) # too much floating table/figures
+taxa.groups <<- c("ARCHAEA", "BACTERIA", "EUKARYOTA", "PROTOZOA", "CHROMISTA", "FUNGI", "ANIMALIA", "PLANTAE")
 
-source("allMaxRemainedDiversity.r", local=TRUE)
+source("allStatisticsTaxaGroup.r", local=TRUE)
 
-cat("\n\n\\clearpage\n\n", file=tableFile, append=TRUE) # too much floating table/figures
-
-source("allRedundancyAnalysis.r", local=TRUE)
-
-source("allRedundancyAnalysisPlants.r", local=TRUE)
+for (taxag in taxa.groups) {
+  taxa.group <<- taxag
+  
+  
+  
+}
 
 ######## complete report latex #######
 
