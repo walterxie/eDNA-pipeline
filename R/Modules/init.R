@@ -243,9 +243,10 @@ getSampleMetaData <- function(isPlot) {
     inputCM <- paste(workingPath, "Env_data/LBI_all_env_data_by_plot.txt", sep="")
   } else {
     # e.g. data/16S.txt
-    inputCM <- paste(workingPath, "Env_data/LBI_all_env_data_by_plot.txt", sep="")
+    inputCM <- paste(workingPath, "Env_data/LBI_all_env_data_by_subplot.txt", sep="")
   }
-  
+  if(verbose) 
+    cat("\nUpload enviornmental data from", inputCM, "\n") 
   env <- readFile(inputCM)
 }
 

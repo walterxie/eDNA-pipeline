@@ -5,7 +5,7 @@ if(!exists("matrixNames")) stop("matrix names are missing !")
 if(!exists("verbose")) verbose = TRUE
 if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("otuThr")) otuThr = 97
-
+# diss.fun = "beta1-1", "jaccard", "horn.morisita"
 if(!exists("diss.fun")) diss.fun="beta1-1"
 if(!exists("taxa.group")) taxa.group="all"
 

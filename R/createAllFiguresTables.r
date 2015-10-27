@@ -81,7 +81,7 @@ source("allDendrograms.r", local=TRUE)
 source("allElevationDiversitiesByPlots.r", local=TRUE)
 
 isPlot <<- FALSE
-source("allMDSBySubplots.r", local=TRUE)
+source("allNMMDS.r", local=TRUE)
 
 #source("allProcrustes.r", local=TRUE)
 
