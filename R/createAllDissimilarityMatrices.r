@@ -47,12 +47,12 @@ for (expId in 1:(n-1)) {
 
 #### Veg ####
 cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[n], "by plot including singletons.\n")
-communityMatrix <- getCommunityMatrixT(expId, TRUE, FALSE)
+communityMatrix <- getCommunityMatrixT(n, TRUE, FALSE)
 
 #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
 diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
 
-fname <- paste(postfix(matrixNames[n], TRUE, FALSE, sep="-"), diss.fun, sep = "-")
+fname <- paste(matrixNames[n], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
 # create file for intermediate data beta1-1 matrix
 outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
 write.cm(diss.matrix, outputFile)

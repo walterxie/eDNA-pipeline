@@ -76,6 +76,8 @@ source("allRarefactions.r", local=TRUE)
 source("allWithinBetweenPlots.r", local=TRUE)
 
 isPlot <<- TRUE
+source("allDendrograms.r", local=TRUE)
+
 source("allElevationDiversitiesByPlots.r", local=TRUE)
 
 isPlot <<- FALSE

@@ -222,7 +222,7 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
   n <- length(matrixNames) 
   # hard code for Vegetation that only has plot and always keep singletons
   if (expId == n) {
-    fname <- paste(matrixNames[expId], postfix(taxa.group, TRUE, FALSE, sep="-"), diss.fun, sep = "-")
+    fname <- paste(matrixNames[expId], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
   } else {
     fname <- paste(matrixNames[expId], postfix(taxa.group, isPlot, min2, sep="-"), diss.fun, sep = "-") 
   }

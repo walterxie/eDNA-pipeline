@@ -17,20 +17,20 @@ cat("Analysis:", taxa.group, "taxa group", diss.fun, "dissimilarity within plots
 
 ######## within plots vs between plots #######	
 for (expId in 1:(n-1)) {	
-  beta1_1 <- getDissimilarityMatrix(expId, FALSE, rmSingleton, diss.fun, taxa.group)
+  diss <- getDissimilarityMatrix(expId, FALSE, rmSingleton, diss.fun, taxa.group)
     
-  beta1_1.melt <- melt(as.matrix(beta1_1))
-  beta1_1.melt <- beta1_1.melt[beta1_1.melt$value>0,]
+  diss.melt <- melt(as.matrix(diss))
+  diss.melt <- diss.melt[diss.melt$value>0,]
   
-  beta1_1.melt$dataset <- matrixNames[expId]
-  beta1_1.melt$comp <- "between" 
+  diss.melt$dataset <- matrixNames[expId]
+  diss.melt$comp <- "between" 
   # plot-subplot
-  beta1_1.melt[getPlot(beta1_1.melt[,1])==getPlot(beta1_1.melt[,2]), "comp"] <- "within"
+  diss.melt[getPlot(diss.melt[,1])==getPlot(diss.melt[,2]), "comp"] <- "within"
 
   if (expId==1) {
-    diver <- beta1_1.melt
+    diver <- diss.melt
   } else {
-    diver <- rbind(diver, beta1_1.melt)
+    diver <- rbind(diver, diss.melt)
   }
 }
 
