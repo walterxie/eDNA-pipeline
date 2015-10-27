@@ -218,19 +218,18 @@ getTaxaAssgReads <- function(expId, isPlot, min2, rankLevel, groupLevel, taxa.gr
 ###### dissimilarity matrix #####
 # Dissimilarity matrix of paired samples
 # diss.fun = "beta1-1", "jaccard", "horn.morisita"
-getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1") {
+getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa.group="all") {
   n <- length(matrixNames) 
-  matrixName <- matrixNames[expId]
   # hard code for Vegetation that only has plot and always keep singletons
   if (expId == n) {
-    matrixName <- postfix(matrixName, TRUE, FALSE, sep="-")
+    fname <- paste(matrixNames[expId], postfix(taxa.group, TRUE, FALSE, sep="-"), diss.fun, sep = "-")
   } else {
-    matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
+    fname <- paste(matrixNames[expId], postfix(taxa.group, isPlot, min2, sep="-"), diss.fun, sep = "-") 
   }
   
-  inputB <- paste(workingPath, "data/", matrixName, "-", diss.fun, ".csv", sep = "")
+  inputB <- paste(workingPath, "data/", fname, ".csv", sep = "")
   if(verbose) 
-    cat("\nUpload", diss.fun, "matrix : from", inputB, "\n") 
+    cat("\nUpload", diss.fun, "matrix of", taxa.group, "taxa group(s) from", inputB, "\n") 
   
   diss.matrix <- readFile(file=inputB, sep=",")
   
