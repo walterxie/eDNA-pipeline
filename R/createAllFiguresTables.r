@@ -42,6 +42,7 @@ otuThr = 97
 levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
 
+diss.fun <<- "beta1-1"
 taxa.group <<- "assigned"
 
 verbose <<- TRUE # only print "Upload community matrix" 1st time 
@@ -96,9 +97,7 @@ source("allStatisticsTaxaGroup.r", local=TRUE)
 
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
-  
-  
-  
+  source("createAllDissimilarityMatrices.r", local=TRUE)
 }
 
 ######## complete report latex #######

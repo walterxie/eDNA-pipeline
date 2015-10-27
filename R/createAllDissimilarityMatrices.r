@@ -7,47 +7,53 @@ if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("otuThr")) otuThr = 97
 
 if(!exists("diss.fun")) diss.fun="beta1-1"
+if(!exists("taxa.group")) taxa.group="all"
 
 source("Modules/init.r")
 
-cat("Intermediate data: create all beta1-1 matrix, rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
-
 n <- length(matrixNames)
-# main
-for (expId in 1:n) {
-  min2 <- rmSingleton
-  if (expId == n) 
-    min2 <- FALSE
-  
+
+#### eDNA ####
+for (expId in 1:(n-1)) {
   #### by subplot
-  if (expId < n) {
-    cat("Intermediate data: create", diss.fun, "matrix by subplot for", matrixNames[expId],
-        ", rmSingleton =", min2, ", otuThr =", otuThr, ".\n")
-    communityMatrix <- getCommunityMatrixT(expId, FALSE, min2)
-    
-    # make sure beta1-1 matrix has sample names in the same order
-    communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
-    
-    #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
-    diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
-    
-    # create file for intermediate data beta1-1 matrix
-    outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], FALSE, min2, sep="-"), "-", diss.fun, ".csv", sep = "")
-    write.cm(diss.matrix, outputFile)
-  }
+  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
+      "by subplot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
+  communityMatrix <- getCommunityMatrixT(expId, FALSE, rmSingleton, taxa.group)
   
-  #### by plot
-  cat("Intermediate data: create", diss.fun, "matrix by plot for", matrixNames[expId],
-      ", rmSingleton =", min2, ", otuThr =", otuThr, ".\n")
-  communityMatrix <- getCommunityMatrixT(expId, TRUE, min2)
+  # make sure beta1-1 matrix has sample names in the same order
+  communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
   
   #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
   diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
   
+  fname <- paste(matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
   # create file for intermediate data beta1-1 matrix
-  outputFile <- paste(workingPath, "data/", postfix(matrixNames[expId], TRUE, min2, sep="-"), "-", diss.fun, ".csv", sep = "")
+  outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
+  write.cm(diss.matrix, outputFile)
+  
+  #### by plot
+  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
+      "by plot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
+  communityMatrix <- getCommunityMatrixT(expId, TRUE, rmSingleton, taxa.group)
+  
+  #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
+  diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
+  
+  fname <- paste(matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
+  # create file for intermediate data beta1-1 matrix
+  outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
   write.cm(diss.matrix, outputFile)
 } 
 
+#### Veg ####
+cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[n], "by plot including singletons.\n")
+communityMatrix <- getCommunityMatrixT(expId, TRUE, FALSE)
 
+#beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
+diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
+
+fname <- paste(postfix(matrixNames[n], TRUE, FALSE, sep="-"), diss.fun, sep = "-")
+# create file for intermediate data beta1-1 matrix
+outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
+write.cm(diss.matrix, outputFile)
 
