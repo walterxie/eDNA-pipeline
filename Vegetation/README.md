@@ -4,9 +4,9 @@ In development
 
 ## Files
 
-1. Raw data: [LBI\_Full\_plant\_data\_v1.7.xls]((https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Full_plant_data_v1.7.xls))
+1. Raw data: [LBI\_Full\_plant\_data\_v1.7.xls](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Full_plant_data_v1.7.xls)
   
-2. Vegetation plot metadata: [LBI\_veg\_metadata.txt]((https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_veg_metadata.txt))
+2. Vegetation plot metadata: [LBI\_veg\_metadata.txt](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_veg_metadata.txt)
   
 3. Script to create SBA matrix from DBH: [DBHtoSBA.r](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/DBHtoSBA.r)
   
