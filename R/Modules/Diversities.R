@@ -107,7 +107,7 @@ calculateDissimilarityMatrix <- function(communityMatrix, diss.fun="beta1-1", pr
   # row.pairs : each row is a pair of row number of communityMatrix
   row.pairs <- t(combn(nrow(communityMatrix),2))
   
-  cat("\nCalculating beta1-1 from", nrow(row.pairs), "pairs of samples.\n")
+  cat("\nCalculating", diss.fun, "from", nrow(row.pairs), "pairs of samples.\n")
   
   if (missing(printProgressBar)) printProgressBar=nrow(row.pairs)>100
   if (printProgressBar) {

@@ -53,7 +53,7 @@ getEnvBy <- function(isPlot, linkedBy, colouredBy, shapedBy) {
 
 for (expId in 1:n) {	
   # isPlot, rmSingleton, taxa.group, are fixed in init, when expId == n
-  diss <- getDissimilarityMatrix(expId, isPlot, rmSingleton, diss.fun, taxa.group)
+  diss <- getDissimilarityMatrix(expId, FALSE, rmSingleton, diss.fun, taxa.group)
   
   # Run metaMDS, get points and stress
   mds <- metaMDS(dist(diss))
@@ -67,7 +67,7 @@ for (expId in 1:n) {
     fname <- paste("nmmds", matrixNames[expId], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
   } else {
     env <- getEnvBy(FALSE, linkedBy, colouredBy, shapedBy)
-    fname <- paste("nmmds", matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
+    fname <- paste("nmmds", matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
   }
   
   if (is.null(linkedBy)) {
@@ -89,9 +89,10 @@ for (expId in 1:n) {
   plotTitle <- paste(matrixNames[expId], " (stress ", round(stress_mds, 2), ")", sep = "")
 
   # Plot MDS ordination
-  mdsp <- ggplot(pts_mds_env, aes_string(x="MDS1", y="MDS2", color=colouredBy)) + 
-    geom_text(aes(label=Row.names), size = 3, vjust = 2) +
-    geom_point(aes_string(shape=shapedBy), size = 3) + scale_shape(solid=FALSE) +
+  mdsp <- ggplot(pts_mds_env, aes_string(x="MDS1", y="MDS2")) + 
+    geom_point(aes_string(shape=shapedBy, color=colouredBy), size = 3) + 
+    scale_shape(solid=FALSE) +
+    geom_text(aes_string(label="Row.names", color=colouredBy), size = 3, vjust = 2, alpha = 0.5) +
     theme_bw() +
     theme(legend.position="top", panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), panel.background = element_blank()) +
@@ -99,7 +100,7 @@ for (expId in 1:n) {
     ggtitle(plotTitle) 
 
   if (!is.null(linkedBy)) 		
-    mdsp <- mdsp + geom_polygon(data = hulls, aes_string(group=linkedBy), fill = NA) 		
+    mdsp <- mdsp + geom_polygon(data = hulls, aes_string(mapping=linkedBy, color=colouredBy), fill = NA) 		
   
   gt <- ggplot_gtable(ggplot_build(mdsp))
   gt$layout$clip[gt$layout$name == "panel"] <- "off"
