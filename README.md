@@ -7,7 +7,7 @@ Homepage: http://walterxie.github.io/eDNA-pipeline/
 Alexei J Drummond, Richard D Newcomb, Thomas R Buckley, Dong Xie, Andrew Dopheide, Benjamin CM Potter, 
 Joseph Heled, Howard A Ross, Leah Tooman, Stefanie Grosser, Duckchul Park, Nicholas J Demetras, 
 Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelson, (2015): 
-*Evaluating a multigene environmental DNA approach for biodiversity assessment*, _GigaScience_.
+**Evaluating a multigene environmental DNA approach for biodiversity assessment**, *GigaScience*.
 
 The online version of this article (doi:[10.1186/s13742-015-0086-1](http://dx.doi.org/10.1186/s13742-015-0086-1)) or http://link.springer.com/article/10.1186/s13742-015-0086-1
 
