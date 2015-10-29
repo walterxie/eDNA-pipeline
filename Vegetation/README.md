@@ -4,13 +4,13 @@ In development
 
 ## Files
 
-1. Raw data: [LBI\_Full\_plant\_data\_v1.7.xls](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Full_plant_data_v1.7.xls)
+- Raw data: [LBI\_Full\_plant\_data\_v1.7.xls](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Full_plant_data_v1.7.xls)
   
-2. Vegetation plot metadata: [LBI\_veg\_metadata.txt](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_veg_metadata.txt)
+- Vegetation plot metadata: [LBI\_veg\_metadata.txt](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_veg_metadata.txt)
   
-3. Script to create SBA matrix from DBH: [DBHtoSBA.r](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/DBHtoSBA.r)
+- Script to create SBA matrix from DBH: [DBHtoSBA.r](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/DBHtoSBA.r)
   
-4. DBH: LBI\_Tree\_DBH\_Values\_All\_Trees_Saplings.csv
+- DBH: LBI\_Tree\_DBH\_Values\_All\_Trees_Saplings.csv
 
 Column names should not have any white space. Example file format:
 ```
@@ -19,7 +19,7 @@ Plot No	Plot Name	Species	Stem Count	DBH
 1	Plot01	BRAREP	1	4
 ```
 
-5. SBA (cm<sup>2</sup>/m<sup>2</sup>) matrix: 
+- SBA (cm<sup>2</sup>/m<sup>2</sup>) matrix: 
 [LBI\_Trees\_Saplings\_SBA.csv](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Trees_Saplings_SBA.csv)
 
 
