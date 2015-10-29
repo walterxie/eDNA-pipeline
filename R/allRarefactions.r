@@ -16,10 +16,10 @@ subTitles <- c(expression(paste("(e) "^"0", D[gamma])),expression(paste("(a) "^"
 
 n <- length(matrixNames) 
 mypalette <- c("red", "orange", "green", "purple", "blue", "brown")
-myshape <- seq(15, (15 + n -1))
+myshape <- seq(15, (15 + n-2))
 
 ######## rarefaction #######
-pdf(paste(workingPath, figDir, "/", postfix("all-rarefaction", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)
+pdf(paste(workingPath, figDir, "/", postfix("edna-rarefaction", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)
 attach(mtcars)
 par(mfrow=c(3,2), oma=c(3,0,0,0))
 
@@ -63,6 +63,6 @@ for (dFId in c(2,5,3,6,1,4)) { #length(levels)
 } 
 
 par(usr=c(0,1,0,1),xpd=NA)
-legend(-1.2, -0.3, ncol=6, legend=matrixNames, col=mypalette, pch=as.numeric(myshape))
+legend(-1.1, -0.3, ncol=6, legend=matrixNames[1:(n-1)], col=mypalette, pch=as.numeric(myshape))
 
 invisible(dev.off())

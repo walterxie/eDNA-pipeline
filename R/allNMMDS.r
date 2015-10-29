@@ -18,7 +18,6 @@ if(!exists("taxa.group")) taxa.group="all"
 
 n <- length(matrixNames) 
 subTitles <- c("a) ","b) ","c) ","d) ","e) ","f) ")
-legend_nrow = 1
 
 source("Modules/init.R", local=TRUE)
 
@@ -42,9 +41,7 @@ getEnvBy <- function(isPlot, linkedBy, colouredBy, shapedBy) {
     stop("Error: shapedBy is not defined from colnames of env  !")
   
   env[,shapedBy] <- gsub(":.*", "", env[,shapedBy], ignore.case = T)
-  env[,shapedBy] <-  substr(env[,shapedBy], 1, 2)
-  n_shape <- length(unique(env[,shapedBy]))
-  myshape <- seq(0, (0 + n_shape-1))
+  #env[,shapedBy] <-  substr(env[,shapedBy], 1, 2)
   
   env
 }
@@ -56,7 +53,7 @@ for (expId in 1:n) {
   diss <- getDissimilarityMatrix(expId, FALSE, rmSingleton, diss.fun, taxa.group)
   
   # Run metaMDS, get points and stress
-  mds <- metaMDS(dist(diss))
+  mds <- metaMDS(as.dist(diss))
   pts_mds <- as.data.frame(mds$points)
   pts_mds <- pts_mds[order(rownames(pts_mds)),]
   stress_mds <- mds$stress
@@ -69,6 +66,8 @@ for (expId in 1:n) {
     env <- getEnvBy(FALSE, linkedBy, colouredBy, shapedBy)
     fname <- paste("nmmds", matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
   }
+  rownames(pts_mds) <- toupper(rownames(pts_mds))
+  rownames(env) <- toupper(rownames(env))
   
   if (is.null(linkedBy)) {
     pts_mds_env <- merge(pts_mds, env[,c(colouredBy, shapedBy)], by = "row.names")
@@ -87,16 +86,19 @@ for (expId in 1:n) {
 
   # subTitles[expId], 
   plotTitle <- paste(matrixNames[expId], " (stress ", round(stress_mds, 2), ")", sep = "")
-
+  
+  n_shape <- length(unique(pts_mds_env[,shapedBy]))
+  myshape <- seq(5, (5 + n_shape-1))
+  
   # Plot MDS ordination
   mdsp <- ggplot(pts_mds_env, aes_string(x="MDS1", y="MDS2")) + 
     geom_point(aes_string(shape=shapedBy, color=colouredBy), size = 3) + 
-    scale_shape(solid=FALSE) +
+    scale_shape_manual(values=myshape) + # The shape palette can deal with a maximum of 6 discrete values
     geom_text(aes_string(label="Row.names", color=colouredBy), size = 3, vjust = 2, alpha = 0.5) +
-    theme_bw() +
-    theme(legend.position="top", panel.grid.major = element_blank(), 
+    theme_bw() + scale_colour_gradientn(colours = c("red", "green", "blue")) +
+    theme(legend.position="top", plot.title = element_text(size = 8), panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), panel.background = element_blank()) +
-    guides(col=guide_legend(nrow=legend_nrow)) +
+    guides(shape=guide_legend(nrow=2)) +
     ggtitle(plotTitle) 
 
   if (!is.null(linkedBy)) 		

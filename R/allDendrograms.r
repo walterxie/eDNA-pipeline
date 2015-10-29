@@ -25,19 +25,20 @@ colLab <- function(n) {
 n_cluster=9
 mypalette <- rainbow(n_cluster)#c("red", "orange", "green", "purple", "blue", "brown")
 
-cat("Analysis:", n_cluster, "clusters dendrogram of", taxa.group, "taxa group(s) using", diss.fun, "dissimilarity. \n")
+cat("Analysis:", n_cluster, "-cluster UPGMA dendrogram of", taxa.group, "taxa group(s) using", diss.fun, "dissimilarity. \n")
 
 ######## dendrograms #######	
 for (expId in 1:n) {	
   # isPlot, rmSingleton, taxa.group, are fixed in init, when expId == n
   diss <- getDissimilarityMatrix(expId, TRUE, rmSingleton, diss.fun, taxa.group)
+
   if (expId == n) {
     fname <- paste("dendrogram", matrixNames[expId], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
   } else {
     fname <- paste("dendrogram", matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
   }
   
-  hc <- hclust(dist(diss), "ave") # "average" (= UPGMA)
+  hc <- hclust(as.dist(diss), "ave") # "average" (= UPGMA)
   
   # cut dendrogram in n_cluster clusters
   clusMember = cutree(hc, n_cluster)
@@ -49,7 +50,7 @@ for (expId in 1:n) {
   pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=6, height=6)
   
   par(mar=c(5,3,3,1)) 
-  plot(clusDendro, xlab="", sub ="", main=paste("UPGMC Dendrogram of", matrixNames[expId], sep=" "))
+  plot(clusDendro, xlab="", sub ="", main=paste(n_cluster, "-cluster UPGMA dendrogram of", matrixNames[expId], sep=" "))
   
   invisible(dev.off())
 }

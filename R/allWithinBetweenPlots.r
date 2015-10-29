@@ -39,7 +39,7 @@ diver$comp <- paste(diver$dataset, diver$comp, sep = "-")
 diver$comp = factor(diver$comp, unique(diver$comp))
 n_edna=n-1
 
-fname <- paste("within-between", postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
+fname <- paste("edna-within-between", postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
 pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=9, height=6)
 
 par(mar=c(3,5,1,1)) 

@@ -56,7 +56,7 @@ getCommunityMatrix <- function(expId, isPlot, min2) {
   if (expId==n) {
     if (!isPlot)
       stop("Vegetation only has plot based community matrix !")
-    inputCM <- paste(workingPath, "data/trees_saplings_by_plot.txt", sep="")
+    inputCM <- paste(workingPath, "data/LBI_Trees_Saplings_SBA.csv", sep="")
   } else if (isPlot) {
     inputCM <- paste(workingPath, "data/", matrixName, "_by_plot.txt", sep="")
   } else {
@@ -252,10 +252,10 @@ getSampleMetaData <- function(isPlot) {
 
 
 ######## elevations #######
-getElevPlotDist <- function(plot.names, env.plot) { 
+getElevPlotDist <- function(plot.names, env.byplot) { 
   colElev = 1
-  
-  matched.id <- match(plot.names, rownames(env.plot))
+  # case insensitive
+  matched.id <- match(tolower(plot.names), tolower(rownames(env.byplot)))
   matched.id <- matched.id[!is.na(matched.id)]
   # match 
   env.plot.match <- env.plot[matched.id, ]
