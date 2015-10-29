@@ -1,5 +1,7 @@
 # eDNA-pipeline
 
+Homepage: http://walterxie.github.io/eDNA-pipeline/
+
 Alexei J Drummond, Richard D Newcomb, Thomas R Buckley, Dong Xie, Andrew Dopheide, Benjamin CM Potter, 
 Joseph Heled, Howard A Ross, Leah Tooman, Stefanie Grosser, Duckchul Park, Nicholas J Demetras, 
 Mark I Stevens, James C Russell, Sandra H Anderson, Anna Carter and Nicola Nelson, (2015): 
