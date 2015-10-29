@@ -11,7 +11,7 @@ workingPath <- "~/WorkSpace/eDNA-pipeline/Vegetation"
 setwd(workingPath)
 
 ###### load DBH, file format is: 
-#Plot No	Plot Name	Species	Stem Count	DBH
+#PlotNo	PlotName	Species	StemCount	DBH
 #1	Plot01	BRAREP	1	1.3
 #1	Plot01	BRAREP	1	4
 dbhFile <- file.path(workingPath, "LBI_Tree_DBH_Values_All_Trees_Saplings.csv")

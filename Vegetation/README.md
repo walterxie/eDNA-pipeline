@@ -14,7 +14,7 @@ In development
 
 Column names should not have any white space. Example file format:
 ```
-Plot No	Plot Name	Species	Stem Count	DBH
+PlotNo	PlotName	Species	StemCount	DBH
 1	Plot01	BRAREP	1	1.3
 1	Plot01	BRAREP	1	4
 ```
