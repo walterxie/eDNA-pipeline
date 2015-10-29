@@ -12,6 +12,13 @@ In development
   
 4. DBH: LBI\_Tree\_DBH\_Values\_All\_Trees_Saplings.csv
 
+Column names should not have any white space. Example file format:
+```
+Plot No	Plot Name	Species	Stem Count	DBH
+1	Plot01	BRAREP	1	1.3
+1	Plot01	BRAREP	1	4
+```
+
 5. SBA (cm<sup>2</sup>/m<sup>2</sup>) matrix: 
 [LBI\_Trees\_Saplings\_SBA.csv](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Trees_Saplings_SBA.csv)
 
