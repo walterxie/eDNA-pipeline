@@ -77,6 +77,10 @@ for (expId in 1:n) {
     theme(axis.title.y=element_blank(), axis.title.x=element_blank(), axis.text.x=element_text(angle=90, hjust=1), 
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
   
+  # naive method to flip over tree
+  ddata_y$segments$yend <- max(ddata_y$segments$y) + min(ddata_y$segments$y) - ddata_y$segments$yend
+  ddata_y$segments$y <- max(ddata_y$segments$y) + min(ddata_y$segments$y) - ddata_y$segments$y
+  
   # Dendrogram plot
   p2 <- ggplot(segment(ddata_y)) + 
     geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) + 
@@ -87,8 +91,8 @@ for (expId in 1:n) {
   pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=12, height=6)
   
   grid.newpage()
-  print(p1, vp=viewport(0.91, 1, x=0.45, y=0.5))
-  print(p2, vp=viewport(0.09, 1, x=0.93, y=0.55))
+  print(p2, vp=viewport(0.1, 0.97, x=0.06, y=0.54))
+  print(p1, vp=viewport(0.9, 1, x=0.55, y=0.5))
   
   invisible(dev.off())
 }
