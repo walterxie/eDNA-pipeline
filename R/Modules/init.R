@@ -101,11 +101,11 @@ prepCommunityMatrix <- function(communityMatrix) {
 }
 
 # transposed CM for vegan, and remove empty rows cols 
-getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group) {
+getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all") {
   communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
   communityMatrix <- prepCommunityMatrix(communityMatrix)
   
-  if (!missing(taxa.group))
+  if (taxa.group != "all")
     communityMatrix <- getCommunityMatrixTaxaGroup(expId, communityMatrix, taxa.group)
   
   communityMatrixT <- transposeCM(communityMatrix)
