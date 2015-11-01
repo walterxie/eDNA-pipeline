@@ -105,7 +105,7 @@ getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all") {
   communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
   communityMatrix <- prepCommunityMatrix(communityMatrix)
   
-  if (taxa.group != "all")
+  if (expId < n && taxa.group != "all")
     communityMatrix <- getCommunityMatrixTaxaGroup(expId, communityMatrix, taxa.group)
   
   communityMatrixT <- transposeCM(communityMatrix)

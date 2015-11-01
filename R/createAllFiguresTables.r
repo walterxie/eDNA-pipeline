@@ -78,6 +78,8 @@ source("allWithinBetweenPlots.r", local=TRUE)
 isPlot <<- TRUE
 source("allDendrograms.r", local=TRUE)
 
+source("allHeatMap.r", local=TRUE)
+
 source("allElevationDiversitiesByPlots.r", local=TRUE)
 
 isPlot <<- FALSE
