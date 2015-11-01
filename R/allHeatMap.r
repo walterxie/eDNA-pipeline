@@ -42,12 +42,14 @@ for (expId in 1:n) {
   min2 <- rmSingleton
   most.abundant=100
   x.lable=paste(most.abundant, "most abundant OTUs")
+  bar.label="Reads"
   
   if (expId == n) {
     ### Veg ###
     isP <- TRUE
     min2 <- FALSE
     x.lable="Species"
+    bar.label="SBA"
   } 
   
   communityMatrix <- getCommunityMatrixT(expId, isP, min2, taxa.group)
@@ -99,7 +101,7 @@ for (expId in 1:n) {
   p1 <- ggplot(mdf, aes(x=variable, y=Samples)) + 
     geom_tile(aes(fill=value)) + 
     scale_fill_gradient(na.value = "transparent", low = "#56B1F7", high = "#132B43",
-                        name = "SBA", trans = "log", breaks = my_breaks, labels = my_breaks) +
+                        name = bar.label, trans = "log", breaks = my_breaks, labels = my_breaks) +
     #guides(fill = guide_legend(reverse=TRUE)) +
     xlab(x.lable) +
     theme(axis.title.y=element_blank(), axis.text.x=element_text(angle=60, hjust=1), 
