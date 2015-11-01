@@ -117,18 +117,20 @@ for (expId in 1:n) {
     coord_flip() + theme_none
   
   ### Draw graphic ###
-  fname <- paste("heatmap", matrixNames[expId], postfix(taxa.group, isP, min2, sep="-"), diss.fun, sep = "-")
   if (expId == n) {
+    fname <- paste("heatmap", matrixNames[expId], postfix("all", isP, min2, sep="-"), diss.fun, sep = "-")
     pdf.width=15 
     pdf.height=6
     p2.vp=viewport(0.1, 0.95, x=0.06, y=0.55)
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   } else if (isP) {
+    fname <- paste("heatmap", matrixNames[expId], postfix(taxa.group, isP, min2, sep="-"), diss.fun, sep = "-")
     pdf.width=16 
     pdf.height=6
     p2.vp=viewport(0.1, 0.91, x=0.06, y=0.57)
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   } else {
+    fname <- paste("heatmap", matrixNames[expId], postfix(taxa.group, isP, min2, sep="-"), diss.fun, sep = "-")
     pdf.width=16 
     pdf.height=9
     p2.vp=viewport(0.1, 0.97, x=0.06, y=0.549)
