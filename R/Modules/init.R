@@ -101,12 +101,34 @@ prepCommunityMatrix <- function(communityMatrix) {
 }
 
 # transposed CM for vegan, and remove empty rows cols 
-getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all") {
+getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0) {
   communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
-  communityMatrix <- prepCommunityMatrix(communityMatrix)
   
-  if (expId < n && taxa.group != "all")
-    communityMatrix <- getCommunityMatrixTaxaGroup(expId, communityMatrix, taxa.group)
+  n <- length(matrixNames)
+  if (expId < n && taxa.group != "all") {
+    ##### load data #####
+    taxaPaths <- getTaxaPaths(expId, taxa.group)
+    
+    if (nrow(taxaPaths) < minRow) {
+      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) match taxa.group", taxa.group, ", < threshold", minRow, ".\n")
+      return(NULL)
+    } else {
+      # merge needs at least 2 cols 
+      taxaAssgReads <- merge(communityMatrix, taxaPaths, by = "row.names")
+      # move 1st col Row.names to row.names
+      rownames(taxaAssgReads) <- taxaAssgReads[,"Row.names"]
+      taxaAssgReads <- taxaAssgReads[,-1]
+      # get CM
+      taxaAssgReads <- taxaAssgReads[,1:ncol(communityMatrix)]
+      
+      cat("Merging", nrow(taxaAssgReads), "matched OTUs from", nrow(communityMatrix), "OTUs in matrix to", 
+          nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ", final ncol =", ncol(taxaAssgReads), ".\n")
+      
+      communityMatrix <- data.matrix(taxaAssgReads)
+    }
+  }
+  
+  communityMatrix <- prepCommunityMatrix(communityMatrix)
   
   communityMatrixT <- transposeCM(communityMatrix)
   
@@ -150,7 +172,8 @@ getTaxaPaths <- function(expId, taxa.group="all") {
   if (taxa.group == "assigned") {
     taxaPaths <- taxaPaths[-which(grepl("unclassified", taxaPaths[,ncol(taxaPaths)])),]
   } else if (taxa.group != "all") {
-    taxaPaths <- taxaPaths[which(grepl(taxa.group, taxaPaths[,1])),] # taxaPaths[,1] is taxa path separated by ;
+    # taxaPaths[,1] is taxa path separated by ;
+    taxaPaths <- taxaPaths[which(grepl(taxa.group, taxaPaths[,1], ignore.case = T)),] 
     #if (tolower(taxa.group) == "metazoa")  # non Arthropoda
     #  taxaPaths <- taxaPaths[-which(grepl("Arthropoda", taxaPaths[,1])),]		
   }
@@ -259,10 +282,10 @@ getElevPlotDist <- function(plot.names, env.byplot) {
   matched.id <- matched.id[!is.na(matched.id)]
   # match 
   env.plot.match <- env.plot[matched.id, ]
-
+  
   cat("Find", nrow(env.plot.match), "plots having elevations, community matrix has", 
       length(plot.names), "plots, meta-data file has", nrow(env.plot), "plots.\n")
-
+  
   return(dist(env.plot.match[,colElev]))
 }
 

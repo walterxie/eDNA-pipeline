@@ -1,3 +1,6 @@
+# A Caution Regarding Rules of Thumb for Variance Inflation Factors
+# http://link.springer.com/article/10.1007/s11135-006-9018-6
+
 library(vegan)
 library(ggplot2)
 library(grid)
@@ -5,67 +8,56 @@ library(VIF)
 library(xtable)
 library(scales)
 
-# change config below
-#figDir <- figDir, ""
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
-#verbose <- FALSE
-
-if(!exists("tableFile")) stop("table file is missing !")
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
-stringBySubOrPlot <- "-by-subplot"
-otuThr <- 97
+if(!exists("verbose")) verbose = TRUE
+if(!exists("rmSingleton")) rmSingleton = TRUE
+if(!exists("otuThr")) otuThr = 97
+if(!exists("diss.fun")) diss.fun="beta1-1"
+if(!exists("taxa.group")) taxa.group="assigned"
+if(!exists("isPlot")) isPlot = FALSE # by subplot
+
+n <- length(matrixNames) 
 
 source("Modules/init.R", local=TRUE)
 source("Modules/vif_function.R", local=TRUE)
 
 # Prepare environmental data for analysis -------------------------------------
-envdata <- read.table(paste(workingPath, "data/LJ12027.txt", sep=""), sep="\t", header=T, row.names=1)
-elev <- read.table(paste(workingPath, "data/plot_elevations.txt", sep=""), sep="\t", header=T, row.names=1)
+env <- getSampleMetaData(isPlot)
+# remove columns: Plot, Elev.group
+env <- env[,-c(1,9)]
+env[,"ForestType"] <- gsub(":.*", "", env[,"ForestType"], ignore.case = T)
+env[env=="x"] <- NA
+# CM30b51, CM30b58 are removed
+env <- na.omit(env)
+# remove discrete values
+env <- env[,-c(4,7)]
 
-rownames(envdata) <- gsub("CM30C30", "Plot9", rownames(envdata), ignore.case = T)
-rownames(envdata) <- gsub("LB1", "Plot10", rownames(envdata), ignore.case = T)
-rownames(elev) <- gsub("CM30C30", "Plot9", rownames(elev), ignore.case = T)
-rownames(elev) <- gsub("LB1", "Plot10", rownames(elev), ignore.case = T)
-
-envdata <- envdata[order(rownames(envdata)), ]
-elev <- elev[order(rownames(elev)), ]
-
-if ( all( tolower(rownames(envdata)) != tolower(rownames(elev)) ) ) 
-	stop("Site names in environmental data and elevation data file not matched !")
-	
-elev_env <- cbind(elev, envdata[,-1])	
 # Inspect data
-#plot(elev_env, gap = 0, panel = panel.smooth)
+#plot(env, gap = 0, panel = panel.smooth)
 # Log transform chem variables according inspection
-elev_env[,c(7,9,10,11,13,14,15)] <- log(elev_env[,c(7,9,10,11,13,14,15)])
+env[,6:13] <- log(env[,6:13])
 
 # Inspect data again; Note that certain variables are highly correlated (e.g. EC/Organic.C/Total.N, 
 # Elevation/Temperature). Also, two datasets are included - pilot vs full LBI study).
 pdf(paste(workingPath, figDir, "/environmental-data.pdf", sep = ""), width=12, height=12)
-plot(elev_env, gap = 0, panel = panel.smooth) 
+plot(env, gap = 0, panel = panel.smooth, upper.panel=NULL) 
 invisible(dev.off()) 
 
-colnames(elev_env)[1] <- "Elevation"
-colnames(elev_env)[2] <- "Slope"
-colnames(elev_env)[3] <- "Aspect"
-#colnames(elev_env)[4] <- "Temperature"
-colnames(elev_env)
-
-rownames(elev_env) <- gsub("Plot", "", rownames(elev_env))
+colnames(env)
 
 rdaReducedList <- list()
 rdaForwardList <- list()
 rdaBackwardList <- list()
 
+for (taxa.group in taxa.groups) {
 # Prepare OTUtable for analysis ------------------------------------------------
-for (expId in 1:length(matrixNames)) {	
-	communityMatrix <- init(expId, otuThr, stringBySubOrPlot)
+for (expId in 1:(n-1)) {	
+
+  communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton, taxa.group)
+  
+  communityMatrix <- init(expId, otuThr, stringBySubOrPlot)
 	rownames(communityMatrix) <- gsub("CM30C30", "Plot9", rownames(communityMatrix), ignore.case = T)
 	rownames(communityMatrix) <- gsub("LB1", "Plot10", rownames(communityMatrix), ignore.case = T)
 	
@@ -203,7 +195,8 @@ for (expId in 1:length(matrixNames)) {
 #    plot(rda_backward, display = c("wa", "bp"))
 #    invisible(dev.off())
 } # END for expId
-
+} # END for taxa.group 
+  
 subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
 ########## Reduced ###########
@@ -212,7 +205,7 @@ pdf(paste(workingPath, figDir, "/all-rda-reduced-", otuThr, ".pdf", sep = ""), w
 attach(mtcars)
 par(mfrow=c(3,2))
 	
-for (expId in 1:length(matrixNames)) {		   
+for (expId in 1:(n-1)) {		   
 	if (expId > 4) {		
 		xlab="CAP1"
 		par(mar=c(4,4,3,2)) 
@@ -237,7 +230,7 @@ pdf(paste(workingPath, figDir, "/all-rda-forward-", otuThr, ".pdf", sep = ""), w
 attach(mtcars)
 par(mfrow=c(3,2))
 	
-for (expId in 1:length(matrixNames)) {		   
+for (expId in 1:(n-1)) {		   
 	if (expId > 4) {		
 		xlab="CAP1"
 		par(mar=c(4,4,3,2)) 
@@ -262,7 +255,7 @@ pdf(paste(workingPath, figDir, "/all-rda-backward-", otuThr, ".pdf", sep = ""), 
 attach(mtcars)
 par(mfrow=c(3,2))
 	
-for (expId in 1:length(matrixNames)) {		   
+for (expId in 1:(n-1)) {		   
 	if (expId > 4) {		
 		xlab="CAP1"
 		par(mar=c(4,4,3,2)) 

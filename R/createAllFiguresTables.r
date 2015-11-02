@@ -95,13 +95,22 @@ source("allNMMDS.r", local=TRUE)
 
 #cat("\n\n\\clearpage\n\n", file=tableFile, append=TRUE) # too much floating table/figures
 
-taxa.groups <<- c("ARCHAEA", "BACTERIA", "EUKARYOTA", "PROTOZOA", "CHROMISTA", "FUNGI", "ANIMALIA", "PLANTAE")
+taxa.groups <<- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA")
 
 source("allStatisticsTaxaGroup.r", local=TRUE)
 
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
   source("createAllDissimilarityMatrices.r", local=TRUE)
+}
+
+isPlot <<- TRUE
+for (taxag in taxa.groups) {
+  taxa.group <<- taxag
+  
+  source("allNMMDS.r", local=TRUE)
+  
+  #source("allRedundancyAnalysis.r", local=TRUE)
 }
 
 ######## complete report latex #######
