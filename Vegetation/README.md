@@ -22,6 +22,8 @@ PlotNo	PlotName	Species	StemCount	DBH
 - SBA (cm<sup>2</sup>/m<sup>2</sup>) matrix: 
 [LBI\_Trees\_Saplings\_SBA.csv](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Trees_Saplings_SBA.csv)
 
+- Stem counts matrix (DBH >= 10cm): 
+[LBI\_Tree\_Stem\_Counts\_10cm\_DBH.csv](https://raw.githubusercontent.com/walterxie/eDNA-pipeline/hauturu/Vegetation/LBI_Tree_Stem_Counts_10cm_DBH.csv)
 
 ## Vegetation Plot Metadata 
 
