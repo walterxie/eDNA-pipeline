@@ -12,6 +12,8 @@ library(RColorBrewer)
 library(colorspace)
 #library(Matrix)
 library(reshape2)
+library(ggdendro)
+library(plyr)
 
 if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
 if(!exists("workingPath")) stop("working path containing data is missing !")
@@ -83,17 +85,11 @@ getCommunityMatrix <- function(expId, isPlot, min2) {
 prepCommunityMatrix <- function(communityMatrix) {
   # filter column first to avoid empty rows after columns remvoed if vectorThr>0
   if(any(colSums(communityMatrix)== 0)) {
-    nc <- ncol(communityMatrix)
     communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=0, MARGIN=2)
-    if(nc > ncol(communityMatrix)) 
-      cat("Warning: remove", nc-ncol(communityMatrix), "empty columns from community matrix.\n") 
     #stop("Invalid input: community matrix has empty samples !")
   }
   if(any(rowSums(communityMatrix)== 0)) {
-    nr <- nrow(communityMatrix)
     communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=0, MARGIN=1)
-    if(nr > nrow(communityMatrix)) 
-      cat("Warning: remove", nr-nrow(communityMatrix), "empty rows from community matrix.\n") 
     #stop("Invalid input: community matrix has empty OTUs !")
   }
   
@@ -110,7 +106,7 @@ getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0)
     taxaPaths <- getTaxaPaths(expId, taxa.group)
     
     if (nrow(taxaPaths) < minRow) {
-      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) match taxa.group", taxa.group, ", < threshold", minRow, ".\n")
+      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) match", taxa.group, "<", minRow, "threshold.\n")
       return(NULL)
     } else {
       # merge needs at least 2 cols 
@@ -179,7 +175,7 @@ getTaxaPaths <- function(expId, taxa.group="all") {
   }
   
   if (nrow(taxaPaths) < 1)
-    stop(paste("Error: cannot find", taxa.group, "from taxa path file", inputTaxa, "!"))
+    cat("Warning: cannot find", taxa.group, "from taxa path file", inputTaxa, "!")
   
   if(verbose && nrow(taxaPaths) < nTaxa) 
     cat("\nSelect", nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n") 
@@ -187,23 +183,6 @@ getTaxaPaths <- function(expId, taxa.group="all") {
   return(taxaPaths)
 }
 
-# return CM filtered by given taxa.group 
-getCommunityMatrixTaxaGroup <- function(expId, communityMatrix, taxa.group) {
-  ##### load data #####
-  taxaPaths <- getTaxaPaths(expId, taxa.group)
-  # merge needs at least 2 cols 
-  taxaAssgReads <- merge(communityMatrix, taxaPaths, by = "row.names")
-  # move 1st col Row.names to row.names
-  rownames(taxaAssgReads) <- taxaAssgReads[,"Row.names"]
-  taxaAssgReads <- taxaAssgReads[,-1]
-  # get CM
-  taxaAssgReads <- taxaAssgReads[,1:ncol(communityMatrix)]
-  
-  cat("Merging", nrow(taxaAssgReads), "matched OTUs from", nrow(communityMatrix), "OTUs in matrix to", 
-      nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ", final ncol =", ncol(taxaAssgReads), ".\n")
-  
-  return(data.matrix(taxaAssgReads))
-}
 
 # rankLevel: the taxa level in each bar
 # groupLevel: used to assign colour for each group, and must higher than rankLevel

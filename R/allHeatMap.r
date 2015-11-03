@@ -35,6 +35,8 @@ theme_none <- theme(
 
 # main
 n_cluster=9
+mypalette <- rainbow(n_cluster)
+cat("Analysis: Heat-map with dendrogram on", n_cluster, "clusters. \n")
 
 for (expId in 1:n) {
   ### eDNA ###

@@ -46,6 +46,10 @@ getCorrSignTable <- function(corr.sign.matrix, digits=3) {
 # returns string w/o leading or trailing whitespace
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
+#http://stackoverflow.com/questions/7963898/extracting-the-last-n-characters-from-a-string-in-r
+#Extracting the last n characters from a string x
+substrRight <- function(x, n) {substr(x, nchar(x)-n+1, nchar(x))}
+
 # get plural for report
 getPlural <- function (singular) {
   if (tolower(singular)=="species") {

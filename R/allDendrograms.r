@@ -23,7 +23,7 @@ colLab <- function(n) {
 }
 
 n_cluster=9
-mypalette <- rainbow(n_cluster)#c("red", "orange", "green", "purple", "blue", "brown")
+mypalette <- rainbow(n_cluster)
 
 cat("Analysis:", n_cluster, "-cluster UPGMA dendrogram of", taxa.group, "taxa group(s) using", diss.fun, "dissimilarity. \n")
 
