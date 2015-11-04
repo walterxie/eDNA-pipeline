@@ -33,13 +33,13 @@ env[env=="x"] <- NA
 env <- na.omit(env)
 # remove discrete values
 env <- env[,-c(4,7)]
-# for log transformation
-env[env==0] <- 0.000000001
 
 # Inspect data
 #plot(env, gap = 0, panel = panel.smooth)
 # Log transform chem variables according inspection
 env[,6:13] <- log(env[,6:13])
+# log transformation for 0
+env[env=="-Inf"] <- 0
 
 # Inspect data again; Note that certain variables are highly correlated (e.g. EC/Organic.C/Total.N, 
 # Elevation/Temperature). Also, two datasets are included - pilot vs full LBI study).
