@@ -13,47 +13,59 @@ source("Modules/init.r")
 
 n <- length(matrixNames)
 
-#### eDNA ####
-for (expId in 1:(n-1)) {
-  #### by subplot
-  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
-      "by subplot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
-  communityMatrix <- getCommunityMatrixT(expId, FALSE, rmSingleton, taxa.group)
-  
+writeDissMatrix <- function(communityMatrix, diss.fun, fname) {
   # make sure beta1-1 matrix has sample names in the same order
   communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
   
   #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
   diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
   
-  fname <- paste(matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
-  # create file for intermediate data beta1-1 matrix
-  outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
-  write.cm(diss.matrix, outputFile)
-  
-  #### by plot
-  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
-      "by plot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
-  communityMatrix <- getCommunityMatrixT(expId, TRUE, rmSingleton, taxa.group)
-  
-  #beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
-  diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
-  
-  fname <- paste(matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
   # create file for intermediate data beta1-1 matrix
   outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
   write.cm(diss.matrix, outputFile)
 } 
 
+minOTUs <- 200
+#### eDNA ####
+for (expId in 1:(n-1)) {
+  #### by subplot
+  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
+      "by subplot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
+  communityMatrix <- getCommunityMatrixT(expId, FALSE, rmSingleton, taxa.group, minRow=minOTUs)
+  
+  fname <- paste(matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
+  
+  if (!is.null(communityMatrix)) {
+    # remove 0 row/column after merge
+    communityMatrix <- prepCommunityMatrix(communityMatrix)
+    
+    cat(taxa.group, "subset from", matrixNames[expId], "having", ncol(communityMatrix), "OTUs", nrow(communityMatrix), "samples. \n") 
+    
+    writeDissMatrix(communityMatrix, diss.fun, fname)
+  }
+  
+  #### by plot
+  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[expId],
+      "by plot, rmSingleton =", rmSingleton, ", taxa.group =", taxa.group, ", otuThr =", otuThr, ".\n")
+  communityMatrix <- getCommunityMatrixT(expId, TRUE, rmSingleton, taxa.group, minRow=minOTUs)
+  
+  fname <- paste(matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
+  
+  if (!is.null(communityMatrix)) {
+    # remove 0 row/column after merge
+    communityMatrix <- prepCommunityMatrix(communityMatrix)
+    
+    cat(taxa.group, "subset from", matrixNames[expId], "having", ncol(communityMatrix), "OTUs", nrow(communityMatrix), "samples. \n") 
+    
+    writeDissMatrix(communityMatrix, diss.fun, fname)
+  }
+} 
+
 #### Veg ####
-cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[n], "by plot including singletons.\n")
-communityMatrix <- getCommunityMatrixT(n, TRUE, FALSE)
-
-#beta1_1 <- calculateDissimilarityMatrix(communityMatrix, printProgressBar=TRUE)
-diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
-
-fname <- paste(matrixNames[n], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
-# create file for intermediate data beta1-1 matrix
-outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
-write.cm(diss.matrix, outputFile)
-
+if (taxa.group=="all" || taxa.group=="assigned") {
+  cat("Intermediate data: create", diss.fun, "matrix for", matrixNames[n], "by plot including singletons.\n")
+  communityMatrix <- getCommunityMatrixT(n, TRUE, FALSE)
+  
+  fname <- paste(matrixNames[n], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
+  writeDissMatrix(communityMatrix, diss.fun, fname)
+}

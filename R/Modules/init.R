@@ -106,11 +106,17 @@ getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0)
     taxaPaths <- getTaxaPaths(expId, taxa.group)
     
     if (nrow(taxaPaths) < minRow) {
-      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) match", taxa.group, "<", minRow, "threshold.\n")
+      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) classified as", taxa.group, "<", minRow, "threshold.\n")
       return(NULL)
     } else {
       # merge needs at least 2 cols 
       taxaAssgReads <- merge(communityMatrix, taxaPaths, by = "row.names")
+      
+      if (nrow(taxaAssgReads) < minRow) {
+        cat("Warning: return NULL, because", nrow(taxaAssgReads), "row(s) in cm match", taxa.group, "<", minRow, "threshold.\n")
+        return(NULL)
+      }
+      
       # move 1st col Row.names to row.names
       rownames(taxaAssgReads) <- taxaAssgReads[,"Row.names"]
       taxaAssgReads <- taxaAssgReads[,-1]
@@ -151,27 +157,31 @@ getRarefactionTable <- function(expId, isPlot, min2) {
 }
 
 ###### taxa assignment by reads #####
-unclassTaxa <- c("Not assigned", "No hits", "cellular organisms", "root")
-
+# "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS"
+# PROKARYOTA: all prokaryotes (Bacteria + Archaea)
+# EUKARYOTA: all eukaryotes
+# PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
 getTaxaPaths <- function(expId, taxa.group="all") {
   inputTaxa <- paste(workingPath, "taxonomy_tables/", matrixNames[expId], "_taxonomy_table.txt", sep="")
   taxaPaths <- readTaxaFile(inputTaxa)	
   taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
   # make lower case to match ranks
   colnames(taxaPaths) <- tolower(colnames(taxaPaths))
-  # define unclassified
-  taxaPaths[taxaPaths==unclassTaxa[1] | taxaPaths==unclassTaxa[2] | 
-              taxaPaths==unclassTaxa[3] | is.na(taxaPaths)] <- "unclassified"
-  
+
   nTaxa=nrow(taxaPaths)
   ##### keep OTU rows contain given taxa belongTo ##### 
-  if (taxa.group == "assigned") {
-    taxaPaths <- taxaPaths[-which(grepl("unclassified", taxaPaths[,ncol(taxaPaths)])),]
-  } else if (taxa.group != "all") {
-    # taxaPaths[,1] is taxa path separated by ;
-    taxaPaths <- taxaPaths[which(grepl(taxa.group, taxaPaths[,1], ignore.case = T)),] 
-    #if (tolower(taxa.group) == "metazoa")  # non Arthropoda
-    #  taxaPaths <- taxaPaths[-which(grepl("Arthropoda", taxaPaths[,1])),]		
+  if (taxa.group != "all") {
+    # Exclude unassigned etc
+    taxaPaths <- subset(taxaPaths, !(grepl("root|cellular organisms|No hits|Not assigned", taxaPaths[,"kingdom"])))  
+   if (taxa.group != "assigned") {
+     if (toupper(taxa.group) == "PROKARYOTA" || toupper(taxa.group) == "EUKARYOTA") {
+       taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"superkingdom"])) 
+     } else if (toupper(taxa.group) == "PROTISTS") {
+       taxaPaths <- subset(taxaPaths, grepl("CHROMISTA|PROTOZOA", taxaPaths[,"kingdom"])) 
+     } else {
+       taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"kingdom"])) 
+     }
+   }
   }
   
   if (nrow(taxaPaths) < 1)

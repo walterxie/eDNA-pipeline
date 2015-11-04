@@ -1,5 +1,5 @@
 # http://stackoverflow.com/questions/6673162/reproducing-lattice-dendrogram-graph-with-ggplot2
-# modified by Walter Xie
+# improved by Walter Xie
 # 2 Nov 2015
 
 library(ggplot2)
