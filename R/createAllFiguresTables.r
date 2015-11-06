@@ -55,13 +55,15 @@ cat("\\title{eDNA data pipeline report to", tit, "}\n\n", file=tableFile, append
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
 ######## figures and tables #######
-# print detail if TRUE
-isPlot <<- FALSE # by subplot
-source("allSampleCount.r", local=TRUE)
+source("allStatistics.r", local=TRUE)
 
 verbose <<- FALSE
 isPlot <<- TRUE # by plot
-source("allStatistics.r", local=TRUE)
+source("allStatisticsSamples.r", local=TRUE)
+
+# print detail if TRUE
+isPlot <<- FALSE # by subplot
+source("allSampleCount.r", local=TRUE)
 
 source("allTaxonomyPhylum.r", local=TRUE)
 
@@ -89,13 +91,15 @@ source("allNMMDS.r", local=TRUE)
 
 #source("allGeneCorrolation.r", local=TRUE)
 
-#source("allRedundancyAnalysis.r", local=TRUE)
 
 ######## by taxa group #######
 
 #cat("\n\n\\clearpage\n\n", file=tableFile, append=TRUE) # too much floating table/figures
 
-taxa.groups <<- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS")
+taxa.groups <<- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", 
+                  "EUKARYOTA", "PROKARYOTA", "PROTISTS")
+
+cat("\n\n\Superkingdom: PROKARYOTA = Bacteria + Archaea; PROTISTS = CHROMISTA + PROTOZOA\n\n", file=tableFile, append=TRUE)
 
 source("allStatisticsTaxaGroup.r", local=TRUE)
 

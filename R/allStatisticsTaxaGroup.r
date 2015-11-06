@@ -17,86 +17,51 @@ n <- length(matrixNames)
 #source("Modules/init.R", local=TRUE)
 
 ######## summary by datasets including singletons #######
+otusRowNames <- c("Reads", "OTUs", "Singleton", "Coupleton") # cannot get unique reads from CM
 
-cat("\nTable: summary by datasets by taxa groups: rmSingleton =", rmSingleton, "isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
+cat("\nTable: summary by datasets by taxa groups: rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
 
 # last column total
-by.datasets <- data.frame(row.names=taxa.groups, stringsAsFactors=FALSE)
+df.otus <- data.frame(row.names=taxa.groups, stringsAsFactors=FALSE)
+df.reads <- data.frame(row.names=taxa.groups, stringsAsFactors=FALSE)
 
 for (expId in 1:(n-1)) {	
-  isP <- isPlot
-  if (expId == n) {
-    isP <- TRUE
-  } 
-  communityMatrix <- getCommunityMatrixT(expId, isP, FALSE) # always including singletons
-  
-  diversity_table <- diversity.df(communityMatrix)
-  
-  by.datasets[1,expId] <- sum(communityMatrix)
-  by.datasets[2,expId] <- ncol(communityMatrix)
-  by.datasets[3,expId] <- sum(colSums(communityMatrix)==1)
-  by.datasets[4,expId] <- sum(colSums(communityMatrix)==2)
-  for (i in 1:length(unlist(diversity_table))) {
-    by.datasets[i+lotus,expId] <- unlist(diversity_table)[i]
+  n.taxa <- 0
+  for (taxa.group in taxa.groups) {
+    cat("Summary by", taxa.group, "subset from", matrixNames[expId], ". \n")
+    
+    # always by plot here to save time
+    communityMatrix <- getCommunityMatrixT(expId, TRUE, rmSingleton, taxa.group)
+    
+    if (is.null(communityMatrix)) {
+      cat("Warning:", taxa.group, "subset from", matrixNames[expId], "has no OTU.\n") 
+    } 
+    
+    n.taxa <- n.taxa + 1
+    if (ncol(communityMatrix) > 0) {
+      df.otus[n.taxa,expId] <- ncol(communityMatrix)
+      df.reads[n.taxa,expId] <- sum(communityMatrix)
+    } else {
+      df.otus[n.taxa,expId] <- 0
+      df.reads[n.taxa,expId] <- 0
+    }
+    colnames(df.otus)[expId] <- matrixNames[expId]
+    colnames(df.reads)[expId] <- matrixNames[expId]
   }
-  colnames(by.datasets)[expId] <- matrixNames[expId]
 }
+# add total
+df.otus[,"Total"] <- rowSums(df.otus)
+df.reads[,"Total"] <- rowSums(df.reads)
 
-by.datasets[1:4,"Total"] <- rowSums(by.datasets)[1:4]
-#by.datasets[1:4,] <- round(by.datasets[1:4,], 0)
-#by.datasets[5:nrow(by.datasets),] <- round(by.datasets[5:nrow(by.datasets),], 2)
-by.datasets <- round(by.datasets, 2)
-by.datasets <- format(by.datasets, big.mark=",", scientific=F)
-for (i in 1:lotus)
-  by.datasets[i,] <- gsub(".00", "", by.datasets[i,])
+df.otus <- format(df.otus, big.mark=",", scientific=F)
+df.reads <- format(df.reads, big.mark=",", scientific=F)
 
-print(xtable(by.datasets, caption = paste("Table of sequence statistics for eDNA data sets", 
-                                          paste(matrixNames, collapse = ", ")),
-             label = "tab:biodiveDNA", caption.placement = "top"), 
-             sanitize.text.function = function(x){x}, file=tableFile, append=TRUE)
+align.v <- rep("r", ncol(df.otus) + 1)
+printXTable(df.otus, caption = paste("Table of OTUs statistics for eDNA data sets by taxonomic groups"), 
+            align = align.v, label = paste("tab:otus","all", sep = ":"), file=tableFile)
 
-######## summary by plots #######
+align.v <- rep("r", ncol(df.reads) + 1)
+printXTable(df.reads, caption = paste("Table of reads statistics for eDNA data sets by taxonomic groups"), 
+            align = align.v, label = paste("tab:reads", "all", sep = ":"), file=tableFile)
 
-cat("\nTable: summary by plots/subplot: isPlot =", isPlot, "rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
 
-for (expId in 1:n) {	
-  isP <- isPlot
-  min2 <- rmSingleton
-  if (expId == n) {
-    isP <- TRUE
-    min2 <- FALSE
-  } 
-  communityMatrix <- getCommunityMatrixT(expId, isP, min2)
-  source("Modules/Diversities.R")
-  
-  # reads
-  readsPerSample <- abundancePerSample(communityMatrix, hasTotal=TRUE) 
-  # OTUs
-  otusPerSample <- richnessPerSample(communityMatrix, hasTotal=TRUE)
-  # gamme1
-  shanPerSample <- shannonPerSample(communityMatrix, digits=2)
-  
-  if (!any( tolower(rownames(readsPerSample)) == tolower(rownames(otusPerSample)) )) 
-    stop("OTU names do not match !")
-  if (!any( tolower(rownames(readsPerSample)[! rownames(readsPerSample) %in% "Total"]) 
-            == tolower(rownames(shanPerSample)) )) 
-    stop("OTU names do not match !")
-  
-  perSample <- data.frame(reads=readsPerSample, OTUs=otusPerSample, stringsAsFactors=FALSE)
-  
-  shanPerSample <- rbind(shanPerSample, c("NA"))
-  perSample<- cbind(perSample, shanPerSample)
-  colnames(perSample) <- c("reads","OTUs","Shannon")
-  
-#  if (sort=="descending") {
-    perSample <- perSample[order(perSample[,"reads"], decreasing = TRUE), ]
-#  } else if (sort=="ascending") {
-#    perSample <- perSample[order(perSample$abundance), ]
-#  }# sort=="no"
-  
-  perSample <- format(perSample, big.mark=",", scientific=F)
-
-  print(xtable(perSample, caption = paste("Table of biodiversities per sample for", matrixNames[expId]),
-               label = postfix(paste("tab:perSample", matrixNames[expId], sep=":"), isP, min2, sep=":"), 
-               caption.placement = "top"), sanitize.text.function = function(x){x}, file=tableFile, append=TRUE)
-}

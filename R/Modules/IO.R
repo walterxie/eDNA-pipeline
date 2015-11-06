@@ -75,12 +75,14 @@ readFile <- function(file=file, sep) {
   return(df)
 }
 
-printXTable <- function(df, caption, label, file=NULL) {
+printXTable <- function(df, caption, label, file=NULL, align = NULL, digits = NULL) {
   if (is.null(file)) {
-    print(xtable(df, caption = caption, label = label, caption.placement = "top"), 
+    print(xtable(df, caption = caption, label = label, caption.placement = "top", 
+          align = align, digits = digits),
           sanitize.text.function = function(x){x})
   } else {
-    print(xtable(df, caption = caption, label = label, caption.placement = "top"), 
+    print(xtable(df, caption = caption, label = label, caption.placement = "top", 
+          align = align, digits = digits),
           sanitize.text.function = function(x){x}, file=file, append=TRUE)
   }
 }

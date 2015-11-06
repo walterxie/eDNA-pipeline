@@ -60,13 +60,29 @@ for (expId in 1:n) {
   
   if (expId < n) {
     communityMatrix <- communityMatrix[, 1:most.abundant]
-    colnames(communityMatrix) <- paste(sapply(strsplit(colnames(communityMatrix), "_"), "[[", 6), 
-                                       sapply(strsplit(colnames(communityMatrix), "_"), "[[", 7), sep="_")
-    colnames(communityMatrix) <- gsub("\\|gene", "", colnames(communityMatrix), ignore.case = T)
+    
+    taxaPaths <- getTaxaPaths(expId, taxa.group)
+    
+    taxaAssg <- merge(t(communityMatrix), taxaPaths, by = "row.names", sort = FALSE)
+    # move 1st col Row.names to row.names
+    rownames(taxaAssg) <- taxaAssg[,"Row.names"]
+    taxaAssg <- taxaAssg[,-1]
+    
+    if (! all(colnames(communityMatrix) == rownames(taxaAssg)) )
+      stop("OTUs names in community matrix do not match taxa classifications !")
+    
+    taxaAssg[,"phylum"] <- gsub(" \\[=.*\\]", "", taxaAssg[,"phylum"])
+    taxaAssg[,"class"] <- gsub(" \\[=.*\\]", "", taxaAssg[,"class"])
+    
+    colnames(communityMatrix) <- paste(taxaAssg[,"kingdom"], taxaAssg[,"phylum"], taxaAssg[,"class"], 1:nrow(taxaAssg), sep="_")
+    
+    #colnames(communityMatrix) <- paste(sapply(strsplit(colnames(communityMatrix), "_"), "[[", 6), 
+    #                                   sapply(strsplit(colnames(communityMatrix), "_"), "[[", 7), sep="_")
+    #colnames(communityMatrix) <- gsub("\\|gene", "", colnames(communityMatrix), ignore.case = T)
     #colnames(communityMatrix) <- paste("OTU", colnames(communityMatrix), sep="_")
     
-    if (length(unique(colnames(communityMatrix))) != ncol(communityMatrix)) 
-      stop("Find duplication from simplified OTU names")
+    #if (length(unique(colnames(communityMatrix))) != ncol(communityMatrix)) 
+    #  stop("Find duplication from simplified OTU names")
   }
   
   max.cm <- max(communityMatrix)
@@ -99,6 +115,7 @@ for (expId in 1:n) {
   mdf$Samples <- factor(mdf$Samples, levels=unique(mdf$Samples))
   
   ### Create plot components ###    
+  # na.value = "#132B43", high = "#56B1F7", low = "#132B43",
   # Heatmap
   p1 <- ggplot(mdf, aes(x=variable, y=Samples)) + 
     geom_tile(aes(fill=value)) + 
@@ -127,15 +144,15 @@ for (expId in 1:n) {
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   } else if (isP) {
     fname <- paste("heatmap", matrixNames[expId], postfix(taxa.group, isP, min2, sep="-"), diss.fun, sep = "-")
-    pdf.width=16 
-    pdf.height=6
+    pdf.width=18 
+    pdf.height=7
     p2.vp=viewport(0.1, 0.91, x=0.06, y=0.57)
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   } else {
     fname <- paste("heatmap", matrixNames[expId], postfix(taxa.group, isP, min2, sep="-"), diss.fun, sep = "-")
-    pdf.width=16 
-    pdf.height=9
-    p2.vp=viewport(0.1, 0.97, x=0.06, y=0.549)
+    pdf.width=18 
+    pdf.height=10
+    p2.vp=viewport(0.1, 0.8, x=0.06, y=0.63)
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   }
    

@@ -97,6 +97,7 @@ prepCommunityMatrix <- function(communityMatrix) {
 }
 
 # transposed CM for vegan, and remove empty rows cols 
+# return(NULL) if nrow(taxaPaths) < minRow, default minRow=0
 getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0) {
   communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
   

@@ -55,7 +55,7 @@ preprocessCM <- function(communityMatrix, keepSingleton, rowThr, colThr, mostAbu
   if (mostAbundThr > 0) {
     communityMatrix <- keepMostAbundantRows(communityMatrix, mostAbundThr=mostAbundThr)
   }  
-
+  
   communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=colThr, MARGIN=2)
   # filter column first to avoid empty rows after columns remvoed
   communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=rowThr, MARGIN=1)
@@ -76,16 +76,21 @@ rmVectorFromCM <- function(communityMatrix, vectorThr, MARGIN) {
   row.count <- nrow(communityMatrix)	
   column.count <- ncol(communityMatrix)
   
-  if (is.element(1, MARGIN)) {
-    communityMatrix <- communityMatrix[rowSums(communityMatrix) > vectorThr,]
-  } else if (is.element(2, MARGIN)) {
-    communityMatrix <- communityMatrix[,colSums(communityMatrix) > vectorThr]
+  # 1 row/col issue
+  if (row.count > 2 && column.count > 2) {
+    if (is.element(1, MARGIN)) {
+      communityMatrix <- communityMatrix[rowSums(communityMatrix) > vectorThr,]
+    } else if (is.element(2, MARGIN)) {
+      communityMatrix <- communityMatrix[,colSums(communityMatrix) > vectorThr]
+    }
+    
+    if (row.count != nrow(communityMatrix)) 
+      cat("Warning : remove", row.count-nrow(communityMatrix), "row(s) whose row sum <=", vectorThr, "!\n")
+    if (column.count != ncol(communityMatrix)) 
+      cat("Warning : remove", column.count-ncol(communityMatrix), "column(s) whose column sum <=", vectorThr, "!\n")
+  } else {
+    cat("Warning : skip filtering for 1 row/column data frame !\n")
   }
-  
-  if (row.count != nrow(communityMatrix)) 
-    cat("Warning : remove", row.count-nrow(communityMatrix), "row(s) whose row sum <=", vectorThr, "!\n")
-  if (column.count != ncol(communityMatrix)) 
-    cat("Warning : remove", column.count-ncol(communityMatrix), "column(s) whose column sum <=", vectorThr, "!\n")
   
   return(communityMatrix)
 }
