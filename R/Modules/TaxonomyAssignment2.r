@@ -36,7 +36,7 @@ taxonomyAssignment <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdom
   cat("Input non-zero taxaAssg with", nrow(taxaAssg), rankLevel, ", assigned to", 
       length(group), groupLevel, ", total", y_string, "=",  sum(taxaAssg[ ,total_string]), ".\n")  
   
-  xlab <- xlab( paste(nrow(taxaAssg), " taxa", sep = "") )
+  xlab <- xlab( paste(nrow(taxaAssg), rankLevel, "(or higher-level taxon)") )
   ylab <- ylab(y_string)		
   
   colTotal <- which(colnames(taxaAssg)==total_string)
@@ -52,7 +52,7 @@ taxonomyAssignment <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdom
     cat("Filter out", nrow(taxaAssg)-length(taxaAssgId), "taxa to Others category whose total <=", 
         percThr, "of the total of whole matrix.\n")  
     
-    xlab <- xlab( paste(length(taxaAssgId), " of ", nrow(taxaAssg), " taxa (", tolower(y_string), 
+    xlab <- xlab( paste(length(taxaAssgId), " of ", nrow(taxaAssg), rankLevel, " (", tolower(y_string), 
                         " > ", percThr*100, "% of total) ", sep = "") )		
     
     # avoid error: invalid factor level, NA generated
@@ -123,7 +123,7 @@ taxonomyAssignment <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdom
                        breaks=breaks, expand = c(0, 0)) +
     coord_flip() + theme_bw() + facet_grid( ~ plot) + ylab + xlab + 
     theme(legend.position="top", legend.direction="horizontal", plot.margin=unit(c(0.2,0.5,0.2,0.8), "cm"), 
-          panel.margin = unit(0.8, "lines"), axis.title.y=element_text(vjust=2.8)) + 
+          panel.margin = unit(0.8, "lines"), axis.title.y=element_text(vjust=2.8), axis.text.x = element_text(vjust=-0.1)) + 
     guides(fill=guide_legend(nrow=legend_nrow,byrow=TRUE)) +
     scale_fill_manual(name = paste(groupLevel, ":"),values = myPalette) 
   
@@ -142,31 +142,42 @@ taxonomyAssignment <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdom
   )
 }
 
+
 # Fix x-axis number format
 scientific_10 <- function(x) {
-  parse(text=gsub("e", " %*% 10^", scientific_format()(x)))
+  text=gsub("1e\\+00", "1", scientific_format()(x))
+  text=gsub("1e\\+01", "10", text)
+  text=gsub("1e\\+", "10^", text)
+  parse(text=text)
 }
 
 # taxaAssgReads = CM + rankLevel + groupLevel
-# aggregate taxaAssgReads by rankLevel 
-getTaxaAssg.OTU.Read <- function(taxaAssgReads, rankLevel, groupLevel) {
+# aggregate taxaAssgReads by rankLevel and y_string = OTU abundance or Read abundance
+getTaxaAssg <- function(taxaAssgReads, rankLevel, groupLevel, y_string="reads") {
   taxaAssgReads[,groupLevel] <- gsub("root|cellular organisms|No hits|Not assigned", "unclassified", taxaAssgReads[,groupLevel])
   
-  # remove 1st column "Row.names" and last colmun groupLevel
-  otus <- aggregate(as.formula(paste(". ~", rankLevel, "+", groupLevel)), data=taxaAssgReads[,-1], function(x) sum(x>0))
-  reads <- aggregate(as.formula(paste(". ~", rankLevel, "+", groupLevel)), data=taxaAssgReads[,-1], FUN=sum)	
-
+  #y_string <- "OTU abundance" # alpha 0
+  if (length(grep("OTU",y_string)) == 0) {
+    # equivalent to d(x,lev=alpha,q=0)
+    taxaAssg <- aggregate(as.formula(paste(". ~", rankLevel, "+", groupLevel)), data=taxaAssgReads[,-1], function(x) sum(x>0))
+    #		} else if (grep("Effective OTU",y_string)) {
+    #y_string <- "Effective OTU abundance" # alpha 1	
+    #TODO: not working:	taxaAssg <- aggregate(as.formula(paste(".", rankLevel, sep=" ~ ")), data= tA.tmp, function(x) d(t(x),lev="gamma",q=1))	
+  } else {
+    #y_string <- "Read abundance" or "Reads"
+    #grep("Read",y_string) 
+    taxaAssg <- aggregate(as.formula(paste(". ~", rankLevel, "+", groupLevel)), data=taxaAssgReads[,-1], FUN=sum)	
+  }
+  
   # add Total column
-  otus[,total_string] <- rowSums(otus[,-1:-2]) 
-  reads[,total_string] <- rowSums(reads[,-1:-2]) 
+  taxaAssg[,total_string] <- rowSums(taxaAssg[,-1:-2]) 
   
   # move groupLevel to the last col
-  otus <- otus[,c(1,3:ncol(otus),2)]
-  reads <- reads[,c(1,3:ncol(otus),2)]
-  otus$var <- "OTUs"
-  reads$var <- "reads"
+  taxaAssg <- taxaAssg[,c(1,3:ncol(taxaAssg),2)]
   
-  cat("Aggregate", nrow(otus), rankLevel, "belonging to", length(unique(otus[,groupLevel])), groupLevel, ".\n")
-  
-  return(rbind(otus,reads))  
+  cat("Aggregate", nrow(taxaAssg), rankLevel, "belonging to", length(unique(taxaAssg[,groupLevel])), 
+      groupLevel, "by counting", y_string, ".\n")
+
+  return(taxaAssg)  
 }
+

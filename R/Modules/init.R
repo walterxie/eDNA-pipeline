@@ -222,6 +222,9 @@ getTaxaAssgReads <- function(expId, isPlot, min2, rankLevel, groupLevel, taxa.gr
   
   taxaAssgReads <- merge(communityMatrix, taxaPaths[,c(colRankLevel, colGroupLevel)], by = "row.names")
   
+  taxaAssgReads[,rankLevel] <- gsub("(\\s\\[=.*\\])", "", taxaAssgReads[,rankLevel])
+  taxaAssgReads[,groupLevel] <- gsub("(\\s\\[=.*\\])", "", taxaAssgReads[,groupLevel])
+  
   cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "OTUs in matrix to", 
       nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n")
   

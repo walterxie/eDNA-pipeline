@@ -71,8 +71,8 @@ for (expId in 1:n) {
     if (! all(colnames(communityMatrix) == rownames(taxaAssg)) )
       stop("OTUs names in community matrix do not match taxa classifications !")
     
-    taxaAssg[,"phylum"] <- gsub(" \\[=.*\\]", "", taxaAssg[,"phylum"])
-    taxaAssg[,"class"] <- gsub(" \\[=.*\\]", "", taxaAssg[,"class"])
+    taxaAssg[,"phylum"] <- gsub("(\\s\\[=.*\\])", "", taxaAssg[,"phylum"])
+    taxaAssg[,"class"] <- gsub("(\\s\\[=.*\\])", "", taxaAssg[,"class"])
     
     colnames(communityMatrix) <- paste(taxaAssg[,"kingdom"], taxaAssg[,"phylum"], taxaAssg[,"class"], 1:nrow(taxaAssg), sep="_")
     
