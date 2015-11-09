@@ -65,6 +65,8 @@ source("allStatisticsSamples.r", local=TRUE)
 isPlot <<- FALSE # by subplot
 source("allSampleCount.r", local=TRUE)
 
+rankLevel="phylum" 
+groupLevel="kingdom" # gives colour, and must higher than rankLevel
 source("allTaxonomyPhylum2.r", local=TRUE)
 
 isPlot <<- FALSE
@@ -99,7 +101,7 @@ source("allNMMDS.r", local=TRUE)
 taxa.groups <<- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", 
                   "EUKARYOTA", "PROKARYOTA", "PROTISTS")
 
-cat("\n\n\Superkingdom: PROKARYOTA = Bacteria + Archaea; PROTISTS = CHROMISTA + PROTOZOA\n\n", file=tableFile, append=TRUE)
+cat("\n\nSuperkingdom: PROKARYOTA = Bacteria + Archaea; PROTISTS = CHROMISTA + PROTOZOA\n\n", file=tableFile, append=TRUE)
 
 source("allStatisticsTaxaGroup.r", local=TRUE)
 
@@ -112,6 +114,9 @@ for (taxag in taxa.groups) {
   taxa.group <<- taxag
   
   isPlot <<- FALSE
+  
+  rankLevel="order" 
+  groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxonomyPhylum2.r", local=TRUE)
 
   source("allRedundancyAnalysis.r", local=TRUE)
