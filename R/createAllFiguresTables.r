@@ -65,7 +65,7 @@ source("allStatisticsSamples.r", local=TRUE)
 isPlot <<- FALSE # by subplot
 source("allSampleCount.r", local=TRUE)
 
-source("allTaxonomyPhylum.r", local=TRUE)
+source("allTaxonomyPhylum2.r", local=TRUE)
 
 isPlot <<- FALSE
 # create all rarefaction table
@@ -112,6 +112,8 @@ for (taxag in taxa.groups) {
   taxa.group <<- taxag
   
   isPlot <<- FALSE
+  source("allTaxonomyPhylum2.r", local=TRUE)
+
   source("allRedundancyAnalysis.r", local=TRUE)
 }
 
