@@ -41,7 +41,7 @@ taxonomyAssignment2 <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdo
   cat("Input non-zero taxaAssg with", nrow(taxaAssg), rankLevel, ", assigned to", length(group), groupLevel, ".\n")  
   
   xlab <- xlab( paste(nrow(taxaAssg), rankLevel, "(or higher-level taxon)") )
-  ylab <- ylab("OTUs or sequences")		
+  ylab <- ylab(paste("OTUs or sequences"))		
 
   #####  prepare data frame for chart #####
   if (!plotTotal) 
@@ -66,8 +66,8 @@ taxonomyAssignment2 <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdo
                aes_string(x = rankLevel, y = y_string, colour = groupLevel), shape = 5, size = 2) +
     geom_point(data = taxaAssgPerSample[taxaAssgPerSample$var == "OTUs",], 
                aes_string(x = rankLevel, y = y_string, colour = groupLevel), shape = 1, size = 2) +
-    #geom_point(data = taxaAssgPerSample[var == "OTUs_min2"], aes(x = Phylum, y = value, colour = Kingdom), shape = 16, size = 2) +
-    #geom_point(data = taxaAssgPerSample[var == "Seqs_min2"], aes(x = Phylum, y = value, colour = Kingdom), shape = 17, size = 2) +
+    #geom_point(data = taxaAssgPerSample[var == "reads_min1"], aes(x = Phylum, y = value, colour = Kingdom), shape = 17, size = 2) +
+    #geom_point(data = taxaAssgPerSample[var == "OTUs_min1"], aes(x = Phylum, y = value, colour = Kingdom), shape = 16, size = 2) +
     scale_y_log10(breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000), label=scientific_10) + 
     facet_grid( ~ variable) + coord_flip()+ theme_bw() + xlab + ylab +
     theme(legend.position="top", legend.direction="horizontal",
