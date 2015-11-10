@@ -12,6 +12,7 @@ if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
 if(!exists("qs")) qs = rep(0:2,each=3)
 
 source("Modules/init.r")
+source("Modules/RarefactionTable.R")
 
 ######## get min size all sites for rdiversityTable each gene #######
 getMinSizeAllSites <- function(communityMatrix) {
@@ -42,7 +43,8 @@ for (expId in 1:n) {
 	source("Modules/RarefactionTable.R", local=TRUE)
 
 	# create rarefaction table file which is calculated by RarefactionTable.R	
-	outputRFTable <- paste(workingPath, "data/", postfix(matrixNames[expId], isPlot, rmSingleton, sep="-"), "-rarefaction-table.csv", sep = "")
+	outputRFTable <- file.path(workingPath, "data", paste(postfix(matrixNames[expId], isPlot, rmSingleton, sep="-"), 
+	                                                      "-rarefaction-table.csv", sep = ""))
 	writeRdiversityTable(communityMatrix, outputRFTable)
 } 
 

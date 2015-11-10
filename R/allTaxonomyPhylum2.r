@@ -25,10 +25,10 @@ total_string = "Total"
 percThr = 0
 
 source("Modules/init.r")
+# plot OTUs and reads in one graph
 source("Modules/TaxonomyAssignment2.R")
 
-######## eDNA #########
-y_string="reads" # or OTUs
+######## eDNA by plot/subplot #########
 taxaAssgTotal <- NULL
 for (expId in 1:(n-1)) {
   taxaAssgReads <- getTaxaAssgReads(expId, isPlot, rmSingleton, rankLevel, groupLevel, taxa.group) 
@@ -38,24 +38,24 @@ for (expId in 1:(n-1)) {
     next
   }
   
-  taxaAssg <- getTaxaAssg(taxaAssgReads, rankLevel, groupLevel, y_string) 
+  taxaAssg <- getTaxaAssg2(taxaAssgReads, rankLevel, groupLevel) 
   
   cat(matrixNames[expId], ":", rankLevel, "=", nrow(taxaAssg), ",", groupLevel, "=", length(unique(taxaAssg[,groupLevel])), ".\n")
   
   if (expId==1) {
-    taxaAssgTotal <- taxaAssg[,c(rankLevel,total_string,groupLevel)]
+    taxaAssgTotal <- taxaAssg[,c(rankLevel,total_string,groupLevel,"var")]
   } else {
-    taxaAssgTotal <- merge(taxaAssgTotal, taxaAssg[,c(rankLevel,total_string,groupLevel)], 
-                           by = c(rankLevel, groupLevel), all = TRUE)
+    taxaAssgTotal <- merge(taxaAssgTotal, taxaAssg[,c(rankLevel,total_string,groupLevel,"var")], 
+                           by = c(rankLevel, groupLevel,"var"), all = TRUE)
   }
   colnames(taxaAssgTotal) <- gsub(total_string, matrixNames[expId], colnames(taxaAssgTotal))
  
   legend_nrow=1
-  tA <- taxonomyAssignment(taxaAssg, rankLevel, groupLevel, percThr, legend_nrow, y_string, plotTotal=FALSE)
+  tA <- taxonomyAssignment2(taxaAssg, rankLevel, groupLevel, percThr, legend_nrow, plotTotal=FALSE)
   pdfWidth = 0.1 + tA$maxLabelLen / 10 + (tA$ncol-2) * 1.5
-  pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.12
+  pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.8
   
-  fname <- paste(rankLevel, matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), y_string, sep = "-")
+  fname <- paste(rankLevel, matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), sep = "-")
   pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=pdfWidth, height=pdfHeight)	
   print(tA$plot)
   invisible(dev.off()) 
@@ -63,22 +63,21 @@ for (expId in 1:(n-1)) {
 
 ###### total by gene #####
 taxaAssgTotal[is.na(taxaAssgTotal)] <- 0
-taxaAssgTotal <- taxaAssgTotal[order(taxaAssgTotal[, groupLevel]),]
 
 cat(total_string, ":", rankLevel, "=", nrow(taxaAssgTotal), ",", groupLevel, "=", length(unique(taxaAssgTotal[,groupLevel])), ".\n")  
 
-# add Total column
-taxaAssgTotal[,total_string] <- rowSums(taxaAssgTotal[,-1:-2]) 
+# add Total column, without phylum,kingdom,var
+taxaAssgTotal[,total_string] <- rowSums(taxaAssgTotal[,-1:-3]) 
 
-# move groupLevel to the last col
-taxaAssgTotal <- taxaAssgTotal[,c(1,3:ncol(taxaAssgTotal),2)]
+# move groupLevel and var to the last col
+taxaAssgTotal <- taxaAssgTotal[,c(1,4:ncol(taxaAssgTotal),2,3)]
 
 legend_nrow=1
-tA <- taxonomyAssignment(taxaAssgTotal, rankLevel, groupLevel, percThr, legend_nrow, y_string, plotTotal=FALSE)
+tA <- taxonomyAssignment2(taxaAssgTotal, rankLevel, groupLevel, percThr, legend_nrow, plotTotal=FALSE)
 pdfWidth = 0.1 + tA$maxLabelLen / 10 + (tA$ncol-2) * 1.5
-pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.12
+pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.09
 
-fname <- paste(rankLevel, tolower(total_string), postfix(taxa.group, TRUE, rmSingleton, sep="-"), y_string, sep = "-")
+fname <- paste(rankLevel, tolower(total_string), postfix(taxa.group, TRUE, rmSingleton, sep="-"), sep = "-")
 pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=pdfWidth, height=pdfHeight)	
 print(tA$plot)
 invisible(dev.off()) 

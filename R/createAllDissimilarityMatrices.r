@@ -21,7 +21,7 @@ writeDissMatrix <- function(communityMatrix, diss.fun, fname) {
   diss.matrix <- calculateDissimilarityMatrix(communityMatrix, diss.fun)
   
   # create file for intermediate data beta1-1 matrix
-  outputFile <- paste(workingPath, "data/", fname, ".csv", sep = "")
+  outputFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))
   write.cm(diss.matrix, outputFile)
 } 
 

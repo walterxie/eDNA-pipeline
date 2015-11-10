@@ -17,12 +17,12 @@ rmSingleton <<- TRUE
 if (rmSingleton) {
 	figDir <<- "figures"
 	# write tables to a file in workingPath
-	tableFile <<- paste(workingPath, "report.tex", sep="")
+	tableFile <<- file.path(workingPath, "report.tex")
 	tit <<- "remove all singletons"	
 } else {
 	figDir <<- "figures1"
 	# write tables to a file in workingPath
-	tableFile <<- paste(workingPath, "report-singleton.tex", sep="")
+	tableFile <<- file.path(workingPath, "report-singleton.tex")
 	tit <<- "keep all singletons"
 }
 cat("\nConfig :", tit, "!\n")
@@ -43,7 +43,6 @@ levels = rep(c("gamma","alpha","beta"),3)
 qs = rep(0:2,each=3)
 
 diss.fun <<- "beta1-1"
-taxa.group <<- "assigned"
 
 verbose <<- TRUE # only print "Upload community matrix" 1st time 
 
@@ -65,6 +64,8 @@ source("allStatisticsSamples.r", local=TRUE)
 isPlot <<- FALSE # by subplot
 source("allSampleCount.r", local=TRUE)
 
+taxa.group <<- "all"
+isPlot <<- TRUE # by plot
 rankLevel="phylum" 
 groupLevel="kingdom" # gives colour, and must higher than rankLevel
 source("allTaxonomyPhylum2.r", local=TRUE)
@@ -74,6 +75,7 @@ isPlot <<- FALSE
 #source("createAllRarefactionTable.r", local=TRUE)
 source("allRarefactions.r", local=TRUE)
 
+taxa.group <<- "assigned"
 # create all beta1-1 matrix for the rest of analyses 
 #source("createAllDissimilarityMatrices.r", local=TRUE)
 
@@ -114,7 +116,6 @@ for (taxag in taxa.groups) {
   taxa.group <<- taxag
   
   isPlot <<- FALSE
-  
   rankLevel="order" 
   groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxonomyPhylum2.r", local=TRUE)

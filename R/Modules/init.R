@@ -5,7 +5,6 @@ library(gridExtra)
 library(data.table)
 library(xtable)
 library(tools)
-library(tidyr)
 library(gplots)
 library(ggplot2)
 library(RColorBrewer)
@@ -58,12 +57,12 @@ getCommunityMatrix <- function(expId, isPlot, min2) {
   if (expId==n) {
     if (!isPlot)
       stop("Vegetation only has plot based community matrix !")
-    inputCM <- paste(workingPath, "data/LBI_Trees_Saplings_SBA.csv", sep="")
+    inputCM <- file.path(workingPath, "data", "LBI_Trees_Saplings_SBA.csv")
   } else if (isPlot) {
-    inputCM <- paste(workingPath, "data/", matrixName, "_by_plot.txt", sep="")
+    inputCM <- file.path(workingPath, "data", paste(matrixName, "by_plot.txt", sep="_"))
   } else {
     # e.g. data/16S.txt
-    inputCM <- paste(workingPath, "data/", matrixName, ".txt", sep="")
+    inputCM <- file.path(workingPath, "data", paste(matrixName, ".txt", sep=""))
   }
   
   communityMatrix <- readFile(inputCM)
@@ -150,7 +149,7 @@ getRarefactionTable <- function(expId, isPlot, min2) {
     matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
   }
   
-  inputRDT <- paste(workingPath, "data/", matrixName, "-rarefaction-table.csv", sep = "")   
+  inputRDT <- file.path(workingPath, "data", paste(matrixName, "rarefaction-table.csv", sep="-"))
   if(verbose) 
     cat("\nUpload rarefaction table : from", inputRDT, "\n") 
   
@@ -163,7 +162,7 @@ getRarefactionTable <- function(expId, isPlot, min2) {
 # EUKARYOTA: all eukaryotes
 # PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
 getTaxaPaths <- function(expId, taxa.group="all") {
-  inputTaxa <- paste(workingPath, "taxonomy_tables/", matrixNames[expId], "_taxonomy_table.txt", sep="")
+  inputTaxa <- file.path(workingPath, "taxonomy_tables", paste(matrixNames[expId], "taxonomy_table.txt", sep="_"))
   taxaPaths <- readTaxaFile(inputTaxa)	
   taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
   # make lower case to match ranks
@@ -231,6 +230,16 @@ getTaxaAssgReads <- function(expId, isPlot, min2, rankLevel, groupLevel, taxa.gr
   return(taxaAssgReads)
 }
 
+getTaxaRef <- function() {
+  tax_ref <- read.table(file.path(workingPath, "data", "New_taxonomy_from_PLOSONE_2015_fixed.txt"), 
+                        header = TRUE, sep = "\t", quote = "", comment.char = "")
+  # make lower case to match ranks
+  colnames(tax_ref) <- tolower(colnames(tax_ref))
+  
+  # Remove quirks/questions in taxa ([= ...])
+  tax_ref <- apply(tax_ref, 2, function(col) gsub("(\\s\\[=.*\\])", "", col))
+}
+
 ###### dissimilarity matrix #####
 # Dissimilarity matrix of paired samples
 # diss.fun = "beta1-1", "jaccard", "horn.morisita"
@@ -243,7 +252,7 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
     fname <- paste(matrixNames[expId], postfix(taxa.group, isPlot, min2, sep="-"), diss.fun, sep = "-") 
   }
   
-  inputB <- paste(workingPath, "data/", fname, ".csv", sep = "")
+  inputB <- file.path(workingPath, "data", paste(fname, "csv", sep = "."))
   if(verbose) 
     cat("\nUpload", diss.fun, "matrix of", taxa.group, "taxa group(s) from", inputB, "\n") 
   
@@ -256,10 +265,10 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
 ######## meta data of samples #######
 getSampleMetaData <- function(isPlot) {
   if (isPlot) {
-    inputCM <- paste(workingPath, "Env_data/LBI_all_env_data_by_plot.txt", sep="")
+    inputCM <- file.path(workingPath, "Env_data", "LBI_all_env_data_by_plot.txt")
   } else {
     # e.g. data/16S.txt
-    inputCM <- paste(workingPath, "Env_data/LBI_all_env_data_by_subplot.txt", sep="")
+    inputCM <- file.path(workingPath, "Env_data", "LBI_all_env_data_by_subplot.txt")
   }
   if(verbose) 
     cat("\nUpload enviornmental data from", inputCM, "\n") 

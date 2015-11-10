@@ -1,6 +1,6 @@
 
 # Author: Walter Xie
-# Accessed on 1 Sep 2015
+# Accessed on 10 Nov 2015
 
 
 #library(ggplot2)
@@ -23,7 +23,15 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
-  
+
+# Fix x-axis number format
+scientific_10 <- function(x) {
+  text=gsub("1e\\+00", "1", scientific_format()(x))
+  text=gsub("1e\\+01", "10", text)
+  text=gsub("1e\\+", "10^", text)
+  parse(text=text)
+}
+
 ######## get table in the format of "corr (sign)" #######
 # Input: corr.sign.matrix is a matrix having same row and col names, 
 # lower triangle is correlations (or equivalent), upper triangle is significance
