@@ -107,7 +107,7 @@ for (expId in 1:n) {
   gt <- ggplot_gtable(ggplot_build(mdsp))
   gt$layout$clip[gt$layout$name == "panel"] <- "off"
   
-  pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=5, height=6, useDingbats = FALSE) 
+  pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=5, height=6, useDingbats = FALSE) 
   print(grid.draw(gt))
   invisible(dev.off()) 
 }

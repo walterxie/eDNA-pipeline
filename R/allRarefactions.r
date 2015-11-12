@@ -19,7 +19,7 @@ mypalette <- c("red", "orange", "green", "purple", "blue", "brown")
 myshape <- seq(15, (15 + n-2))
 
 ######## rarefaction #######
-pdf(paste(workingPath, figDir, "/", postfix("edna-rarefaction", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)
+pdf(file.path(workingPath, figDir, paste(postfix("edna-rarefaction", isPlot, rmSingleton, sep="-"), "pdf", sep = ".")), width=6, height=9)
 attach(mtcars)
 par(mfrow=c(3,2), oma=c(3,0,0,0))
 

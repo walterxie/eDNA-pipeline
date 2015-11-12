@@ -156,7 +156,7 @@ for (expId in 1:n) {
     p1.vp=viewport(0.92, 1, x=0.55, y=0.5)
   }
    
-  pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=pdf.width, height=pdf.height)
+  pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=pdf.width, height=pdf.height)
   
   grid.newpage()
   print(p2, vp=p2.vp)

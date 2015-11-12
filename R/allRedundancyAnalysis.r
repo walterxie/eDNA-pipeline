@@ -87,7 +87,7 @@ for (expId in 1:(n-1)) {
   rda <- proceedRDA(communityMatrix, cm.env, tableFile, verbose)
     
   fname <- paste("rda", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
-  pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=9, height=3)
+  pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=9, height=3)
   attach(mtcars)
   par(mfrow=c(1,3))
   par(mar=c(4,4,3,2), cex=0.6)

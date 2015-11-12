@@ -56,7 +56,7 @@ for (expId in 1:(n-1)) {
   pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.09
   
   fname <- paste(rankLevel, matrixNames[expId], postfix(taxa.group, TRUE, rmSingleton, sep="-"), sep = "-")
-  pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=pdfWidth, height=pdfHeight)	
+  pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=pdfWidth, height=pdfHeight)	
   print(tA$plot)
   invisible(dev.off()) 
 }
@@ -78,6 +78,6 @@ pdfWidth = 0.1 + tA$maxLabelLen / 10 + (tA$ncol-2) * 1.5
 pdfHeight = 1 + legend_nrow * 1 + tA$nrow * 0.09
 
 fname <- paste(rankLevel, tolower(total_string), postfix(taxa.group, TRUE, rmSingleton, sep="-"), sep = "-")
-pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=pdfWidth, height=pdfHeight)	
+pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=pdfWidth, height=pdfHeight)	
 print(tA$plot)
 invisible(dev.off()) 

@@ -54,7 +54,7 @@ for (expId in 1:(n-1)) { # MiSeq only
 readsOTUs$region = factor(readsOTUs$region,matrixNames)
 readsOTUs$labls = factor(readsOTUs$labls,labls)
 
-pdf(paste(workingPath, figDir, "/", postfix("reads-counts", isPlot, FALSE, sep="-"), ".pdf", sep = ""), width=8, height=5)	
+pdf(file.path(workingPath, figDir, paste(postfix("reads-counts", isPlot, FALSE, sep="-"), "pdf", sep = ".")), width=8, height=5)	
 
 print( ggplot(readsOTUs, aes(x = region, y = value, fill = labls)) + geom_bar(stat="identity", position='stack') +
 	 theme_bw() + facet_grid( ~ cat) + ylab("Percentage") + scale_fill_manual(breaks=rev(labls), values= myPalette) + 
@@ -69,7 +69,7 @@ subTitles <- c("(a)","(b)","(c)","(d)","(e)","(f)")
 
 cat("\neDNA Graph: sample counts bar chart: rmSingleton =", rmSingleton, ", isPlot =", isPlot, ", otuThr =", otuThr, "\n") 
 
-pdf(paste(workingPath, figDir, "/", postfix("sample-counts", isPlot, rmSingleton, sep="-"), ".pdf", sep = ""), width=6, height=9)	
+pdf(file.path(workingPath, figDir, paste(postfix("sample-counts", isPlot, rmSingleton, sep="-"), "pdf", sep = ".")), width=6, height=9)	
 attach(mtcars)
 par(mfrow=c(3,2))	
 

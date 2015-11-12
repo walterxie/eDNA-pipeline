@@ -32,7 +32,7 @@ colnames(mantel_table) <- c("Mantel statistic $r$", "significance", "R$^2$", "p-
 
 ####### beta 1 - 1 vs elevation ########
 fname <- paste("elev-diff", postfix("all", TRUE, rmSingleton, sep="-"), diss.fun, sep = "-")
-pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=9, height=5)
+pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=9, height=5)
 attach(mtcars)
 par(mfrow=c(1,2), oma=c(4,0,0,0)) 
 

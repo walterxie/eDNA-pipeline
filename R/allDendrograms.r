@@ -49,7 +49,7 @@ for (expId in 1:n) {
   # using dendrapply
   clusDendro = dendrapply(hcd, colLab)
   
-  pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=6, height=6)
+  pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=6, height=6)
   
   par(mar=c(5,3,3,1)) 
   plot(clusDendro, xlab="", sub ="", main=paste(n_cluster, "-cluster UPGMA dendrogram of", matrixNames[expId], sep=" "))

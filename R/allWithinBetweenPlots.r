@@ -40,7 +40,7 @@ diver$comp = factor(diver$comp, unique(diver$comp))
 n_edna=n-1
 
 fname <- paste("edna-within-between", postfix(taxa.group, FALSE, rmSingleton, sep="-"), diss.fun, sep = "-")
-pdf(paste(workingPath, figDir, "/", fname, ".pdf", sep = ""), width=9, height=6)
+pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=9, height=6)
 
 par(mar=c(3,5,1,1)) 
 boxplot(value ~ comp, data=diver, at = sort(c(seq(1,(n_edna-1)*3+1,by=3),seq(2,(n_edna-1)*3+2,by=3))), xaxt = 'n',

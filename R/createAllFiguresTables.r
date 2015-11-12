@@ -77,9 +77,16 @@ source("allRarefactions.r", local=TRUE)
 
 taxa.group <<- "assigned"
 # create all beta1-1 matrix for the rest of analyses 
+#isPlot <<- TRUE
+#source("createAllDissimilarityMatrices.r", local=TRUE)
+isPlot <<- FALSE
 #source("createAllDissimilarityMatrices.r", local=TRUE)
 
 source("allWithinBetweenPlots.r", local=TRUE)
+
+source("allNMMDS.r", local=TRUE)
+
+source("allCommPhylo.r", local=TRUE)
 
 isPlot <<- TRUE
 source("allDendrograms.r", local=TRUE)
@@ -87,9 +94,6 @@ source("allDendrograms.r", local=TRUE)
 source("allHeatMap.r", local=TRUE)
 
 source("allElevationDiversitiesByPlots.r", local=TRUE)
-
-isPlot <<- FALSE
-source("allNMMDS.r", local=TRUE)
 
 #source("allProcrustes.r", local=TRUE)
 
