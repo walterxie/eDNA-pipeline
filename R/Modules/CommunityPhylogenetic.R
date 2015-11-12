@@ -17,6 +17,12 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
   if ( ! all( sort(colnames(communityMatrix)) == sort(phyloTree$tip.label) ) ) 
     stop( paste("Community OTU names do not match tree tip labels") )
   
+  if(verbose) {
+    cat("Input community", nrow(communityMatrix), "samples", ncol(communityMatrix), "OTUs", 
+        ", phylogenetic tree with", length(phyloTree$tip.label), "tips and", phyloTree$Nnode, "internal nodes.\n") 
+    cat("Analysis: Faith's phylogenetic alpha diversity.\n") 
+  }
+  
   # phylogenetic alpha diversity (PD) index proposed by Faith (1992)
   pd.result <- pd(communityMatrix, phyloTree, include.root = TRUE)
   
@@ -24,6 +30,9 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
   printXTable(pd.result, 
               caption = paste("Faith's phylogenetic alpha diversity of", treeFileStem), 
               label = paste("tab:pd:alpha", treeFileStem, sep = ":"), file=tableFile)    
+  
+  if(verbose) 
+    cat("Analysis: MPD and MNTD.\n")
   
   # cophenetic distances for a hierarchical clustering
   phydist <- cophenetic(phyloTree)
@@ -37,7 +46,6 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
               caption = paste("The mean pairwise distance (MPD) between all species in each community of", treeFileStem), 
               label = paste("tab:mpd:", treeFileStem, sep = ":"), file=tableFile)    
   
-  
   # MNTD: standardized effect size of mean nearest taxon distances in communities
   ses.mntd.result <- ses.mntd(communityMatrix, phydist, null.model = "taxa.labels", abundance.weighted = FALSE, runs = 99)
   
@@ -46,6 +54,9 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
               caption = paste("The mean nearest taxon distance (MNTD)", 
                               "separating each species in the community from its closest relative of", treeFileStem), 
               label = paste("tab:mntd:", treeFileStem, sep = ":"), file=tableFile)    
+  
+  if(verbose) 
+    cat("Analysis: MPD phylogenetic beta diversity.\n")
   
   # MPD (mean pairwise distance) separating taxa in two communities, phylogenetic beta diversity (Steven Kembel)
   comdist.result <- comdist(communityMatrix, phydist)
@@ -57,7 +68,7 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
   comdist.m[comdist.m=="0"] <- NA
   comdist.m <- comdist.m[-1,-ncol(comdist.m)]
   
-  printXTable(comdist.result, 
+  printXTable(comdist.m, 
               caption = paste("Phylogenetic beta diversity of", treeFileStem), 
               label = paste("tab:pd:beta", treeFileStem, sep = ":"), file=tableFile)    
   

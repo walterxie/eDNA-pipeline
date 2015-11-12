@@ -169,21 +169,21 @@ getTaxaPaths <- function(expId, taxa.group="all") {
   taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
   # make lower case to match ranks
   colnames(taxaPaths) <- tolower(colnames(taxaPaths))
-
+  
   nTaxa=nrow(taxaPaths)
   ##### keep OTU rows contain given taxa belongTo ##### 
   if (taxa.group != "all") {
     # Exclude unassigned etc
     taxaPaths <- subset(taxaPaths, !(grepl("root|cellular organisms|No hits|Not assigned", taxaPaths[,"kingdom"])))  
-   if (taxa.group != "assigned") {
-     if (toupper(taxa.group) == "PROKARYOTA" || toupper(taxa.group) == "EUKARYOTA") {
-       taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"superkingdom"])) 
-     } else if (toupper(taxa.group) == "PROTISTS") {
-       taxaPaths <- subset(taxaPaths, grepl("CHROMISTA|PROTOZOA", taxaPaths[,"kingdom"])) 
-     } else {
-       taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"kingdom"])) 
-     }
-   }
+    if (taxa.group != "assigned") {
+      if (toupper(taxa.group) == "PROKARYOTA" || toupper(taxa.group) == "EUKARYOTA") {
+        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"superkingdom"])) 
+      } else if (toupper(taxa.group) == "PROTISTS") {
+        taxaPaths <- subset(taxaPaths, grepl("CHROMISTA|PROTOZOA", taxaPaths[,"kingdom"])) 
+      } else {
+        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"kingdom"])) 
+      }
+    }
   }
   
   if (nrow(taxaPaths) < 1)
@@ -245,10 +245,14 @@ getTaxaRef <- function() {
 ###### Trees #####
 getPhyloTree <- function(fNameStem) {
   inputT <- file.path(workingPath, "trees", paste(fNameStem, "tre", sep = "."))
-  cat("Load tree from", inputT, "\n") 
-  tree <- read.tree(inputT)
-  if(verbose) print(tree)
-  
+  if (file.exists(destfile)) {
+    cat("Load tree from", inputT, "\n") 
+    tree <- read.tree(inputT)
+    if(verbose) print(tree)
+  } else {
+    tree <- NULL
+    cat("Warning: cannot find tree file:", inputT, "\n") 
+  }
   tree
 }
 
