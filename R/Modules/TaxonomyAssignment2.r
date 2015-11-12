@@ -17,7 +17,7 @@ y_string="value"
 
 tax_ref <- getTaxaRef()
 
-# plot OTUs and reads in one graph
+# plot OTUs and reads in one graph, use column "var" to store flag
 # rankLevel: the rank chosen to melt down community matrix
 # groupLevel: gives colour, and must higher than rankLevel
 # rankLevel, groupLevel must be lower case to match ranks
@@ -37,10 +37,11 @@ taxonomyAssignment2 <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdo
     taxaAssg <- taxaAssg[taxaAssg[ ,total_string] > 0,]
   }
   
+  taxa = unique(taxaAssg[,rankLevel]) 
   group = unique(taxaAssg[,groupLevel]) 
-  cat("Input non-zero taxaAssg with", nrow(taxaAssg), rankLevel, ", assigned to", length(group), groupLevel, ".\n")  
+  cat("Input non-zero taxaAssg with", length(taxa), rankLevel, ", assigned to", length(group), groupLevel, ".\n")  
   
-  xlab <- xlab( paste(nrow(taxaAssg), rankLevel, "(or higher-level taxon)") )
+  xlab <- xlab( paste(length(taxa), rankLevel, "(or higher-level taxon)") )
   ylab <- ylab(paste("OTUs or sequences"))		
 
   #####  prepare data frame for chart #####
@@ -80,11 +81,11 @@ taxonomyAssignment2 <- function(taxaAssg, rankLevel="phylum", groupLevel="kingdo
   if (!is.null(title)) 		
     p <- p + ggtitle(paste(title))	   
 
-  cat("Return nrow =", nrow(taxaAssg), ", ncol =", ncol(taxaAssg), ", ngroup =", length(group), 
+  cat("Return nrow =", length(taxa), ", ncol =", ncol(taxaAssg), ", ngroup =", length(group), 
       ", maxlablen =", maxLabelLen, ".\n") 
   # Return a list containing the filename
   list(
-    nrow = nrow(taxaAssg),
+    nrow = length(taxa), # number of taxa
     ncol = ncol(taxaAssg), # include 'taxa' and 'group' col
     group = unique(taxaAssg[,groupLevel]), # include Other
     maxLabelLen = maxLabelLen, # max length of characters in label
