@@ -13,6 +13,8 @@ library(colorspace)
 library(reshape2)
 library(ggdendro)
 library(plyr)
+library(cluster)
+library(ape)
 
 if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
 if(!exists("workingPath")) stop("working path containing data is missing !")
@@ -238,6 +240,16 @@ getTaxaRef <- function() {
   
   # Remove quirks/questions in taxa ([= ...])
   tax_ref <- apply(tax_ref, 2, function(col) gsub("(\\s\\[=.*\\])", "", col))
+}
+
+###### Trees #####
+getPhyloTree <- function(fname) {
+  inputT <- file.path(workingPath, "trees", paste(fname, "tre", sep = "."))
+  cat("Load tree from", inputT, "\n") 
+  tree <- read.tree(inputT)
+  if(verbose) print(tree)
+  
+  tree
 }
 
 ###### dissimilarity matrix #####

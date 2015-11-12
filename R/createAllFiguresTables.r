@@ -3,9 +3,9 @@
 rm(list=ls()) 
 
 # change config below
-sourcePath <<- "~/WorkSpace/eDNA-pipeline/R/"
+sourcePath <<- "~/WorkSpace/eDNA-pipeline/R"
 setwd(sourcePath)
-workingPath <<- "~/Projects/NZGO/Miseq/"
+workingPath <<- "~/Projects/NZGO/Miseq"
 
 cat("\nConfig : set R source path", sourcePath, "\n")
 cat("\nConfig : set working path", workingPath, "\n")

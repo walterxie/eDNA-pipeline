@@ -1,4 +1,6 @@
 
+library(cluster)
+
 if(!exists("figDir")) stop("figure folder name is missing !")
 if(!exists("matrixNames")) stop("matrix names are missing !")
 

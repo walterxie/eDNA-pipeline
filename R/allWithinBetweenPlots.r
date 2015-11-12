@@ -13,7 +13,7 @@ n <- length(matrixNames)
 
 source("Modules/init.R", local=TRUE)
 
-cat("Analysis:", taxa.group, "taxa group", diss.fun, "dissimilarity within plots vs between plots. \n")
+cat("Analysis: eDNA", taxa.group, "taxa group", diss.fun, "dissimilarity within plots vs between plots. \n")
 
 ######## within plots vs between plots #######	
 for (expId in 1:(n-1)) {	
