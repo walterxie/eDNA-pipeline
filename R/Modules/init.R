@@ -245,7 +245,7 @@ getTaxaRef <- function() {
 ###### Trees #####
 getPhyloTree <- function(fNameStem) {
   inputT <- file.path(workingPath, "trees", paste(fNameStem, "tre", sep = "."))
-  if (file.exists(destfile)) {
+  if (file.exists(inputT)) {
     cat("Load tree from", inputT, "\n") 
     tree <- read.tree(inputT)
     if(verbose) print(tree)

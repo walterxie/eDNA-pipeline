@@ -111,20 +111,35 @@ cat("\n\nSuperkingdom: PROKARYOTA = Bacteria + Archaea; PROTISTS = CHROMISTA + P
 
 source("allStatisticsTaxaGroup.r", local=TRUE)
 
+isPlot <<- TRUE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
   source("createAllDissimilarityMatrices.r", local=TRUE)
 }
 
+isPlot <<- FALSE
+for (taxag in taxa.groups) {
+  taxa.group <<- taxag
+  source("createAllDissimilarityMatrices.r", local=TRUE)
+}
+
+isPlot <<- FALSE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
   
-  isPlot <<- FALSE
   rankLevel="order" 
   groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxonomyPhylum2.r", local=TRUE)
 
+  source("allCommPhylo.r", local=TRUE)
+  
   source("allRedundancyAnalysis.r", local=TRUE)
+}
+
+isPlot <<- TRUE
+for (taxag in taxa.groups) {
+  taxa.group <<- taxag
+  # TODO
 }
 
 ######## complete report latex #######
