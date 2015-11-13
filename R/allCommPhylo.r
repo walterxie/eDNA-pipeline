@@ -16,12 +16,12 @@ n <- length(matrixNames)
 
 source("Modules/CommunityPhylogenetic.R", local=TRUE)
 
-cat("Analysis: eDNA community phylogenetic structure. \n")
+cat("\nAnalysis: eDNA community phylogenetic structure. \n")
 
 for (expId in 1:(n-1)) {
     ### eDNA ###
     # 16S-assigned-min2
-    treeFileStem <- tolower(paste(matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), sep = "-"))
+    treeFileStem <- tolower(paste(matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-"))
     phyloTree <- getPhyloTree(treeFileStem)
 
     if (is.null(phyloTree)) {
