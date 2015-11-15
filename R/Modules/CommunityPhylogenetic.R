@@ -13,7 +13,7 @@ source("Modules/init.R", local=TRUE)
 # tableFile: latex file
 # verbose default TRUE
 comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile=NULL, verbose=TRUE, 
-                             ORD.RES=function(res) {res[order(rownames(res)),]}) {
+                             comdistFile=NULL, ORD.RES=function(res) {res[order(rownames(res)),]}) {
   if ( ! all( sort(colnames(communityMatrix)) == sort(phyloTree$tip.label) ) ) 
     stop( paste("Community OTU names do not match tree tip labels") )
   
@@ -60,6 +60,10 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
   
   # MPD (mean pairwise distance) separating taxa in two communities, phylogenetic beta diversity (Steven Kembel)
   comdist.result <- comdist(communityMatrix, phydist)
+  
+  # create file for intermediate data beta1-1 matrix
+  if (!is.null(comdistFile))
+    write.cm(comdist.result, comdistFile)
   
   comdist.m <- as.matrix(comdist.result)
   comdist.m <- comdist.m[order(rownames(comdist.m)),]

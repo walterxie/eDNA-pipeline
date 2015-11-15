@@ -33,5 +33,8 @@ for (expId in 1:(n-1)) {
     
     cm.env <- getSampleMetaData(isPlot)  
     
-    comm.phylo.struc(communityMatrix, phyloTree, treeFileStem, tableFile, verbose)
+    fname <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
+    comdistFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))
+    
+    comm.phylo.struc(communityMatrix, phyloTree, treeFileStem, tableFile, verbose, comdistFile)
 }
