@@ -60,12 +60,12 @@ comm.phylo.struc <- function(communityMatrix, phyloTree, treeFileStem, tableFile
   
   # MPD (mean pairwise distance) separating taxa in two communities, phylogenetic beta diversity (Steven Kembel)
   comdist.result <- comdist(communityMatrix, phydist)
-  
-  # create file for intermediate data beta1-1 matrix
-  if (!is.null(comdistFile))
-    write.cm(comdist.result, comdistFile)
-  
   comdist.m <- as.matrix(comdist.result)
+  
+  # create file for intermediate data phylogenetic beta diversity matrix
+  if (!is.null(comdistFile))
+    write.cm(comdist.m, comdistFile)
+  
   comdist.m <- comdist.m[order(rownames(comdist.m)),]
   comdist.m <- comdist.m[,order(colnames(comdist.m))]
   comdist.m[upper.tri(comdist.m)] <- NA
