@@ -68,7 +68,7 @@ taxa.group <<- "all"
 isPlot <<- TRUE # by plot
 rankLevel="phylum" 
 groupLevel="kingdom" # gives colour, and must higher than rankLevel
-source("allTaxonomyPhylum2.r", local=TRUE)
+source("allTaxaSummary2.r", local=TRUE)
 
 isPlot <<- FALSE
 # create all rarefaction table
@@ -133,7 +133,7 @@ for (taxag in taxa.groups) {
   
   rankLevel="order" 
   groupLevel="phylum" # gives colour, and must higher than rankLevel
-  source("allTaxonomyPhylum2.r", local=TRUE)
+  source("allTaxaSummary2.r", local=TRUE)
 
   source("allPhyloRare.r", local=TRUE)
   
