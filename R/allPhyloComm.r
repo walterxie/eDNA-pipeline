@@ -31,7 +31,7 @@ for (expId in 1:(n-1)) {
     
     communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton, taxa.group)
     
-    cm.env <- getSampleMetaData(isPlot)  
+    #env <- getSampleMetaData(isPlot)  
     
     fname <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
     comdistFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))

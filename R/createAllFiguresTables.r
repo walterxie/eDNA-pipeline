@@ -72,10 +72,13 @@ source("allTaxonomyPhylum2.r", local=TRUE)
 
 isPlot <<- FALSE
 # create all rarefaction table
-#source("createAllRarefactionTable.r", local=TRUE)
-source("allRarefactions.r", local=TRUE)
+#source("createAllRarefactionTables.r", local=TRUE)
+#source("allRarefactions.r", local=TRUE)
 
 taxa.group <<- "assigned"
+#source("createAllPhyloRareTables.r", local=TRUE)
+source("allPhyloRare.r", local=TRUE)
+
 # create all beta1-1 matrix for the rest of analyses 
 #isPlot <<- TRUE
 #source("createAllDissimilarityMatrices.r", local=TRUE)
@@ -114,13 +117,14 @@ source("allStatisticsTaxaGroup.r", local=TRUE)
 isPlot <<- TRUE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
-  source("createAllDissimilarityMatrices.r", local=TRUE)
+  #source("createAllDissimilarityMatrices.r", local=TRUE)
 }
 
 isPlot <<- FALSE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
-  source("createAllDissimilarityMatrices.r", local=TRUE)
+  #source("createAllDissimilarityMatrices.r", local=TRUE)
+  source("createAllPhyloRareTables.r", local=TRUE)
 }
 
 isPlot <<- FALSE
@@ -131,6 +135,8 @@ for (taxag in taxa.groups) {
   groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxonomyPhylum2.r", local=TRUE)
 
+  source("allPhyloRare.r", local=TRUE)
+  
   source("allCommPhylo.r", local=TRUE)
   
   source("allRedundancyAnalysis.r", local=TRUE)

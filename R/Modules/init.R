@@ -140,24 +140,6 @@ getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0)
 }
 # rownames(communityMatrix) <- gsub("-(.*)|", "\\1", rownames(communityMatrix))
 
-###### table to plot Rarefaction ##### 
-getRarefactionTable <- function(expId, isPlot, min2) {
-  n <- length(matrixNames) 
-  matrixName <- matrixNames[expId]
-  # hard code for Vegetation that only has plot and always keep singletons
-  if (expId == n) {
-    matrixName <- postfix(matrixName, TRUE, FALSE, sep="-")
-  } else {
-    matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
-  }
-  
-  inputRDT <- file.path(workingPath, "data", paste(matrixName, "rarefaction-table.csv", sep="-"))
-  if(verbose) 
-    cat("\nUpload rarefaction table : from", inputRDT, "\n") 
-  
-  rarefactionTable <- read.csv(file=inputRDT, head=TRUE, sep=",", row.names=paste(levels, qs, sep=""), check.names=FALSE)
-}
-
 ###### taxa assignment by reads #####
 # "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS"
 # PROKARYOTA: all prokaryotes (Bacteria + Archaea)
@@ -254,6 +236,47 @@ getPhyloTree <- function(fNameStem) {
     cat("Warning: cannot find tree file:", inputT, "\n") 
   }
   tree
+}
+
+###### table to plot Phylo Rarefaction ##### 
+getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
+  n <- length(matrixNames) 
+  # hard code for Vegetation that only has plot and always keep singletons
+  if (expId == n) {
+    mid.name <- postfix("all", TRUE, FALSE, sep="-")
+  } else {
+    mid.name <- postfix(taxa.group, isPlot, min2, sep="-") 
+  }
+  
+  inputT <- file.path(workingPath, "data", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
+  if (file.exists(inputT)) {
+    phylo.rare.df <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+    if(verbose) 
+      cat("\nUpload phylo rarefaction table from", inputT, "\n") 
+  } else {
+    phylo.rare.df <- NULL
+    cat("Warning: cannot find phylo rarefaction table", inputT, "\n") 
+  }
+  
+  phylo.rare.df
+}
+
+###### table to plot Rarefaction ##### 
+getRarefactionTable <- function(expId, isPlot, min2) {
+  n <- length(matrixNames) 
+  matrixName <- matrixNames[expId]
+  # hard code for Vegetation that only has plot and always keep singletons
+  if (expId == n) {
+    matrixName <- postfix(matrixName, TRUE, FALSE, sep="-")
+  } else {
+    matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
+  }
+  
+  inputRDT <- file.path(workingPath, "data", paste(matrixName, "rarefaction-table.csv", sep="-"))
+  if(verbose) 
+    cat("\nUpload rarefaction table : from", inputRDT, "\n") 
+  
+  rarefactionTable <- read.csv(file=inputRDT, head=TRUE, sep=",", row.names=paste(levels, qs, sep=""), check.names=FALSE)
 }
 
 ###### dissimilarity matrix #####
