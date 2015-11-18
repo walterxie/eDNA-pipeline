@@ -11,25 +11,25 @@ library(scales)
 source("Modules/init.R", local=TRUE)
 source("Modules/vif_function.R", local=TRUE)
 
-# communityMatrix: rows are simples
-# cm.env: rows are simples, and must be same as rownames(communityMatrix) inlcuding order
+# cm.or.dist: rows are simples
+# env: rows are simples, and must be same as rownames(cm.or.dist) inlcuding order
 # tableFile: latex file
 # verbose default TRUE
-proceedRDA <- function(communityMatrix, cm.env, tableFile, verbose=TRUE) {
-  if ( all( tolower(rownames(cm.env)) != tolower(rownames(communityMatrix)) ) ) 
+proceedRDA <- function(cm.or.dist, env, tableFile=NULL, verbose=TRUE) {
+  if ( all( tolower(rownames(env)) != tolower(rownames(as.matrix(cm.or.dist))) ) ) 
     stop("Site names in community matrix and environmental data file not matched !")
   
   # Constrained ordination ------------------------------------------------------
   rda_table <- data.frame(row.names=c("Constrained","Unconstrained"))
-  anova_table <- data.frame(row.names=colnames(cm.env))
+  anova_table <- data.frame(row.names=colnames(env))
   
   # Distance-based redundancy analysis, using capscale
   # Constrained Analysis of Principal Coordinates (CAP) is an ordination method similar to Redundancy Analysis (rda).
   # DB-RDA, empty model
-  rda_0 <- capscale(communityMatrix ~ 1, cm.env, distance = "jaccard")
+  rda_0 <- capscale(cm.or.dist ~ 1, env, distance = "jaccard")
   
   # DB-RDA, maximal model (bad idea - only use for auto model building)
-  rda_1 <- capscale(communityMatrix ~ ., cm.env, distance = "jaccard")
+  rda_1 <- capscale(cm.or.dist ~ ., env, distance = "jaccard")
   if (verbose) head(summary(rda_1))
   # sp = species scores, wa = site scores, bp = biplot arrows, lc = linear constraints 
   #	plot(rda_1, display = c("wa", "bp")) # Note correlation of biplot arrows
@@ -44,9 +44,9 @@ proceedRDA <- function(communityMatrix, cm.env, tableFile, verbose=TRUE) {
   constrained_inertia <- c()
   constrained_proportion <- c()
   # Test each variable individually
-  for (i in 1:length(colnames(cm.env))) {
-    rda_individual <- capscale(formula = as.formula(paste("communityMatrix", colnames(cm.env)[i], sep=" ~ ")), 
-                               cm.env, distance = "jaccard")
+  for (i in 1:length(colnames(env))) {
+    rda_individual <- capscale(formula = as.formula(paste("cm.or.dist", colnames(env)[i], sep=" ~ ")), 
+                               env, distance = "jaccard")
     constrained_inertia <- c(constrained_inertia, rda_individual$CCA$tot.chi)
     constrained_proportion <- c(constrained_proportion, rda_individual$CCA$tot.chi/rda_individual$tot.chi)
   }
@@ -62,15 +62,15 @@ proceedRDA <- function(communityMatrix, cm.env, tableFile, verbose=TRUE) {
   
   # Build model after stepwise removal of collinear variables (vif >= 10; requires vif_function.R) 
   # variance inflation factor (VIF) quantifies the severity of multicollinearity in an ordinary least squares regression analysis. 
-  env_reduced <- vif_func(in_frame = cm.env)
+  env_reduced <- vif_func(in_frame = env)
   print(env_reduced) # Remaining variables
   
   # Build model automatically from reduced variable set
   # (Unsure how to pass env_reduced variables to capscale formula; paste() doesn't work...)
-  #	rda_reduced <- capscale(communityMatrix ~ slope.degree + Mean.Temp + Northness + Eastness + 
-  #							pH + C.N.ratio + NO3.N + NH4.N + Olsen.P, cm.env, distance = "jaccard")
-  rda_reduced <- capscale(formula = as.formula(paste("communityMatrix", paste(env_reduced, collapse=" + "), sep=" ~ ")), 
-                          cm.env, distance = "jaccard")
+  #	rda_reduced <- capscale(cm.or.dist ~ slope.degree + Mean.Temp + Northness + Eastness + 
+  #							pH + C.N.ratio + NO3.N + NH4.N + Olsen.P, env, distance = "jaccard")
+  rda_reduced <- capscale(formula = as.formula(paste("cm.or.dist", paste(env_reduced, collapse=" + "), sep=" ~ ")), 
+                          env, distance = "jaccard")
   if (verbose) head(summary(rda_reduced))
   anova_reduced <- anova(rda_reduced, by = "terms")
   
@@ -85,7 +85,7 @@ proceedRDA <- function(communityMatrix, cm.env, tableFile, verbose=TRUE) {
   # Choose a Model by Permutation Tests in Constrained Ordination using forward model selection
   rda_reduced_f <- ordistep(rda_0, scope = formula(rda_reduced), direction = "forward", permutations = 3999)
   
-  rda_forward <- capscale(formula = as.formula(rda_reduced_f$call), data = cm.env, distance = "jaccard")
+  rda_forward <- capscale(formula = as.formula(rda_reduced_f$call), data = env, distance = "jaccard")
   if (verbose) head(summary(rda_forward))
   anova_forward <- anova(rda_forward, by = "terms")
   
@@ -100,7 +100,7 @@ proceedRDA <- function(communityMatrix, cm.env, tableFile, verbose=TRUE) {
   # Choose a Model by Permutation Tests in Constrained Ordination using backward model selection
   rda_reduced_b <- ordistep(rda_reduced, scope = formula(rda_0), direction = "backward", permutations = 3999)
   
-  rda_backward <- capscale(formula = as.formula(rda_reduced_b$call), data = cm.env, distance = "jaccard")
+  rda_backward <- capscale(formula = as.formula(rda_reduced_b$call), data = env, distance = "jaccard")
   if (verbose) head(summary(rda_backward))
   anova_backward <- anova(rda_backward, by = "terms")
   

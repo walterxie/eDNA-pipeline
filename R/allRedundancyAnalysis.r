@@ -84,7 +84,7 @@ for (expId in 1:(n-1)) {
   cat("RDA of", taxa.group, "subset from", matrixNames[expId], "having", ncol(communityMatrix), "OTUs", 
       nrow(communityMatrix), "samples. \n") 
   
-  rda <- proceedRDA(communityMatrix, cm.env, tableFile, verbose)
+  rda <- proceedRDA(cm.or.dist=communityMatrix, env=cm.env, tableFile, verbose)
     
   fname <- paste("rda", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
   pdf(file.path(workingPath, figDir, paste(fname, "pdf", sep = ".")), width=9, height=3)
