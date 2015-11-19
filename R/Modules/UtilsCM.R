@@ -1,5 +1,24 @@
 # Author: Walter Xie, Andrew Dopheide
-# Accessed on 1 Sep 2015
+# Accessed on 19 Nov 2015
+
+
+# remove singletons from rows/cols
+rmSingletons <- function(communityMatrix, MARGIN=1, verbose=TRUE) {
+  if (is.element(1, MARGIN)) {
+    singletons <- which(rowSums(communityMatrix)==1)
+    communityMatrix <- communityMatrix[-singletons,]
+    msg <- "from rows"
+  } else if (is.element(2, MARGIN)) {
+    singletons <- which(colSums(communityMatrix)==1)
+    communityMatrix <- communityMatrix[,-singletons]
+    msg <- "from columns"
+  }
+  
+  if(verbose) 
+    cat("Remove", length(singletons) ,"singletons", msg, "!\n")
+  
+  communityMatrix
+}
 
 # communityMatrix: data frame
 transposeCM <- function(communityMatrix=communityMatrix) {

@@ -145,7 +145,7 @@ getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0)
 # PROKARYOTA: all prokaryotes (Bacteria + Archaea)
 # EUKARYOTA: all eukaryotes
 # PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
-getTaxaPaths <- function(expId, taxa.group="all") {
+getTaxaPaths <- function(expId, taxa.group="all", rank="kingdom") {
   inputTaxa <- file.path(workingPath, "taxonomy_tables", paste(matrixNames[expId], "taxonomy_table.txt", sep="_"))
   taxaPaths <- readTaxaFile(inputTaxa)	
   taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
@@ -163,7 +163,7 @@ getTaxaPaths <- function(expId, taxa.group="all") {
       } else if (toupper(taxa.group) == "PROTISTS") {
         taxaPaths <- subset(taxaPaths, grepl("CHROMISTA|PROTOZOA", taxaPaths[,"kingdom"])) 
       } else {
-        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"kingdom"])) 
+        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,rank])) 
       }
     }
   }
