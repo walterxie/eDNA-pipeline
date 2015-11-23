@@ -123,6 +123,9 @@ calculateDissimilarityMatrix <- function(communityMatrix, diss.fun="beta1-1", pr
     } else if (diss.fun=="horn.morisita") {
       # Horn-Morisita
       diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- vegdist(communityMatrix[row.pairs[n,],], method="horn", binary=FALSE)
+    } else if (diss.fun=="bray.curtis") {
+      # Bray-Curtis
+      diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- vegdist(communityMatrix[row.pairs[n,],])
     } else { # diss.fun="beta1-1"
       # beta1-1
       diss.matrix[row.pairs[n,2], row.pairs[n,1]] <- d(communityMatrix[row.pairs[n,],],lev="beta",q=1)-1
