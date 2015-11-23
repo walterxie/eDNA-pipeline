@@ -135,3 +135,9 @@ pdf(file.path(workingPath, paste0("optimal-clusters-cascadeKM.pdf")), width=6, h
 plot(ccas, sortq=TRUE)
 invisible(dev.off()) 
 
+ccas <- cascadeKM(t(sba), 2, 20, criterion = "ssi")
+pdf(file.path(workingPath, paste0("optimal-clusters-cascadeKM-ssi.pdf")), width=6, height=6)
+plot(ccas, sortq=TRUE)
+invisible(dev.off())
+
+
