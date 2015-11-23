@@ -66,29 +66,6 @@ run.pam.cl=function(data, data.dist, n.max=20) {
   return(nclusters)
 }
 
-upgma.clustering=function(x,k) { # x is a distance matrix and k the number of clusters
-  require(cluster)
-  cluster = as.vector(pam(as.dist(x), k, diss=TRUE)$clustering)
-  return(cluster)
-}
-
-run.upgma.cl=function(data, data.dist, n.max=20) { 
-  require(clusterSim)
-  #nclusters = index.G1(t(data), data.cluster, d = data.dist, centrotypes = "medoids")
-  nclusters=NULL
-  for (k in 1:n.max) { 
-    if (k==1) {
-      nclusters[k]=NA 
-    } else {
-      data.cluster_temp=hclust(data.dist, "ave") # "average" (= UPGMA)
-      # cut dendrogram in n_cluster clusters
-      clusMember = cutree(data.cluster_temp, k)
-      nclusters[k]=index.G1(t(data), data.cluster_temp, d=data.dist, centrotypes = "medoids")
-    }
-  }
-  return(nclusters)
-}
-
 source("../R/Modules/Diversities.R")
 
 ###### load SBA 
@@ -125,7 +102,7 @@ diss.matrix <- calculateDissimilarityMatrix(t(sba), diss.fun=dist.fun)
 diss.matrix <- diss.matrix * 10
 sba.dist=as.dist(diss.matrix)
 
-nclusters=run.upgma.cl(sba, sba.dist, n.max)
+nclusters=run.pam.cl(sba, sba.dist, n.max)
 
 # the optimal number of clusters
 pdf(file.path(workingPath, paste0("optimal-clusters-", dist.fun, ".pdf")), width=6, height=6)
@@ -140,7 +117,7 @@ dist.fun="jaccard"
 diss.matrix <- calculateDissimilarityMatrix(t(sba), diss.fun=dist.fun)
 sba.dist=as.dist(diss.matrix)
 
-nclusters=run.upgma.cl(sba, sba.dist, n.max)
+nclusters=run.pam.cl(sba, sba.dist, n.max)
 
 # the optimal number of clusters
 pdf(file.path(workingPath, paste0("optimal-clusters-", dist.fun, ".pdf")), width=6, height=6)
