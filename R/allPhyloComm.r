@@ -19,22 +19,22 @@ source("Modules/CommunityPhylogenetic.R", local=TRUE)
 cat("\nAnalysis: eDNA community phylogenetic structure. \n")
 
 for (expId in 1:(n-1)) {
-    ### eDNA ###
-    # 16S-assigned-min2
-    treeFileStem <- tolower(paste(matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-"))
-    phyloTree <- getPhyloTree(treeFileStem)
-
-    if (is.null(phyloTree)) {
-      cat("\nSkip", taxa.group, "subset from", matrixNames[expId], "because of no tree file.\n")
-      next
-    }
-    
-    communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton, taxa.group)
-    
-    #env <- getSampleMetaData(isPlot)  
-    
-    fname <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
-    comdistFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))
-    
-    comm.phylo.struc(communityMatrix, phyloTree, treeFileStem, tableFile, verbose, comdistFile)
+  ### eDNA ###
+  # 16S-assigned-min2, isPlot always FALSE for a valid treeFileStem
+  treeFileStem <- tolower(paste(matrixNames[expId], postfix(taxa.group, FALSE, rmSingleton, sep="-"), sep = "-"))
+  phyloTree <- getPhyloTree(treeFileStem)
+  
+  if (is.null(phyloTree)) {
+    cat("\nSkip", taxa.group, "subset from", matrixNames[expId], "because of no tree file.\n")
+    next
+  }
+  
+  communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton, taxa.group)
+  
+  #env <- getSampleMetaData(isPlot)  
+  
+  fname <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
+  comdistFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))
+  
+  comm.phylo.struc(communityMatrix, phyloTree, treeFileStem, tableFile, verbose, comdistFile)
 }

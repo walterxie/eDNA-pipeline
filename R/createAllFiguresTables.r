@@ -70,7 +70,7 @@ rankLevel="phylum"
 groupLevel="kingdom" # gives colour, and must higher than rankLevel
 source("allTaxaSummary2.r", local=TRUE)
 
-isPlot <<- FALSE
+#isPlot <<- FALSE
 # create all rarefaction table
 #source("createAllRarefactionTables.r", local=TRUE)
 #source("allRarefactions.r", local=TRUE)
@@ -87,11 +87,11 @@ isPlot <<- FALSE
 
 source("allWithinBetweenPlots.r", local=TRUE)
 
+isPlot <<- TRUE
 source("allNMMDS.r", local=TRUE)
 
 source("allCommPhylo.r", local=TRUE)
 
-isPlot <<- TRUE
 source("allDendrograms.r", local=TRUE)
 
 source("allHeatMap.r", local=TRUE)
@@ -114,38 +114,36 @@ cat("\n\nSuperkingdom: PROKARYOTA = Bacteria + Archaea; PROTISTS = CHROMISTA + P
 
 source("allStatisticsTaxaGroup.r", local=TRUE)
 
-isPlot <<- TRUE
-for (taxag in taxa.groups) {
-  taxa.group <<- taxag
-  #source("createAllDissimilarityMatrices.r", local=TRUE)
-}
 
 isPlot <<- FALSE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
   #source("createAllDissimilarityMatrices.r", local=TRUE)
-  source("createAllPhyloRareTables.r", local=TRUE)
 }
 
-isPlot <<- FALSE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
   
   rankLevel="order" 
   groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxaSummary2.r", local=TRUE)
-
-  source("allPhyloRare.r", local=TRUE)
-  
-  source("allCommPhylo.r", local=TRUE)
-  
-  source("allRedundancyAnalysis.r", local=TRUE)
 }
 
 isPlot <<- TRUE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
-  # TODO
+  #source("createAllDissimilarityMatrices.r", local=TRUE)
+  source("createAllPhyloRareTables.r", local=TRUE)
+}
+
+for (taxag in taxa.groups) {
+  taxa.group <<- taxag
+  
+  source("allPhyloRare.r", local=TRUE)
+  
+  source("allCommPhylo.r", local=TRUE)
+  
+  #source("allRedundancyAnalysis.r", local=TRUE)
 }
 
 ######## complete report latex #######

@@ -95,7 +95,7 @@ for (expId in 1:n) {
     geom_point(aes_string(shape=shapedBy, color=colouredBy), size = 3) + 
     scale_shape_manual(values=myshape) + # The shape palette can deal with a maximum of 6 discrete values
     geom_text(aes_string(label="Row.names", color=colouredBy), size = 3, vjust = 2, alpha = 0.5) +
-    theme_bw() + scale_colour_gradientn(colours = c("red", "green", "blue")) +
+    theme_bw() + scale_colour_gradientn(colours = c("blue", "orange")) +
     theme(legend.position="top", plot.title = element_text(size = 8), panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), panel.background = element_blank()) +
     guides(shape=guide_legend(nrow=2)) +

@@ -28,25 +28,32 @@ for (expId in 1:(n-1)) {
     next
   }
   
-  merge.df <- merge(phylo.rare.df, env[,c("Plot","Elevation","ForestType")], by = "row.names", sort = FALSE)
+  merge.df <- merge(phylo.rare.df, env[,c("Elevation","ForestType")], by = "row.names", sort = FALSE)
   # rename Row.names
   colnames(merge.df)[1] <- "Samples"
   
-  melt.df <- melt(merge.df, id=c("Samples","Plot","Elevation","ForestType"))
+  melt.df <- melt(merge.df, id=c("Samples","Elevation","ForestType"))
   melt.df <- melt.df[complete.cases(melt.df),]
   # remove prefix size.
   melt.df$variable  <- gsub("^.*?\\.","",melt.df$variable) 
   
   melt.df$variable <- as.numeric(melt.df$variable)
   melt.df$Samples = factor(melt.df$Samples, unique(melt.df$Samples))
-  melt.df$ForestType = factor(melt.df$ForestType, sort(unique(melt.df$ForestType)))
+  #sort(unique(melt.df$ForestType))
+  melt.df$ForestType = factor(melt.df$ForestType, c("VS2","VS3","VS5","WF7","WF9","WF11","WF12","WF13","MF20","unknown"))
   
-  p <- ggplot(data=melt.df, aes(x=variable, y=value, group=Samples, shape=ForestType, colour=Elevation)) + 
-    scale_shape_manual(values=0:nlevels(melt.df$ForestType)) +
+  end.lines <- aggregate(cbind(variable, value) ~ Samples, melt.df, max)
+  end.lines <- merge(end.lines, unique(melt.df[,c("Samples","Elevation","ForestType")]), by = "Samples", sort = FALSE)
+  
+  p <- ggplot(data=melt.df, aes(x=variable, y=value, group=Samples, colour=Elevation)) + 
+    scale_shape_manual(values=c(15,16,17,0,1,2,5,6,3,4)) +
+    scale_colour_gradientn(colours = c("blue", "orange")) +
+    scale_x_sqrt(breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000)) + 
+    #scale_y_log10(breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000), label=scientific_10) +
     xlab("Rarefaction Size") + ylab("Mean of Rooted PD") + 
     ggtitle(paste(matrixNames[expId], taxa.group)) +     
     geom_line(size=.5) +     
-    geom_point(size=3, fill="white") +
+    geom_point(data=end.lines, aes(shape=ForestType, colour=Elevation), size=3) +
     theme(axis.line = element_line(colour = "black"),
           panel.grid.major = element_blank(),  panel.grid.minor = element_blank(),
           panel.border = element_blank(), panel.background = element_blank()) 
