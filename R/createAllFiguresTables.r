@@ -141,7 +141,7 @@ for (taxag in taxa.groups) {
   
   source("allPhyloRare.r", local=TRUE)
   
-  source("allCommPhylo.r", local=TRUE)
+  source("allPhyloComm.r", local=TRUE)
   
   #source("allRedundancyAnalysis.r", local=TRUE)
 }

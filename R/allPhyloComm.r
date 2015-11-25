@@ -16,7 +16,14 @@ n <- length(matrixNames)
 
 source("Modules/CommunityPhylogenetic.R", local=TRUE)
 
+pdFilePath <- file.path(workingPath, "data", "pd")
+mkdir(pdFilePath) 
+
 cat("\nAnalysis: eDNA community phylogenetic structure. \n")
+
+#env <- getSampleMetaData(isPlot)
+#env[,"ForestType"] <- gsub(":.*", "", env[,"ForestType"], ignore.case = T)
+#env[,"ForestType"] <- gsub("x", "unknown", env[,"ForestType"], ignore.case = T)
 
 for (expId in 1:(n-1)) {
   ### eDNA ###
@@ -31,10 +38,18 @@ for (expId in 1:(n-1)) {
   
   communityMatrix <- getCommunityMatrixT(expId, isPlot, rmSingleton, taxa.group)
   
-  #env <- getSampleMetaData(isPlot)  
+  pd.alpha <- phylo.alpha(communityMatrix, phyloTree)
   
-  fname <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
-  comdistFile <- file.path(workingPath, "data", paste(fname, ".csv", sep = ""))
+  pd.phydist <- phylo.phydist(communityMatrix, phyloTree)
   
-  comm.phylo.struc(communityMatrix, phyloTree, treeFileStem, tableFile, verbose, comdistFile)
+  pd.mpd <- phylo.mpd(communityMatrix, pd.phydist)
+  pd.mntd <- phylo.mntd(communityMatrix, pd.phydist)
+  
+  pd.beta.dist <- phylo.beta.dist(communityMatrix, pd.phydist)
+  
+  fileStem <- paste(matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
+  printResult(pd.alpha, pd.mpd, pd.mntd, pd.beta.dist, pdFilePath, fileStem, tableFile)
+    
+  fileStem <- paste("pd-beta", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
+  plotPDBeta(pd.beta.dist, file.path(workingPath, figDir, fileStem))
 }
