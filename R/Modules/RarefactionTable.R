@@ -47,6 +47,9 @@ createRDPerSampleTable <- function(expId, isPlot, rmSingleton, taxa.group, pathF
     cat("Rarefaction :", matrixNames[expId], taxa.group, ", min =", rare.min, ", max =", rare.max, ".\n") 
   }
   
+  alpha0MeanTable <- data.frame(row.names=rownames(communityMatrix), check.names=FALSE)
+  alpha1MeanTable <- data.frame(row.names=rownames(communityMatrix), check.names=FALSE)
+  
   for (ss in sample.sizes) {
     if (verbose)
       cat("sample size =", ss, ".\n") 
