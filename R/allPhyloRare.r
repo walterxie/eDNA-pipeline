@@ -13,6 +13,7 @@ if(!exists("isPlot")) isPlot = FALSE # by subplot
 
 #source("Modules/init.r")
 source("Modules/PhylorareTable.R")
+source("Modules/RarefactionPlot.R")
 
 n <- length(matrixNames) 
 
@@ -33,5 +34,5 @@ for (expId in 1:(n-1)) {
   
   fname <- paste("phylorare", matrixNames[expId], postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-")
   fileStem <- file.path(workingPath, figDir, fname)
-  plotPhylorareTable(phylo.rare.df, env, fileStem)
+  plotRarefactionTable(phylo.rare.df, env, fileStem)
 }

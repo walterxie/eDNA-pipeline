@@ -248,7 +248,7 @@ getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
     mid.name <- postfix(taxa.group, isPlot, min2, sep="-") 
   }
   
-  inputT <- file.path(workingPath, "data", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
+  inputT <- file.path(workingPath, "data", "pdrf", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
   if (file.exists(inputT)) {
     phylo.rare.df <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
     if(verbose) 
@@ -257,11 +257,25 @@ getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
     phylo.rare.df <- NULL
     cat("Warning: cannot find phylo rarefaction table", inputT, "\n") 
   }
-  
   phylo.rare.df
 }
 
 ###### table to plot Rarefaction ##### 
+getRarefactionTableTaxa <- function(expId, isPlot, min2, taxa.group, div="alpha1") {
+  pathFileStem <- file.path(workingPath, "data", "rf", paste(matrixNames[expId], 
+                    postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-"))
+  inputT <- paste(pathFileStem, "rare", div, "table.csv", sep = "-")
+  if (file.exists(inputT)) {
+    rare.df <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+    if(verbose) 
+      cat("\nUpload rarefaction table per sample from", inputT, "\n") 
+  } else {
+    rare.df <- NULL
+    cat("Warning: cannot find rarefaction table per sample", inputT, "\n") 
+  }
+  rare.df
+}
+
 getRarefactionTable <- function(expId, isPlot, min2) {
   n <- length(matrixNames) 
   matrixName <- matrixNames[expId]

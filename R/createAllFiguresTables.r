@@ -132,12 +132,15 @@ for (taxag in taxa.groups) {
 isPlot <<- TRUE
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
+  source("createAllRarefactionTables.r", local=TRUE)
   #source("createAllDissimilarityMatrices.r", local=TRUE)
   source("createAllPhyloRareTables.r", local=TRUE)
 }
 
 for (taxag in taxa.groups) {
   taxa.group <<- taxag
+  
+  source("allRarefactionsPerSample.r", local=TRUE)
   
   source("allPhyloRare.r", local=TRUE)
   
