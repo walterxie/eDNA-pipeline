@@ -70,24 +70,23 @@ rankLevel="phylum"
 groupLevel="kingdom" # gives colour, and must higher than rankLevel
 source("allTaxaSummary2.r", local=TRUE)
 
-#isPlot <<- FALSE
-# create all rarefaction table
-#source("createAllRarefactionTables.r", local=TRUE)
-#source("allRarefactions.r", local=TRUE)
-
 taxa.group <<- "assigned"
 #source("createAllPhyloRareTables.r", local=TRUE)
 source("allPhyloRare.r", local=TRUE)
 
-# create all beta1-1 matrix for the rest of analyses 
-#isPlot <<- TRUE
-#source("createAllDissimilarityMatrices.r", local=TRUE)
 isPlot <<- FALSE
+# create all rarefaction table
+#source("createAllRarefactionTables.r", local=TRUE)
+#source("allRarefactions.r", local=TRUE)
+# create all beta1-1 matrix for the rest of analyses 
 #source("createAllDissimilarityMatrices.r", local=TRUE)
 
 source("allWithinBetweenPlots.r", local=TRUE)
 
 isPlot <<- TRUE
+#source("createAllDissimilarityMatrices.r", local=TRUE)
+#source("createAllMaxRemDiv.r", local=TRUE)
+
 source("allNMMDS.r", local=TRUE)
 
 source("allCommPhylo.r", local=TRUE)
@@ -134,6 +133,7 @@ for (taxag in taxa.groups) {
   taxa.group <<- taxag
   source("createAllRarefactionTables.r", local=TRUE)
   #source("createAllDissimilarityMatrices.r", local=TRUE)
+  #source("createAllMaxRemDiv.r", local=TRUE)
   source("createAllPhyloRareTables.r", local=TRUE)
 }
 

@@ -305,7 +305,7 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
     fname <- paste(matrixNames[expId], postfix(taxa.group, isPlot, min2, sep="-"), diss.fun, sep = "-") 
   }
   
-  inputB <- file.path(workingPath, "data", paste(fname, "csv", sep = "."))
+  inputB <- file.path(workingPath, "data", "dist", paste(fname, "csv", sep = "."))
   if(verbose) 
     cat("\nUpload", diss.fun, "matrix of", taxa.group, "taxa group(s) from", inputB, "\n") 
   
@@ -314,6 +314,32 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
   return(diss.matrix)
 }
 
+###### table to max remained diversity ##### 
+getMaxRemainedDiversity <- function(lev.q, taxa.group="assigned") {
+  inputT <- file.path(workingPath, "data", "maxrd", paste("max-div", lev.q, taxa.group,"table.csv", sep = "-"))
+  if (file.exists(inputT)) {
+    max.rd <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+    if(verbose) 
+      cat("\nUpload max remained diversity table from", inputT, "\n") 
+  } else {
+    max.rd <- NULL
+    cat("Warning: cannot find max remained diversity table", inputT, "\n") 
+  }
+  max.rd
+}
+
+getMaxRemainedDiversityRank <- function(lev.q, taxa.group="assigned") {
+  inputT <- file.path(workingPath, "data", "maxrd", paste("max-div-rank", lev.q, taxa.group,"table.csv", sep = "-"))
+  if (file.exists(inputT)) {
+    max.rd <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+    if(verbose) 
+      cat("\nUpload max remained diversity rank table from", inputT, "\n") 
+  } else {
+    max.rd <- NULL
+    cat("Warning: cannot find max remained diversity rank table", inputT, "\n") 
+  }
+  max.rd
+}
 
 ######## meta data of samples #######
 getSampleMetaData <- function(isPlot) {

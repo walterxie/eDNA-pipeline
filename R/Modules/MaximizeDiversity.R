@@ -5,6 +5,26 @@ JostDiversity <- function(communityMatrix, level, qN){
 	return(d(communityMatrix,lev=level,q=qN))
 }
 
+plotHeatmapMaxRemDivRank <- function(rank.elv, fname, title) {
+  breaks.rank <- round(seq(1, nrow(rank.elv), length.out = 5), digits = 0)
+  
+  rank.melt <- melt(rank.elv, id=c("Samples","Elevation","ForestType"))
+  rank.melt$Samples <- factor(rank.melt$Samples, levels=unique(rank.melt$Samples))
+  
+  p <- ggplot(rank.melt, aes(x=variable, y=Samples)) + 
+    geom_tile(aes(fill=value)) + 
+    scale_fill_gradient(na.value="transparent", low="blue", high="orange", name="rank", breaks=breaks.rank) +
+    ylab("Plot (sorted by elevation)") + ggtitle(title) +
+    theme(axis.title.x=element_blank(), axis.text.x=element_text(angle=45, hjust=1), 
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+  
+  pdf(file.path(workingPath, figDir, fname), width=6, height=6)	
+  print(p)
+  invisible(dev.off()) 
+}
+
+
+
 # Note: communityMatrix must be by plots
 # return 3 columns: rank, diversity, removedSites
 #e.g.
