@@ -126,6 +126,8 @@ for (taxag in taxa.groups) {
   rankLevel="order" 
   groupLevel="phylum" # gives colour, and must higher than rankLevel
   source("allTaxaSummary2.r", local=TRUE)
+  
+  #source("allEnterotypes.r", local=TRUE)
 }
 
 isPlot <<- TRUE
