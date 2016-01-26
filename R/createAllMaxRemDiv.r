@@ -5,7 +5,7 @@ if(!exists("verbose")) verbose = TRUE
 if(!exists("rmSingleton")) rmSingleton = TRUE
 if(!exists("otuThr")) otuThr = 97
 if(!exists("taxa.group")) taxa.group="assigned"
-if(!exists("isPlot")) isPlot = FALSE # by subplot
+if(!exists("isPlot")) isPlot = TRUE # by subplot
 
 
 n <- length(matrixNames) 
@@ -20,7 +20,7 @@ mkdir(filePath)
 cat("Intermediate data: create max remained diversity table",
     ", rmSingleton =", TRUE, ", isPlot =", TRUE, ", otuThr =", otuThr, "\n") 
 
-q=0
+q=1
 for (lev in c("gamma", "beta")) {
   if (lev == "beta") {
     q=1

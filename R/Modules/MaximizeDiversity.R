@@ -13,7 +13,7 @@ plotHeatmapMaxRemDivRank <- function(rank.elv, fname, title) {
   
   p <- ggplot(rank.melt, aes(x=variable, y=Samples)) + 
     geom_tile(aes(fill=value)) + 
-    scale_fill_gradient(na.value="transparent", low="blue", high="orange", name="rank", breaks=breaks.rank) +
+    scale_fill_gradient(na.value="transparent", low="white", high="steelblue", name="rank", breaks=breaks.rank) +
     ylab("Plot (sorted by elevation)") + ggtitle(title) +
     theme(axis.title.x=element_blank(), axis.text.x=element_text(angle=45, hjust=1), 
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
