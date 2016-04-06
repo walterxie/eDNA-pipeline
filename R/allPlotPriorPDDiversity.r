@@ -17,7 +17,10 @@ env <- getSampleMetaData(TRUE)
 
 for (taxag in taxaGroups) {
   for (matrn in matrixNames) {
-    t.communityMatrix <- getCommunityMatrixT(matrn, isPlot=TRUE, minAbund=2, minRich=800, taxa.group=taxag)
+    if (matrn == "16S" && taxag != "BACTERIA") 
+      next
+    
+    t.communityMatrix <- getCommunityMatrixT(matrn, isPlot=TRUE, minAbund=2, minRich=600, taxa.group=taxag)
     
     if (!is.null(t.communityMatrix)) {
       phylo.tree <- getPhyloTree(matrn, taxag)
