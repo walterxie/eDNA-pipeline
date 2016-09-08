@@ -6,10 +6,10 @@ threshold = 150
 
 # add postfix for various names
 postfix <- function(..., sep, min2=TRUE, by.plot=FALSE) {
-  name <- paste(list(...), sep = sep)
+  name <- paste(..., sep = sep)
   if (min2) 
     name <- paste(name, "min2", sep = sep)
-  if (isPlot) 
+  if (by.plot) 
     name <- paste(name, "by", "plot", sep = sep) 
   return(name)
 }
@@ -22,116 +22,44 @@ getPlot <- function(subplots, sep="-") {
 ######## load community matrix #######
 # by_plot=T plot based, min2=T no singleton 
 getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1","Vegetation"), 
-                               by.plot=FALSE, min2=TRUE, data.folder="./data/OTU_tables") {
+                               min2=TRUE, by.plot=FALSE, data.folder="./data/OTU_tables") {
   data.set <- match.arg(data.set)
 
   if (data.set=="Vegetation") {
     if (!by.plot)
       stop("Vegetation only has plot based community matrix !")
-    cm.fie.path <- file.path(data.folder, "..", "LBI_Trees_Saplings_SBA.csv")
+    cm.file.path <- file.path(data.folder, "..", "LBI_Trees_Saplings_SBA.csv")
   } else {
-    fn <- postfix(data.set, "otutable", sep="_", by.plot=by.plot, min2=min2)
+    fn <- postfix(data.set, "otutable", sep="_", min2=min2, by.plot=by.plot)
     # e.g. data/16S_otutable.txt
-    cm.fie.path <- file.path(data.folder, paste(fn, "txt", sep="."))
+    cm.file.path <- file.path(data.folder, paste(fn, "txt", sep="."))
   }
-  
+  print(cm.file.path)
   require(ComMA)
   # always set minAbund=1 here
-  communityMatrix <- ComMA::readCommunityMatrix(cm.fie.path, matrix.name=data.set, minAbund=1)
+  community.matrix <- ComMA::readCommunityMatrix(cm.file.path, matrix.name=data.set, minAbund=1)
   
-  return(communityMatrix)
+  return(community.matrix)
 }
+# t.cm <- transposeCM(cm)
 
-
-# transposed CM for vegan, and remove empty rows cols 
-# return(NULL) if nrow(taxaPaths) < minRow, default minRow=0
-getCommunityMatrixT <- function(expId, isPlot, min2, taxa.group="all", minRow=0) {
-  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
-  
-  n <- length(matrixNames)
-  if (expId < n && taxa.group != "all") {
-    ##### load data #####
-    taxaPaths <- getTaxaPaths(expId, taxa.group)
-    
-    if (nrow(taxaPaths) < minRow) {
-      cat("Warning: return NULL, because", nrow(taxaPaths), "row(s) classified as", taxa.group, "<", minRow, "threshold.\n")
-      return(NULL)
-    } else {
-      # merge needs at least 2 cols 
-      taxaAssgReads <- merge(communityMatrix, taxaPaths, by = "row.names")
-      
-      if (nrow(taxaAssgReads) < minRow) {
-        cat("Warning: return NULL, because", nrow(taxaAssgReads), "row(s) in cm match", taxa.group, "<", minRow, "threshold.\n")
-        return(NULL)
-      }
-      
-      # move 1st col Row.names to row.names
-      rownames(taxaAssgReads) <- taxaAssgReads[,"Row.names"]
-      taxaAssgReads <- taxaAssgReads[,-1]
-      # get CM
-      taxaAssgReads <- taxaAssgReads[,1:ncol(communityMatrix)]
-      
-      cat("Merging", nrow(taxaAssgReads), "matched OTUs from", nrow(communityMatrix), "OTUs in matrix to", 
-          nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ", final ncol =", ncol(taxaAssgReads), ".\n")
-      
-      communityMatrix <- data.matrix(taxaAssgReads)
-    }
-  }
-  
-  communityMatrix <- prepCommunityMatrix(communityMatrix)
-  
-  communityMatrixT <- transposeCM(communityMatrix)
-  
-  return(communityMatrixT)
-}
-# rownames(communityMatrix) <- gsub("-(.*)|", "\\1", rownames(communityMatrix))
+# cm.taxa <- mergeCMTaxa(cm, taxa.table)
+# taxa.assign <- assignTaxaByRank(cm.taxa)
+# sum(taxa.assign[[rank]])
 
 ###### taxa assignment by reads #####
 # "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS"
 # PROKARYOTA: all prokaryotes (Bacteria + Archaea)
 # EUKARYOTA: all eukaryotes
 # PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
-getTaxaPaths <- function(expId, taxa.group="all", rank="kingdom") {
-  inputTaxa <- file.path(workingPath, "taxonomy_tables", paste(matrixNames[expId], "taxonomy_table.txt", sep="_"))
-  taxaPaths <- readTaxaFile(inputTaxa)	
-  taxaPaths <- taxaPaths[order(rownames(taxaPaths)),]
-  # make lower case to match ranks
-  colnames(taxaPaths) <- tolower(colnames(taxaPaths))
+getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
+                         data.folder="./data/Taxonomy_tables", taxa.group="all", rank="kingdom") {
+  data.set <- match.arg(data.set)
   
-  nTaxa=nrow(taxaPaths)
-  ##### keep OTU rows contain given taxa belongTo ##### 
-  if (taxa.group != "all") {
-    # Exclude unassigned etc
-    taxaPaths <- subset(taxaPaths, !(grepl("root|cellular organisms|No hits|Not assigned", taxaPaths[,"kingdom"])))  
-    # (Only retain prokaryotes for 16S, eukaryotes for the other amplicons)  
-    if (expId==1) {
-      taxaPaths <- subset(taxaPaths, (grepl("BACTERIA|ARCHAEA", taxaPaths[,"kingdom"])))  
-    } else {
-      taxaPaths <- subset(taxaPaths, !(grepl("BACTERIA|ARCHAEA", taxaPaths[,"kingdom"])))
-    }
-    # Exclude probably bogus taxa
-    taxaPaths <- subset(taxaPaths, !(grepl("Cnidaria|Brachiopoda|Echinodermata|Porifera", taxaPaths[,"phylum"])|
-                                       grepl("Bivalvia|Teleostei|Elasmobranchii|Polyplacophora", taxaPaths[,"class"])|
-grepl("Nudibranchia|Crocodylia|Serpentes|Testudines|Carnivora|Gymnophiona|Lagomorpha|Rodentia|Serpentes|Scorpiones", taxaPaths[,"order"])))
-    
-    if (taxa.group != "assigned") {
-      if (toupper(taxa.group) == "PROKARYOTA" || toupper(taxa.group) == "EUKARYOTA") {
-        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,"superkingdom"])) 
-      } else if (toupper(taxa.group) == "PROTISTS") {
-        taxaPaths <- subset(taxaPaths, grepl("CHROMISTA|PROTOZOA", taxaPaths[,"kingdom"])) 
-      } else {
-        taxaPaths <- subset(taxaPaths, grepl(taxa.group, taxaPaths[,rank])) 
-      }
-    }
-  }
-  
-  if (nrow(taxaPaths) < 1)
-    cat("Warning: cannot find", taxa.group, "from taxa path file", inputTaxa, "!")
-  
-  if(verbose && nrow(taxaPaths) < nTaxa) 
-    cat("\nSelect", nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n") 
-  
-  return(taxaPaths)
+  tt.file.path <- file.path(data.folder, paste(data.set, "taxonomy_table.txt", sep="_"))
+  taxa.table <- ComMA::readTaxaTable(tt.file.path, matrix.name=data.set, taxa.group=taxa.group, rank=rank)	
+
+  return(taxa.table)
 }
 
 
