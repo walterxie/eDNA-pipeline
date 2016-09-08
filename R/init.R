@@ -1,43 +1,16 @@
-library(vegan)
-library(vegetarian)
-library(grid)
-library(gridExtra)
-library(data.table)
-library(xtable)
-library(tools)
-library(gplots)
-library(ggplot2)
-library(RColorBrewer)
-library(colorspace)
-#library(Matrix)
-library(reshape2)
-library(ggdendro)
-library(plyr)
-library(cluster)
-library(ape)
-
-if(!exists("sourcePath")) stop("source path to initiate modules is missing !")
-if(!exists("workingPath")) stop("working path containing data is missing !")
-
-if(!exists("verbose")) verbose <- TRUE
-
-# utils, run them before analysis
-source("Modules/IO.R")
-source("Modules/Utils.R")
-source("Modules/UtilsCM.R")
-# fundmental functions
-source("Modules/Diversities.R")
+# The file to initiate and load data 
+# depend on ComMA https://github.com/walterxie/ComMA
 
 # most abundant 150 OTUs
 threshold = 150
 
-# add postfix for figure name or table label
-postfix <- function(name, isPlot, min2, sep) {
-  if (isPlot) 
-    name <- paste(name, "byplot", sep = sep) 
+# add postfix for various names
+postfix <- function(..., sep, min2=TRUE, by.plot=FALSE) {
+  name <- paste(list(...), sep = sep)
   if (min2) 
     name <- paste(name, "min2", sep = sep)
-  
+  if (isPlot) 
+    name <- paste(name, "by", "plot", sep = sep) 
   return(name)
 }
 
@@ -47,55 +20,28 @@ getPlot <- function(subplots, sep="-") {
 }
 
 ######## load community matrix #######
-# expId = 1:6
-# isPlot determines to use which matrix file, by subplot or plot 
-# min2 = rmSingleton, whether remove all singletons
-# may contain empty rows cols
-getCommunityMatrix <- function(expId, isPlot, min2) {
-  n <- length(matrixNames)
-  matrixName <- matrixNames[expId]
-  
-  # hard code to get Vegetation
-  if (expId==n) {
-    if (!isPlot)
+# by_plot=T plot based, min2=T no singleton 
+getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1","Vegetation"), 
+                               by.plot=FALSE, min2=TRUE, data.folder="./data/OTU_tables") {
+  data.set <- match.arg(data.set)
+
+  if (data.set=="Vegetation") {
+    if (!by.plot)
       stop("Vegetation only has plot based community matrix !")
-    inputCM <- file.path(workingPath, "data", "LBI_Trees_Saplings_SBA.csv")
-  } else if (isPlot) {
-    inputCM <- file.path(workingPath, "data", paste(matrixName, "by_plot.txt", sep="_"))
+    cm.fie.path <- file.path(data.folder, "..", "LBI_Trees_Saplings_SBA.csv")
   } else {
-    # e.g. data/16S.txt
-    inputCM <- file.path(workingPath, "data", paste(matrixName, ".txt", sep=""))
+    fn <- postfix(data.set, "otutable", sep="_", by.plot=by.plot, min2=min2)
+    # e.g. data/16S_otutable.txt
+    cm.fie.path <- file.path(data.folder, paste(fn, "txt", sep="."))
   }
   
-  communityMatrix <- readFile(inputCM)
-  if(verbose) 
-    cat("\nUpload community matrix : ", ncol(communityMatrix), "columns,", nrow(communityMatrix), "rows, from", inputCM, "\n") 
-  
-  if (min2) {
-    singletons <- which(rowSums(communityMatrix)==1)
-    if(verbose) 
-      cat("Remove", length(singletons) ,"singletons from ", matrixName, " !\n")
-    communityMatrix <- communityMatrix[-singletons,]
-    rm(singletons)		
-  }
+  require(ComMA)
+  # always set minAbund=1 here
+  communityMatrix <- ComMA::readCommunityMatrix(cm.fie.path, matrix.name=data.set, minAbund=1)
   
   return(communityMatrix)
 }
 
-# remove empty rows cols
-prepCommunityMatrix <- function(communityMatrix) {
-  # filter column first to avoid empty rows after columns remvoed if vectorThr>0
-  if(any(colSums(communityMatrix)== 0)) {
-    communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=0, MARGIN=2)
-    #stop("Invalid input: community matrix has empty samples !")
-  }
-  if(any(rowSums(communityMatrix)== 0)) {
-    communityMatrix <- rmVectorFromCM(communityMatrix, vectorThr=0, MARGIN=1)
-    #stop("Invalid input: community matrix has empty OTUs !")
-  }
-  
-  return(communityMatrix)
-}
 
 # transposed CM for vegan, and remove empty rows cols 
 # return(NULL) if nrow(taxaPaths) < minRow, default minRow=0
