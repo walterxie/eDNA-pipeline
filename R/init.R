@@ -43,6 +43,8 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 }
 # t.cm <- transposeCM(cm)
 
+# taxa.table <- getTaxaTable("16S", taxa.group="assigned")
+# tt.sub <- subsetTaxaTable(taxa.table, taxa.group="BACTERIA", rank="phylum")
 # cm.taxa <- mergeCMTaxa(cm, taxa.table)
 # taxa.assign <- assignTaxaByRank(cm.taxa)
 # sum(taxa.assign[[rank]])
