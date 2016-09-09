@@ -9,35 +9,35 @@ div.row.names <- c("$^0D_\\alpha$","$^1D_\\alpha$","$^2D_\\alpha$","$^0D_\\beta$
 getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
   source("R/init.R", local=TRUE)
   
-  if(!exists("matrix.names")) stop("matrix names are missing !")
-  if(!exists("data.names")) stop("data set names are missing !")
+  if(!exists("input.names")) stop("input names are missing !")
+  output.names <- getOutputNames(input.names)
 
   # data frame for statistics
   otu.stats <- data.frame(stringsAsFactors=FALSE, check.names=FALSE)
   
   require(ComMA)
-  for (dataId in 1:length(data.names)) {
+  for (dataId in 1:length(input.names)) {
     # inlcude singletons
     min2=FALSE
-    cat("\n", matrix.names[dataId], "OTU clustering statistics,", ifelse(min2, "exclude", "include"), 
+    cat("\n", output.names[dataId], "OTU clustering statistics,", ifelse(min2, "exclude", "include"), 
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
-    cm <- getCommunityMatrix(data.names[dataId], min2=min2, by.plot=by.plot)
+    cm <- getCommunityMatrix(input.names[dataId], min2=min2, by.plot=by.plot)
     cm.summary <- ComMA::summaryCM.Vector(cm)
     # otus.row.names
-    otu.stats[1,matrix.names[dataId]] <- cm.summary["reads"]
-    otu.stats[2,matrix.names[dataId]] <- cm.summary["OTUs"]
-    otu.stats[3,matrix.names[dataId]] <- cm.summary["singletons"]
-    otu.stats[4,matrix.names[dataId]] <- as.numeric(cm.summary["OTUs"])-as.numeric(cm.summary["singletons"])
-    otu.stats[5,matrix.names[dataId]] <- cm.summary["max.OTU.abundance"]
+    otu.stats[1,output.names[dataId]] <- cm.summary["reads"]
+    otu.stats[2,output.names[dataId]] <- cm.summary["OTUs"]
+    otu.stats[3,output.names[dataId]] <- cm.summary["singletons"]
+    otu.stats[4,output.names[dataId]] <- as.numeric(cm.summary["OTUs"])-as.numeric(cm.summary["singletons"])
+    otu.stats[5,output.names[dataId]] <- cm.summary["max.OTU.abundance"]
     row.offset <- 5
     
     # no singletons
     min2=TRUE
-    cat("\n", matrix.names[dataId], "Jost diversities,", ifelse(min2, "exclude", "include"), 
+    cat("\n", output.names[dataId], "Jost diversities,", ifelse(min2, "exclude", "include"), 
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
-    cm <- getCommunityMatrix(data.names[dataId], min2=min2, by.plot=by.plot)
+    cm <- getCommunityMatrix(input.names[dataId], min2=min2, by.plot=by.plot)
     t.cm <- ComMA::transposeDF(cm)
     # gamma(q=0), alpha(q=0), beta(q=0), gamma(q=1), ..., beta(q=2)
     diversity.v <- ComMA::diversityTable(t.cm, named.vector=T)
@@ -45,7 +45,7 @@ getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
     diversity.v <- diversity.v[c(2,5,8,3,6,9,1,4,7)]
     # div.row.names
     for (i in 1:length(diversity.v)) 
-      otu.stats[i+row.offset, matrix.names[dataId]] <- diversity.v[i]
+      otu.stats[i+row.offset, output.names[dataId]] <- diversity.v[i]
   }
   rownames(otu.stats) <- c(otus.row.names, div.row.names)
   

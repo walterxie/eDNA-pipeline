@@ -1,10 +1,13 @@
 # The file to initiate and load data 
 # depend on ComMA https://github.com/walterxie/ComMA
 
-# names presented in figures and tables
-matrix.names <- c("16S","18S","fungal 26S","fungal ITS","COI-650","COI-300")
 # names presented in files
-data.names <- c("16S","18S","26S","ITS","FolCO1","ShCO1")
+input.names <- c("16S","18S","26S","ITS","FolCO1","ShCO1")
+# names presented in figures and tables
+getOutputNames <- function(input.names) {
+  output.names <- gsub("FolCO1", "COI-650", input.names)
+  output.names <- gsub("ShCO1", "COI-300", output.names)
+}
 
 # most abundant 150 OTUs
 most.abundant.OTU = 150
