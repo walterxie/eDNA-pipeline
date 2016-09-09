@@ -66,7 +66,8 @@ for(v in c("gamma0","gamma1","beta1","phylo")){
   #c <- cor(b, method = "pearson")
   #h <- hclust(as.dist(1-c)) # Gives same clustering as Euclidean
   #plot(h)
-  rownames(b) <- factor(rownames(b), levels = envdata.byplot.sort$Plot_elev, ordered = TRUE)
+  colnames(b) <- gsub(" ", "\n", colnames(b))
+  #rownames(b) <- factor(rownames(b), levels = envdata.byplot.sort$Plot_elev, ordered = TRUE)
   p <- make.heatmap1(as.matrix(b), 
                 column.method = "PCA", column.metric="euclidean", # Column ordering method
                 row.method  ="complete", row.metric = "euclidean", 
@@ -79,7 +80,7 @@ for(v in c("gamma0","gamma1","beta1","phylo")){
                 xlab("") + ylab("") + #coord_flip() +
                 theme(panel.grid = element_blank(), panel.border = element_blank(),
                       axis.text = element_blank(), axis.ticks = element_blank(),
-                      plot.margin = unit(c(0,2,2,0),"cm"), strip.text.x = element_text(colour = "red"))
+                      plot.margin = unit(c(0,2,2,0),"cm"))
   
   
   # Turn off clipping
@@ -101,8 +102,7 @@ for(v in c("gamma0","gamma1","beta1","phylo")){
   p2 <- ggplot(data = p.ord, aes(label, Elevation, group = 1)) + geom_line() + 
     coord_flip() + ylab("Elevation (m)") + xlab("") + 
     theme(axis.text.x = element_text(size = 8), 
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.margin = unit(c(0,0,0,-0.5), "cm"))
+          axis.text.y = element_blank(), axis.ticks.y = element_blank())
   gg2 <- ggplotGrob(p2)
   
   #build$data[[3]]$label <- gsub(" ", "\n", build$data[[3]]$label)
@@ -111,16 +111,15 @@ for(v in c("gamma0","gamma1","beta1","phylo")){
   #build$data[[3]]$hjust <- "1.5"
   
   #grid.draw(ggplot_gtable(build))
-
+  
+  ### Don't know how to get correct dimesions of neatmap plot (grrr)
   maxHeight = grid::unit.pmax(gg1$heights[2:5], gg2$heights[2:5])
   gg1$heights[2:5] <- as.list(maxHeight)
   gg2$heights[2:5] <- as.list(maxHeight)
   
-  # Don't know how to get clustered row order from heatmap (for adding elevation data series)
-  #p2 <- ggplot(data = envdata.byplot, aes(Plot, Elevation, group = 1)) + geom_line() + coord_flip()
   pdf(file = paste0("LBI_", v, "_neatmap_by_group_clustered_x_and_y.pdf"), width = 8, height = 5, useDingbats = FALSE)
-  plot(gt)
-  grid.arrange(gg1, gg2, ncol=2, widths = c(10, 1))
+  #plot(gt)
+  grid.arrange(gg1, gg2, ncol=2, widths = c(10, 2))
   dev.off()
 }  
 
@@ -135,6 +134,7 @@ for(v in c("gamma0","gamma1","beta1","phylo")){
   #c <- cor(b, method = "pearson")
   #h <- hclust(as.dist(1-c)) # Gives same clustering as Euclidean
   #plot(h)
+  colnames(b) <- gsub(" ", "\n", colnames(b))
   rownames(b) <- factor(rownames(b), levels = rownames(envdata.byplot.sort), ordered = TRUE)
   p <- make.heatmap1(as.matrix(b), 
                      column.method = "PCA", column.metric="euclidean", # Column ordering method
