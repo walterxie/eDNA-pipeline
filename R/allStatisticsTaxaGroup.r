@@ -42,11 +42,11 @@ getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
   }
   
   align.v <- rep("r", ncol(tg.otus) + 1)
-  printXTable(tg.otus, align = align.v, label = "tab:stats", file = file.xtable,
+  ComMA::printXTable(tg.otus, align = align.v, label = "tab:stats", file = file.xtable,
               caption = paste("") )
   
   align.v <- rep("r", ncol(tg.phyla) + 1)
-  printXTable(tg.phyla, align = align.v, label = "tab:stats", file = file.xtable,
+  ComMA::printXTable(tg.phyla, align = align.v, label = "tab:stats", file = file.xtable,
               caption = paste("") )
   
   list( otus=tg.otus, phyla = tg.phyla )
