@@ -1,54 +1,60 @@
+# Table 2: Sequence processing and OTU clustering statistics, 
+# effective biodiversity and overall taxonomic composition of each amplicon
 
+otus.row.names <- c("Reads", "97\\% OTUs", "Singleton OTUs", "Non-singleton OTUs", "Maximum OTU abundance") 
+div.row.names <- c("$^0D_\\alpha$","$^1D_\\alpha$","$^2D_\\alpha$","$^0D_\\beta$","$^1D_\\beta$",
+                   "$^2D_\\beta$","$^0D_\\gamma$","$^1D_\\gamma$","$^2D_\\gamma$")
 
-if(!exists("tableFile")) stop("table file is missing !")
-if(!exists("matrixNames")) stop("matrix names are missing !")
-
-if(!exists("verbose")) verbose = TRUE
-if(!exists("otuThr")) otuThr = 97
-if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
-if(!exists("qs")) qs = rep(0:2,each=3)
-
-otusRowNames <- c("Reads", "OTUs", "Singleton", "Coupleton") # cannot get unique reads from CM
-divRowNames <- c("$^0D_\\gamma$","$^0D_\\alpha$","$^0D_\\beta$","$^1D_\\gamma$","$^1D_\\alpha$","$^1D_\\beta$",
-				"$^2D_\\gamma$","$^2D_\\alpha$","$^2D_\\beta$")
-lotus = length(otusRowNames)
-
-n <- length(matrixNames) 
-
-#source("Modules/init.R", local=TRUE)
-
-######## summary by datasets including singletons #######
-
-cat("\nTable: summary by datasets including singletons: otuThr =", otuThr, "\n") 
-
-# last column total
-by.datasets <- data.frame(row.names=c(otusRowNames, divRowNames), stringsAsFactors=FALSE)
-
-for (expId in 1:n) {	
-  communityMatrix <- getCommunityMatrixT(expId, TRUE, FALSE) # always including singletons
+# file.xtable is the file to log xtable
+getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
+  source("R/init.R", local=TRUE)
   
-  diversity_table <- diversity.df(communityMatrix)
+  if(!exists("matrix.names")) stop("matrix names are missing !")
+  if(!exists("data.names")) stop("data set names are missing !")
+
+  # data frame for statistics
+  otu.stats <- data.frame(stringsAsFactors=FALSE, check.names=FALSE)
   
-  by.datasets[1,expId] <- sum(communityMatrix)
-  by.datasets[2,expId] <- ncol(communityMatrix)
-  by.datasets[3,expId] <- sum(colSums(communityMatrix)==1)
-  by.datasets[4,expId] <- sum(colSums(communityMatrix)==2)
-  for (i in 1:length(unlist(diversity_table))) {
-    by.datasets[i+lotus,expId] <- unlist(diversity_table)[i]
+  require(ComMA)
+  for (dataId in 1:length(data.names)) {
+    # inlcude singletons
+    min2=FALSE
+    cat("\n", matrix.names[dataId], "OTU clustering statistics,", ifelse(min2, "exclude", "include"), 
+        "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
+    
+    cm <- getCommunityMatrix(data.names[dataId], min2=min2, by.plot=by.plot)
+    cm.summary <- ComMA::summaryCM.Vector(cm)
+    # otus.row.names
+    otu.stats[1,matrix.names[dataId]] <- cm.summary["reads"]
+    otu.stats[2,matrix.names[dataId]] <- cm.summary["OTUs"]
+    otu.stats[3,matrix.names[dataId]] <- cm.summary["singletons"]
+    otu.stats[4,matrix.names[dataId]] <- as.numeric(cm.summary["OTUs"])-as.numeric(cm.summary["singletons"])
+    otu.stats[5,matrix.names[dataId]] <- cm.summary["max.OTU.abundance"]
+    row.offset <- 5
+    
+    # no singletons
+    min2=TRUE
+    cat("\n", matrix.names[dataId], "Jost diversities,", ifelse(min2, "exclude", "include"), 
+        "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
+    
+    cm <- getCommunityMatrix(data.names[dataId], min2=min2, by.plot=by.plot)
+    t.cm <- ComMA::transposeDF(cm)
+    # gamma(q=0), alpha(q=0), beta(q=0), gamma(q=1), ..., beta(q=2)
+    diversity.v <- ComMA::diversityTable(t.cm, named.vector=T)
+    # reorder to match div.row.names
+    diversity.v <- diversity.v[c(2,5,8,3,6,9,1,4,7)]
+    # div.row.names
+    for (i in 1:length(diversity.v)) 
+      otu.stats[i+row.offset, matrix.names[dataId]] <- diversity.v[i]
   }
-  colnames(by.datasets)[expId] <- matrixNames[expId]
+  rownames(otu.stats) <- c(otus.row.names, div.row.names)
+  
+  otu.stats <- ComMA::prettyNumbers(otu.stats)
+  
+  align.v <- rep("r", ncol(otu.stats) + 1)
+  printXTable(otu.stats, align = align.v, label = "tab:stats", file = file.xtable,
+              caption = paste("Sequence processing and OTU clustering statistics,", 
+                              "effective biodiversity and overall taxonomic composition of each amplicon") )
+  return(otu.stats)
 }
-
-by.datasets[1:4,"Total"] <- rowSums(by.datasets)[1:4]
-#by.datasets[1:4,] <- round(by.datasets[1:4,], 0)
-#by.datasets[5:nrow(by.datasets),] <- round(by.datasets[5:nrow(by.datasets),], 2)
-by.datasets <- round(by.datasets, 2)
-by.datasets <- format(by.datasets, big.mark=",", scientific=F)
-for (i in 1:lotus)
-  by.datasets[i,] <- gsub(".00", "", by.datasets[i,])
-
-align.v <- rep("r", ncol(by.datasets) + 1)
-printXTable(by.datasets, caption = paste("Table of sequence statistics for eDNA data sets", 
-                                         paste(matrixNames, collapse = ", ")),
-            align = align.v, label = "tab:biodiveDNA", file=tableFile)
 

@@ -1,8 +1,13 @@
 # The file to initiate and load data 
 # depend on ComMA https://github.com/walterxie/ComMA
 
+# names presented in figures and tables
+matrix.names <- c("16S","18S","fungal 26S","fungal ITS","COI-650","COI-300")
+# names presented in files
+data.names <- c("16S","18S","26S","ITS","FolCO1","ShCO1")
+
 # most abundant 150 OTUs
-threshold = 150
+most.abundant.OTU = 150
 
 # add postfix for various names
 postfix <- function(..., sep, min2=TRUE, by.plot=FALSE) {
@@ -59,6 +64,7 @@ getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
   data.set <- match.arg(data.set)
   
   tt.file.path <- file.path(data.folder, paste(data.set, "taxonomy_table.txt", sep="_"))
+  require(ComMA)
   taxa.table <- ComMA::readTaxaTable(tt.file.path, matrix.name=data.set, taxa.group=taxa.group, rank=rank)	
 
   return(taxa.table)
