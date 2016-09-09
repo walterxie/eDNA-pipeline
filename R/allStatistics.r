@@ -52,7 +52,7 @@ getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
   otu.stats <- ComMA::prettyNumbers(otu.stats)
   
   align.v <- rep("r", ncol(otu.stats) + 1)
-  printXTable(otu.stats, align = align.v, label = "tab:stats", file = file.xtable,
+  ComMA::printXTable(otu.stats, align = align.v, label = "tab:stats", file = file.xtable,
               caption = paste("Sequence processing and OTU clustering statistics,", 
                               "effective biodiversity and overall taxonomic composition of each amplicon") )
   return(otu.stats)

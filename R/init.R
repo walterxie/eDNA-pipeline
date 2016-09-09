@@ -2,7 +2,7 @@
 # depend on ComMA https://github.com/walterxie/ComMA
 
 # names presented in files
-input.names <- c("16S","18S","26S","ITS","FolCO1","ShCO1")
+input.names <- c("16S","18S","26S","ITS","ShCO1","FolCO1")
 # names presented in figures and tables
 getOutputNames <- function(input.names) {
   output.names <- gsub("FolCO1", "COI-650", input.names)
@@ -52,10 +52,12 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 # t.cm <- transposeCM(cm)
 
 # taxa.table <- getTaxaTable("16S", taxa.group="assigned")
-# tt.sub <- subsetTaxaTable(taxa.table, taxa.group="BACTERIA", rank="phylum")
+# tt.sub <- subsetTaxaTable(taxa.table, taxa.group="BACTERIA", rank="kingdom")
 # cm.taxa <- mergeCMTaxa(cm, taxa.table)
 # taxa.assign <- assignTaxaByRank(cm.taxa)
 # sum(taxa.assign[[rank]])
+
+# cm.taxa <- ComMA::subsetCM(cm, tt, taxa.group="BACTERIA", rank="kingdom")
 
 ###### taxa assignment by reads #####
 # "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS"
