@@ -1,67 +1,53 @@
 
 
-if(!exists("tableFile")) stop("table file is missing !")
-if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("taxa.groups")) stop("taxa groups are missing !")
 
-if(!exists("verbose")) verbose = TRUE
-if(!exists("rmSingleton")) rmSingleton = TRUE
-if(!exists("isPlot")) isPlot = TRUE # by plot
-if(!exists("otuThr")) otuThr = 97
-if(!exists("levels")) levels = rep(c("gamma","alpha","beta"),3)
-if(!exists("qs")) qs = rep(0:2,each=3)
+taxa.row.names <- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA")
 
-
-n <- length(matrixNames) 
-
-#source("Modules/init.R", local=TRUE)
-
-######## summary by datasets including singletons #######
-otusRowNames <- c("Reads", "OTUs", "Singleton", "Coupleton") # cannot get unique reads from CM
-
-cat("\nTable: summary by datasets by taxa groups: rmSingleton =", rmSingleton, ", otuThr =", otuThr, "\n") 
-
-# last column total
-df.otus <- data.frame(row.names=taxa.groups, stringsAsFactors=FALSE)
-df.reads <- data.frame(row.names=taxa.groups, stringsAsFactors=FALSE)
-
-for (expId in 1:(n-1)) {	
-  n.taxa <- 0
-  for (taxa.group in taxa.groups) {
-    cat("Summary by", taxa.group, "subset from", matrixNames[expId], ". \n")
+getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
+  source("R/init.R", local=TRUE)
+  
+  if(!exists("input.names")) stop("input names are missing !")
+  output.names <- getOutputNames(input.names)
+  
+  # data frame for statistics
+  tg.otus <- data.frame(stringsAsFactors=FALSE, check.names=FALSE)
+  tg.phyla <- data.frame(stringsAsFactors=FALSE, check.names=FALSE)
+  
+  require(ComMA)
+  for (dataId in 1:length(input.names)) {
+    # no singletons
+    min2=TRUE
+    cat("\n", output.names[dataId], "Taxonomic composition,", ifelse(min2, "exclude", "include"), 
+        "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
-    # always by plot here to save time
-    communityMatrix <- getCommunityMatrixT(expId, TRUE, rmSingleton, taxa.group)
+    cm <- getCommunityMatrix(input.names[dataId], min2=min2, by.plot=by.plot)
+    tt <- getTaxaTable(input.names[dataId], taxa.group="assigned")
     
-    if (is.null(communityMatrix)) {
-      cat("Warning:", taxa.group, "subset from", matrixNames[expId], "has no OTU.\n") 
-    } 
-    
-    n.taxa <- n.taxa + 1
-    if (ncol(communityMatrix) > 0) {
-      df.otus[n.taxa,expId] <- ncol(communityMatrix)
-      df.reads[n.taxa,expId] <- sum(communityMatrix)
-    } else {
-      df.otus[n.taxa,expId] <- 0
-      df.reads[n.taxa,expId] <- 0
+    for (taxaId in 1:length(taxa.row.names)) {
+      cat("Taxonomic group", taxa.row.names[taxaId], ".\n") 
+      
+      tt.sub <- ComMA::subsetTaxaTable(tt, taxa.group=taxa.row.names[taxaId], rank="kingdom")
+      
+      if (nrow(tt.sub) < 1) {
+        tg.otus[taxa.row.names[taxaId],output.names[dataId]] <- 0
+        tg.phyla[taxa.row.names[taxaId],output.names[dataId]] <- 0
+      } else {
+        cm.taxa <- ComMA::mergeCMTaxa(cm, tt.sub, col.ranks = c("kingdom", "phylum"))
+        taxa.assign <- ComMA::assignTaxaByRank(cm.taxa)
+        
+        tg.otus[taxa.row.names[taxaId],output.names[dataId]] <- nrow(cm.taxa)
+        tg.phyla[taxa.row.names[taxaId],output.names[dataId]] <- nrow(taxa.assign$phylum)
+      }
     }
-    colnames(df.otus)[expId] <- matrixNames[expId]
-    colnames(df.reads)[expId] <- matrixNames[expId]
   }
+  
+  align.v <- rep("r", ncol(tg.otus) + 1)
+  printXTable(tg.otus, align = align.v, label = "tab:stats", file = file.xtable,
+              caption = paste("") )
+  
+  align.v <- rep("r", ncol(tg.phyla) + 1)
+  printXTable(tg.phyla, align = align.v, label = "tab:stats", file = file.xtable,
+              caption = paste("") )
+  
+  list( otus=tg.otus, phyla = tg.phyla )
 }
-# add total
-df.otus[,"Total"] <- rowSums(df.otus)
-df.reads[,"Total"] <- rowSums(df.reads)
-
-df.otus <- format(df.otus, big.mark=",", scientific=F)
-df.reads <- format(df.reads, big.mark=",", scientific=F)
-
-align.v <- rep("r", ncol(df.otus) + 1)
-printXTable(df.otus, caption = paste("Table of OTUs statistics for eDNA data sets by taxonomic groups"), 
-            align = align.v, label = paste("tab:otus","all", sep = ":"), file=tableFile)
-
-align.v <- rep("r", ncol(df.reads) + 1)
-printXTable(df.reads, caption = paste("Table of reads statistics for eDNA data sets by taxonomic groups"), 
-            align = align.v, label = paste("tab:reads", "all", sep = ":"), file=tableFile)
-
-
