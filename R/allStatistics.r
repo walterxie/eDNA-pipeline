@@ -11,20 +11,20 @@ getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE)
   cm.list <- list()
   cm.min2.list <- list()
   require(ComMA)
-  for (dataId in 1:length(input.names)) {
+  for (data.id in 1:length(input.names)) {
     # inlcude singletons
     min2=FALSE
-    cat("\n", output.names[dataId], "OTU clustering statistics,", ifelse(min2, "exclude", "include"), 
+    cat("\n", output.names[data.id], "OTU clustering statistics,", ifelse(min2, "exclude", "include"), 
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
-    cm <- getCommunityMatrix(input.names[dataId], min2=min2, by.plot=by.plot)
-    cm.list[[output.names[dataId]]] <- cm
+    cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
+    cm.list[[output.names[data.id]]] <- cm
     
     # no singletons
     min2=TRUE
-    cat("\n", output.names[dataId], "Jost diversities,", ifelse(min2, "exclude", "include"), 
+    cat("\n", output.names[data.id], "Jost diversities,", ifelse(min2, "exclude", "include"), 
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
-    cm <- getCommunityMatrix(input.names[dataId], min2=min2, by.plot=by.plot)
-    cm.min2.list[[output.names[dataId]]] <- cm
+    cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
+    cm.min2.list[[output.names[data.id]]] <- cm
   }
   cat("\n")
   
