@@ -1,7 +1,8 @@
 # Table 2: Sequence processing and OTU clustering statistics, 
 # effective biodiversity and overall taxonomic composition of each amplicon
 
-getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
+# use phyla.list to check if the assigned phyla in each group are correct
+getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
   source("R/init.R", local=TRUE)
   
   if(!exists("input.names")) stop("input names are missing !")
@@ -29,13 +30,13 @@ getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL) {
   ta.gr.stats <- ComMA::summaryTaxaGroup(cm.taxa.list, input.list=T, unclassified=3, taxa.group=taxa.group,
                                          group.rank="kingdom", count.rank="phylum")
   
-  align.v <- rep("r", ncol(ta.gr.stats$otus) + 1)
-  ComMA::printXTable(ta.gr.stats$otus, align = align.v, label = "tab:stats", file = file.xtable,
-              caption = paste("") )
+  merged.stats <- ComMA::merge2DF(ta.gr.stats$otus, ta.gr.stats$rank.count)
   
-  align.v <- rep("r", ncol(ta.gr.stats$rank.count) + 1)
-  ComMA::printXTable(ta.gr.stats$rank.count, align = align.v, label = "tab:stats", file = file.xtable,
-              caption = paste("") )
+  align.v <- rep("r", ncol(merged.stats) + 1)
+  ComMA::printXTable(merged.stats, align = align.v, label = "tab:tgroup:stats", 
+                     file = file.xtable, invalid.char=invalid.char,
+              caption = paste("Overall taxonomic composition of each amplicon") )
   
-  list( otus=ta.gr.stats$otus, phyla = ta.gr.stats$rank.count )
+  list( otus=ta.gr.stats$otus, merged=merged.stats, phyla=ta.gr.stats$rank.count, 
+        phyla.list=ta.gr.stats$count.rank.df.list  )
 }
