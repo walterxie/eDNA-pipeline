@@ -76,65 +76,57 @@ getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
 }
 
 
-# rankLevel: the taxa level in each bar
-# groupLevel: used to assign colour for each group, and must higher than rankLevel
-# taxa.group: keep OTU rows contain given taxa group, if "all", keep all
-# return taxaAssgReads = CM + rankLevel + groupLevel
-getTaxaAssgReads <- function(expId, isPlot, min2, rankLevel, groupLevel, taxa.group="all") {
-  cat("Create taxonomy assignment for", matrixNames[expId], ".\n")
-  
-  ##### load data #####
-  communityMatrix <- getCommunityMatrix(expId, isPlot, min2)
-  communityMatrix <- prepCommunityMatrix(communityMatrix)
-  
-  communityMatrix <- communityMatrix[order(rownames(communityMatrix)),]
-  communityMatrix <- communityMatrix[,order(colnames(communityMatrix))]
-  
-  taxaPaths <- getTaxaPaths(expId, taxa.group)
-  
-  ###### taxa assignment by reads #####
-  if ( ! tolower(rankLevel) %in% tolower(colnames(taxaPaths)) ) 
-    stop( paste("Column name", rankLevel, "not exist in taxa path file for ", matrixNames[expId]) )
-  if (! tolower(groupLevel) %in% tolower(colnames(taxaPaths)) ) 
-    stop( paste("Column name", groupLevel, "not exist in taxa path file for ", matrixNames[expId]) )
-  
-  colRankLevel <- which(tolower(colnames(taxaPaths))==tolower(rankLevel))
-  colGroupLevel <- which(tolower(colnames(taxaPaths))==tolower(groupLevel))
-  
-  taxaAssgReads <- merge(communityMatrix, taxaPaths[,c(colRankLevel, colGroupLevel)], by = "row.names")
-  
-  taxaAssgReads[,rankLevel] <- gsub("(\\s\\[=.*\\])", "", taxaAssgReads[,rankLevel])
-  taxaAssgReads[,groupLevel] <- gsub("(\\s\\[=.*\\])", "", taxaAssgReads[,groupLevel])
-  
-  cat("Merging:", nrow(taxaAssgReads), "OTUs are matched from", nrow(communityMatrix), "OTUs in matrix to", 
-      nrow(taxaPaths), "taxa classification, taxa.group =", taxa.group, ".\n")
-  
-  return(taxaAssgReads)
-}
-
-getTaxaRef <- function() {
-  tax_ref <- read.table(file.path(workingPath, "data", "New_taxonomy_from_PLOSONE_2015_fixed.txt"), 
-                        header = TRUE, sep = "\t", quote = "", comment.char = "")
-  # make lower case to match ranks
-  colnames(tax_ref) <- tolower(colnames(tax_ref))
-  
-  # Remove quirks/questions in taxa ([= ...])
-  tax_ref <- apply(tax_ref, 2, function(col) gsub("(\\s\\[=.*\\])", "", col))
-}
-
 ###### Trees #####
-getPhyloTree <- function(fNameStem) {
-  inputT <- file.path(workingPath, "trees", paste(fNameStem, "tre", sep = "."))
-  if (file.exists(inputT)) {
-    cat("Load tree from", inputT, "\n") 
-    tree <- read.tree(inputT)
+getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
+                         taxa.group="PROKARYOTA", data.folder="./data/Trees", verbose=FALSE) {
+  data.set <- match.arg(data.set)
+  input.f <- file.path(data.folder, paste(data.set, tolower(taxa.group), "min2.tre", sep = "-"))
+  if (file.exists(input.f)) {
+    require(ape)
+    cat("\nLoad tree from", input.f, "\n") 
+    tree <- read.tree(input.f)
     if(verbose) print(tree)
   } else {
     tree <- NULL
-    cat("Warning: cannot find tree file:", inputT, "\n") 
+    warning("Cannot find tree file: ", input.f, " !\n") 
   }
-  tree
+  return(tree)
 }
+
+######## meta data of samples #######
+getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", verbose=FALSE) {
+  input.f <- file.path(data.folder, paste("LBI_all_env_data_by", 
+                       ifelse(by.plot, "plot.txt", "subplot.txt"), sep = "_"))
+  if (file.exists(input.f)) {
+    require(ape)
+    cat("\nLoad enviornmental data from", input.f, "\n") 
+    env <- ComMA::readFile(input.f)
+    if(verbose) print(env)
+  } else {
+    env <- NULL
+    warning("Cannot find enviornmental data: ", input.f, " !\n") 
+  }
+  return(env) 
+}
+
+
+######## elevations #######
+getElevPlotDist <- function(plot.names, env.byplot) { 
+  colElev = 1
+  # case insensitive
+  matched.id <- match(tolower(plot.names), tolower(rownames(env.byplot)))
+  matched.id <- matched.id[!is.na(matched.id)]
+  # match 
+  env.plot.match <- env.plot[matched.id, ]
+  
+  cat("Find", nrow(env.plot.match), "plots having elevations, community matrix has", 
+      length(plot.names), "plots, meta-data file has", nrow(env.plot), "plots.\n")
+  
+  return(dist(env.plot.match[,colElev]))
+}
+
+
+
 
 ###### table to plot Phylo Rarefaction ##### 
 getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
@@ -146,14 +138,14 @@ getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
     mid.name <- postfix(taxa.group, isPlot, min2, sep="-") 
   }
   
-  inputT <- file.path(workingPath, "data", "pdrf", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
-  if (file.exists(inputT)) {
-    phylo.rare.df <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+  input.f <- file.path(workingPath, "data", "pdrf", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
+  if (file.exists(input.f)) {
+    phylo.rare.df <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
     if(verbose) 
-      cat("\nUpload phylo rarefaction table from", inputT, "\n") 
+      cat("\nUpload phylo rarefaction table from", input.f, "\n") 
   } else {
     phylo.rare.df <- NULL
-    cat("Warning: cannot find phylo rarefaction table", inputT, "\n") 
+    cat("Warning: cannot find phylo rarefaction table", input.f, "\n") 
   }
   phylo.rare.df
 }
@@ -162,14 +154,14 @@ getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
 getRarefactionTableTaxa <- function(expId, isPlot, min2, taxa.group, div="alpha1") {
   pathFileStem <- file.path(workingPath, "data", "rf", paste(matrixNames[expId], 
                     postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-"))
-  inputT <- paste(pathFileStem, "rare", div, "table.csv", sep = "-")
-  if (file.exists(inputT)) {
-    rare.df <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+  input.f <- paste(pathFileStem, "rare", div, "table.csv", sep = "-")
+  if (file.exists(input.f)) {
+    rare.df <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
     if(verbose) 
-      cat("\nUpload rarefaction table per sample from", inputT, "\n") 
+      cat("\nUpload rarefaction table per sample from", input.f, "\n") 
   } else {
     rare.df <- NULL
-    cat("Warning: cannot find rarefaction table per sample", inputT, "\n") 
+    cat("Warning: cannot find rarefaction table per sample", input.f, "\n") 
   }
   rare.df
 }
@@ -214,58 +206,31 @@ getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa
 
 ###### table to max remained diversity ##### 
 getMaxRemainedDiversity <- function(lev.q, taxa.group="assigned") {
-  inputT <- file.path(workingPath, "data", "maxrd", paste("max-div", lev.q, taxa.group,"table.csv", sep = "-"))
-  if (file.exists(inputT)) {
-    max.rd <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+  input.f <- file.path(workingPath, "data", "maxrd", paste("max-div", lev.q, taxa.group,"table.csv", sep = "-"))
+  if (file.exists(input.f)) {
+    max.rd <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
     if(verbose) 
-      cat("\nUpload max remained diversity table from", inputT, "\n") 
+      cat("\nUpload max remained diversity table from", input.f, "\n") 
   } else {
     max.rd <- NULL
-    cat("Warning: cannot find max remained diversity table", inputT, "\n") 
+    cat("Warning: cannot find max remained diversity table", input.f, "\n") 
   }
   max.rd
 }
 
 getMaxRemainedDiversityRank <- function(lev.q, taxa.group="assigned") {
-  inputT <- file.path(workingPath, "data", "maxrd", paste("max-div-rank", lev.q, taxa.group,"table.csv", sep = "-"))
-  if (file.exists(inputT)) {
-    max.rd <- read.csv(file=inputT, head=TRUE, sep=",", row.names=1, check.names=FALSE)
+  input.f <- file.path(workingPath, "data", "maxrd", paste("max-div-rank", lev.q, taxa.group,"table.csv", sep = "-"))
+  if (file.exists(input.f)) {
+    max.rd <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
     if(verbose) 
-      cat("\nUpload max remained diversity rank table from", inputT, "\n") 
+      cat("\nUpload max remained diversity rank table from", input.f, "\n") 
   } else {
     max.rd <- NULL
-    cat("Warning: cannot find max remained diversity rank table", inputT, "\n") 
+    cat("Warning: cannot find max remained diversity rank table", input.f, "\n") 
   }
   max.rd
 }
 
-######## meta data of samples #######
-getSampleMetaData <- function(isPlot) {
-  if (isPlot) {
-    inputCM <- file.path(workingPath, "Env_data", "LBI_all_env_data_by_plot.txt")
-  } else {
-    # e.g. data/16S.txt
-    inputCM <- file.path(workingPath, "Env_data", "LBI_all_env_data_by_subplot.txt")
-  }
-  if(verbose) 
-    cat("\nUpload enviornmental data from", inputCM, "\n") 
-  env <- readFile(inputCM)
-}
 
-
-######## elevations #######
-getElevPlotDist <- function(plot.names, env.byplot) { 
-  colElev = 1
-  # case insensitive
-  matched.id <- match(tolower(plot.names), tolower(rownames(env.byplot)))
-  matched.id <- matched.id[!is.na(matched.id)]
-  # match 
-  env.plot.match <- env.plot[matched.id, ]
-  
-  cat("Find", nrow(env.plot.match), "plots having elevations, community matrix has", 
-      length(plot.names), "plots, meta-data file has", nrow(env.plot), "plots.\n")
-  
-  return(dist(env.plot.match[,colElev]))
-}
 
 
