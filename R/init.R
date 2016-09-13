@@ -29,6 +29,7 @@ getPlot <- function(subplots, sep="-") {
 
 ######## load community matrix #######
 # by_plot=T plot based, min2=T no singleton 
+# cm <- getCommunityMatrix("16S")
 getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1","Vegetation"), 
                                min2=TRUE, by.plot=FALSE, data.folder="./data/OTU_tables") {
   data.set <- match.arg(data.set)
@@ -64,6 +65,7 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 # PROKARYOTA: all prokaryotes (Bacteria + Archaea)
 # EUKARYOTA: all eukaryotes
 # PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
+# tt <- getTaxaTable("16S", taxa.group="BACTERIA")
 getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
                          data.folder="./data/Taxonomy_tables", taxa.group="all", rank="kingdom") {
   data.set <- match.arg(data.set)
@@ -77,6 +79,7 @@ getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
 
 
 ###### Trees #####
+# tre <- getPhyloTree("16S", "PROKARYOTA")
 getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
                          taxa.group="PROKARYOTA", data.folder="./data/Trees", verbose=FALSE) {
   data.set <- match.arg(data.set)
@@ -94,11 +97,12 @@ getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
 }
 
 ######## meta data of samples #######
+# env.plot <- getEnvData
 getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", verbose=FALSE) {
   input.f <- file.path(data.folder, paste("LBI_all_env_data_by", 
                        ifelse(by.plot, "plot.txt", "subplot.txt"), sep = "_"))
   if (file.exists(input.f)) {
-    require(ape)
+    require(ComMA)
     cat("\nLoad enviornmental data from", input.f, "\n") 
     env <- ComMA::readFile(input.f)
     if(verbose) print(env)
