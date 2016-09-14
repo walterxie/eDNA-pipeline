@@ -1,6 +1,7 @@
 # Table 2: Sequence processing and OTU clustering statistics, 
 # effective biodiversity and overall taxonomic composition of each amplicon
 
+# The (EUKARYOTA) category is the number of OTUs that are identified as eukaryotes but aren't identified to kingdom level.
 # use phyla.list to check if the assigned phyla in each group are correct
 getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
   source("R/init.R", local=TRUE)
@@ -21,30 +22,22 @@ getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=
     cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
     tt <- getTaxaTable(input.names[data.id], taxa.group="assigned")
     
-    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = c("superkingdom", "kingdom", "phylum"))
+    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = c("kingdom", "phylum"))
     cm.taxa.list[[output.names[data.id]]] <- cm.taxa
   }
   
   cat("\n")
   # remove every rows containing "unclassified".
-  ta.gr.stats <- ComMA::summaryTaxaGroup(cm.taxa.list, input.list=T, unclassified=3, 
-                                         taxa.group=taxa.group[1:length(taxa.group)-1],
+  ta.gr.stats <- ComMA::summaryTaxaGroup(cm.taxa.list, input.list=T, unclassified=3, taxa.group=taxa.group,
                                          group.rank="kingdom", count.rank="phylum")
-  # add superkingdom
-  ta.gr.stats2 <- ComMA::summaryTaxaGroup(cm.taxa.list, input.list=T, unclassified=3, 
-                                         taxa.group=taxa.group[length(taxa.group)],
-                                         group.rank="superkingdom", count.rank="phylum")
-  otus <- rbind(ta.gr.stats$otus, ta.gr.stats2$otus)
-  phyla <-rbind(ta.gr.stats$rank.count, ta.gr.stats2$rank.count)
-  merged.stats <- ComMA::merge2DF(otus, phyla)
   
-  # append phyla.list
-  phyla.list <- append(ta.gr.stats$count.rank.df.list, ta.gr.stats2$count.rank.df.list)
+  merged.stats <- ComMA::merge2DF(ta.gr.stats$otus, ta.gr.stats$rank.count)
   
   align.v <- rep("r", ncol(merged.stats) + 1)
   ComMA::printXTable(merged.stats, align = align.v, label = "tab:tgroup:stats", 
                      file = file.xtable, invalid.char=invalid.char,
               caption = paste("Overall taxonomic composition of each amplicon") )
   
-  list( otus=otus, merged=merged.stats, phyla=phyla,phyla.list=phyla.list  )
+  list( otus=ta.gr.stats$otus, merged=merged.stats, phyla=ta.gr.stats$rank.count, 
+        phyla.list=ta.gr.stats$count.rank.df.list  )
 }
