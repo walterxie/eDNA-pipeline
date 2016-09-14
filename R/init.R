@@ -122,7 +122,7 @@ getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", ve
     require(ComMA)
     cat("\nLoad enviornmental data from", input.f, "\n") 
     env <- ComMA::readFile(input.f)
-    if (by.plot) env$Plot <- rownames(env)
+    #if (by.plot) env$Plot <- rownames(env)
     if(verbose) print(env)
   } else {
     env <- NULL
