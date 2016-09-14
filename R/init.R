@@ -132,12 +132,13 @@ getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", ve
 }
 
 ### Load between plot distances ###
-getBetweenPlotDistance <- function(data.folder="./data/Environmental_data") { 
+getBetweenPlotDistance <- function(data.folder="./data/Environmental_data", verbose=TRUE) { 
   input.f <- file.path(data.folder, "LBI_between-plot_distances.txt")
   if (file.exists(input.f)) {
     require(ComMA)
-    cat("\nLoad between plot distances from", input.f, "\n") 
-    plot.dists <- ComMA::readFile(input.f)
+    if(verbose)
+      cat("\nLoad between plot distances from", input.f, "\n") 
+    plot.dists <- ComMA::readFile(input.f, verbose=verbose)
     plot.dists$pair <- paste(plot.dists$plot1, plot.dists$plot2)
     plot.dists$pair <- plotSort(plot.dists$pair)
   } else {
@@ -147,13 +148,14 @@ getBetweenPlotDistance <- function(data.folder="./data/Environmental_data") {
   return(plot.dists) 
 }
 
-### Load subplot distances ###
-getSubplotDistance <- function(data.folder="./data/Environmental_data") { 
+### Load within plot distances ###
+getWithinPlotDistance <- function(data.folder="./data/Environmental_data", verbose=TRUE) { 
   input.f <- file.path(data.folder, "LBI_subplot_distances.txt")
   if (file.exists(input.f)) {
     require(ComMA)
-    cat("\nLoad between plot distances from", input.f, "\n") 
-    s <- ComMA::readFile(input.f)
+    if(verbose)
+      cat("\nLoad within plot distances from", input.f, "\n") 
+    s <- ComMA::readFile(input.f, verbose=verbose)
     subplot.dists <- data.frame(t(combn(names(s), 2)), dist=s[lower.tri(s)])
     subplot.dists$pair <- paste0(subplot.dists$X1, subplot.dists$X2)
     subplot.dists$pair <- subplotSort(subplot.dists$pair)

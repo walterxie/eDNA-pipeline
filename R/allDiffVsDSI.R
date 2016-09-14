@@ -2,8 +2,8 @@
 # Figure 8: Correlations between elevation differences and multivariate dissimilarity index (DSI)
 
 # only available to subplot
-getAllDSIDist <- function(save.rdata=FALSE) {
-  source("R/init.R", local=TRUE)
+getAllDSIDist <- function(save.rdata=FALSE, init=TRUE) {
+  if (init) source("R/init.R", local=TRUE)
   metrics <- c("jaccard", "horn.morisita", "bray.curtis", "beta1-1", "wt.unif", "unwt.unif")
   
   if(!exists("input.names")) stop("input names are missing !")
@@ -26,12 +26,14 @@ getAllDSIDist <- function(save.rdata=FALSE) {
   if (save.rdata)
     save(all.dist.list, file = "data/all.dist.RData")
   
-  all.dist.list <- appendDistDF(output.names, metrics, all.dist.list, save.rdata=save.rdata)
+  all.dist.list <- appendDistDF(output.names, metrics, all.dist.list, save.rdata=save.rdata, init=FALSE)
   
   return(all.dist.list) # a list of list
 }
 
-appendDistDF <- function(output.names, metrics, all.dist.list=list(), save.rdata=FALSE) {
+appendDistDF <- function(output.names, metrics, all.dist.list=list(), save.rdata=FALSE, init=TRUE) {
+  if (init) source("R/init.R", local=TRUE)
+  
   # all within-between pairwise distances
   cat("\nCalculate all within-between pairwise distances ... \n")
   dist.data <- data.frame(check.names = F)
@@ -145,10 +147,11 @@ plotDistanceCorrelation <- function(dist.data, data.levels = c("16S","18S","26S"
   len <- length(levels(dist.data$metric))*length(levels(dist.data$gene))
   vars <- data.frame(expand.grid(levels(dist.data$metric), levels(dist.data$gene)))
   colnames(vars) <- c("metric", "gene")
-  dat <- data.frame(x = rep(10, len), y = rep(0.5, len), vars) # x and y are coordinates relative to x/y axis scales
+  # x and y are coordinates relative to x/y axis scales
+  dat <- data.frame(x = rep(10, len), y = rep(0.5, len), vars) 
   dat$labs <- cor.data$cp[match(interaction(cor.data$metric, cor.data$gene), interaction(dat$metric, dat$gene))]
   
-  p + geom_text(data = dat, aes(x, y, label=labs, group=NULL), size = 2)
+  p <- p + geom_text(data = dat, aes(x, y, label=labs, group=NULL), size = 2)
   return(p)
 }
 
@@ -201,7 +204,7 @@ getWithinDistDF <- function(dsi.dist){
   dist.list <- dist.list[dist.list$s1 != dist.list$s2, ] # Drop same sample distances
   dist.list$spair <- subplotSort(paste0(dist.list$s1, dist.list$s2))
   
-  subplot.dists  <- getSubplotDistance()
+  subplot.dists  <- getWithinPlotDistance(verbose=FALSE)
   dist.list$dist <- subplot.dists$dist[match(dist.list$spair, subplot.dists$pair)]
   return(dist.list)
 }
@@ -215,7 +218,7 @@ getBetweenDistDF <- function(dsi.dist){
   dist.list <- dist.list[dist.list$p1 != dist.list$p2, ] # Drop within-plot distances
   dist.list$pair <- plotSort(paste(dist.list$p1, dist.list$p2)) 
   
-  plot.dists <- getBetweenPlotDistance()
+  plot.dists <- getBetweenPlotDistance(verbose=FALSE)
   dist.list$dist <- plot.dists$dist[match(dist.list$pair, plot.dists$pair)]
   return(dist.list)
 }

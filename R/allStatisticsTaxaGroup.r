@@ -3,8 +3,8 @@
 
 # The (EUKARYOTA) category is the number of OTUs that are identified as eukaryotes but aren't identified to kingdom level.
 # use phyla.list to check if the assigned phyla in each group are correct
-getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
-  source("R/init.R", local=TRUE)
+getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE, init=TRUE) {
+  if (init) source("R/init.R", local=TRUE)
   taxa.group <- c("ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA")
   
   if(!exists("input.names")) stop("input names are missing !")
