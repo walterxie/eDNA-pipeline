@@ -22,11 +22,6 @@ postfix <- function(..., sep, min2=TRUE, by.plot=FALSE) {
   return(name)
 }
 
-# get plot names from subplots vector separated by sep
-getPlot <- function(subplots, sep="-") {
-  sapply(strsplit(as.character(subplots), sep), "[[", 1)
-}
-
 ######## load community matrix #######
 # by_plot=T plot based, min2=T no singleton 
 # cm <- getCommunityMatrix("16S")
@@ -127,6 +122,7 @@ getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", ve
     require(ComMA)
     cat("\nLoad enviornmental data from", input.f, "\n") 
     env <- ComMA::readFile(input.f)
+    if (by.plot) env$Plot <- rownames(env)
     if(verbose) print(env)
   } else {
     env <- NULL
@@ -135,8 +131,54 @@ getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", ve
   return(env) 
 }
 
+### Load between plot distances ###
+getBetweenPlotDistance <- function(data.folder="./data/Environmental_data") { 
+  input.f <- file.path(data.folder, "LBI_between-plot_distances.txt")
+  if (file.exists(input.f)) {
+    require(ComMA)
+    cat("\nLoad between plot distances from", input.f, "\n") 
+    plot.dists <- ComMA::readFile(input.f)
+    plot.dists$pair <- paste(plot.dists$plot1, plot.dists$plot2)
+    plot.dists$pair <- plotSort(plot.dists$pair)
+  } else {
+    plot.dists <- NULL
+    warning("Cannot find between plot distances: ", input.f, " !\n") 
+  }
+  return(plot.dists) 
+}
 
-######## elevations #######
+### Load subplot distances ###
+getSubplotDistance <- function(data.folder="./data/Environmental_data") { 
+  input.f <- file.path(data.folder, "LBI_subplot_distances.txt")
+  if (file.exists(input.f)) {
+    require(ComMA)
+    cat("\nLoad between plot distances from", input.f, "\n") 
+    s <- ComMA::readFile(input.f)
+    subplot.dists <- data.frame(t(combn(names(s), 2)), dist=s[lower.tri(s)])
+    subplot.dists$pair <- paste0(subplot.dists$X1, subplot.dists$X2)
+    subplot.dists$pair <- subplotSort(subplot.dists$pair)
+  } else {
+    subplot.dists <- NULL
+    warning("Cannot find between plot distances: ", input.f, " !\n") 
+  }
+  return(subplot.dists) 
+}
+
+
+######## plot vs subplots #######
+# get plot names from subplots vector separated by sep
+getPlot <- function(subplots, sep="-") 
+  sapply(strsplit(as.character(subplots), sep), "[[", 1)
+
+### sort pairs of plot names ###
+plotSort <- function(x)
+  sapply(lapply(strsplit(x, " "), sort), paste, collapse=" ")
+### Sort subplot pairs ###
+subplotSort <- function(x)
+  sapply(lapply(strsplit(x, NULL), sort), paste, collapse="")
+
+
+######## elevations dist #######
 getElevPlotDist <- function(plot.names, env.byplot) { 
   colElev = 1
   # case insensitive
@@ -150,9 +192,6 @@ getElevPlotDist <- function(plot.names, env.byplot) {
   
   return(dist(env.plot.match[,colElev]))
 }
-
-
-
 
 ###### table to plot Phylo Rarefaction ##### 
 getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {

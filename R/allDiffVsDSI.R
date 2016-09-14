@@ -1,32 +1,103 @@
 # Figure 7: Correlations between spatial separation and multivariate dissimilarity index (DSI)
 # Figure 8: Correlations between elevation differences and multivariate dissimilarity index (DSI)
 
-# default by subplot
-getAllDSIDist <- function(by.plot=FALSE) {
+# only available to subplot
+getAllDSIDist <- function(save.rdata=FALSE) {
   source("R/init.R", local=TRUE)
   metrics <- c("jaccard", "horn.morisita", "bray.curtis", "beta1-1", "wt.unif", "unwt.unif")
   
   if(!exists("input.names")) stop("input names are missing !")
   output.names <- getOutputNames(input.names)
   
+  by.plot=FALSE
+  # calculate all dist
+  cat("\nCalculate all dissimilarity ... \n")
   all.dist.list <- list()
   for (data.id in 1:length(input.names)) {
     cm <- getIdentifiedCM(input.names[data.id], by.plot=by.plot)
     tree <- getPhyloTree(input.names[data.id])
-    all.dist.list$by.plot <- by.plot
+    
     for(metric in metrics){
       dsi.dist <- getDissimilarity(cm, tree=tree, method=metric)
-      all.dist.list[[input.names[data.id]]][[metric]] <- dsi.dist
+      all.dist.list[[output.names[data.id]]][[metric]] <- dsi.dist
     }
   }
+  all.dist.list$by.plot <- by.plot
+  if (save.rdata)
+    save(all.dist.list, file = "data/all.dist.RData")
+  
+  # all within-between pairwise distances
+  cat("\nCalculate all within-between pairwise distances ... \n")
+  dist.data <- data.frame(check.names = F)
+  for (data.id in 1:length(input.names)) {
+    for(metric in metrics){
+      d <- getWithinBetweenDistDF(all.dist.list[[output.names[data.id]]][[metric]])
+      if(nrow(d) > 0){
+        d$gene <- output.names[data.id]
+        d$metric <- metric
+      }
+      dist.data <- rbind(dist.data, d)
+    }
+  }
+  all.dist.list$within.between <- dist.data
+  if (save.rdata)
+    save(dist.data, file = "data/within.between.RData")
+  
+  # within-plot spatial distances
+  cat("\nCalculate within-plot spatial distances ... \n")
+  dist.data <- data.frame(check.names = F)
+  for (data.id in 1:length(input.names)) {
+    for(metric in metrics){
+      d <- getWithinDistDF(all.dist.list[[output.names[data.id]]][[metric]])
+      if(nrow(d) > 0){
+        d$gene <- output.names[data.id]
+        d$metric <- metric
+      }
+      dist.data <- rbind(dist.data, d)
+    }
+  }
+  all.dist.list$within <- dist.data
+  if (save.rdata)
+    save(dist.data, file = "data/within.RData")
+  
+  # between-plot spatial distances
+  cat("\nCalculate between-plot spatial distances ... \n")
+  dist.data <- data.frame(check.names = F)
+  for (data.id in 1:length(input.names)) {
+    for(metric in metrics){
+      d <- getBetweenDistDF(all.dist.list[[output.names[data.id]]][[metric]])
+      if(nrow(d) > 0){
+        d$gene <- output.names[data.id]
+        d$metric <- metric
+      }
+      dist.data <- rbind(dist.data, d)
+    }
+  }
+  all.dist.list$between <- dist.data
+  if (save.rdata)
+    save(dist.data, file = "data/between.RData")
+  
+  # elevation differences between subplots
+  cat("\nCalculate elevation differences between subplots ... \n")
+  env.subplot <- getEnvData(by.plot=F)
+  dist.data <- data.frame(check.names = F)
+  for (data.id in 1:length(input.names)) {
+    for(metric in metrics){
+      d <- getElevationDistDF(all.dist.list[[output.names[data.id]]][[metric]], env.subplot)
+      if(nrow(d) > 0){
+        d$gene <- output.names[data.id]
+        d$metric <- metric
+      }
+      dist.data <- rbind(dist.data, d)
+    }
+  }
+  all.dist.list$elev.diff <- dist.data
+  if (save.rdata)
+    save(dist.data, file = "data/elev.diff.RData")
+  
   return(all.dist.list) # a list of list
 }
 
-
-#dsi.dist.list[[input.names[data.id]]][["elevation"]] <- getElevationDistList(dsi.dist)
-#dsi.dist.list[[input.names[data.id]]][["within.between"]] <- getWithinBetweenDistList(dsi.dist)
-#dsi.dist.list[[input.names[data.id]]][["plot"]] <- getPlotSpatialDistList(dsi.dist)
-#dsi.dist.list[[input.names[data.id]]][["subplot"]] <- getSubplotSpatialDistList(dsi.dist)
 
 getCorSpatialDSI <- function(by.plot=TRUE, file.figure=NULL) {
   
@@ -44,51 +115,57 @@ getCorElevationDSI <- function(by.plot=TRUE, file.figure=NULL) {
 
 ## Get all within-between pairwise distances ###
 getWithinBetweenDistDF <- function(dsi.dist){
-  dist.df <- melt(as.matrix(dsi.dist))
-  dist.df$p1 <- gsub("-.", "", dist.df$Var1)
-  dist.df$p2 <- gsub("-.", "", dist.df$Var2)
-  dist.df$s1 <- sapply(strsplit(as.character(dist.df$Var1), "-"), "[[", 2)
-  dist.df$s2 <- sapply(strsplit(as.character(dist.df$Var2), "-"), "[[", 2)
-  dist.df$wb <- ifelse(dist.df$p1 == dist.df$p2, "within", "between")
-  dist.df <- dist.df[dist.df$Var1 != dist.df$Var2, ] # Drop same sample distances
-  return(dist.df)
+  dist.list <- melt(as.matrix(dsi.dist))
+  dist.list$p1 <- gsub("-.", "", dist.list$Var1)
+  dist.list$p2 <- gsub("-.", "", dist.list$Var2)
+  dist.list$s1 <- sapply(strsplit(as.character(dist.list$Var1), "-"), "[[", 2)
+  dist.list$s2 <- sapply(strsplit(as.character(dist.list$Var2), "-"), "[[", 2)
+  dist.list$wb <- ifelse(dist.list$p1 == dist.list$p2, "within", "between")
+  dist.list <- dist.list[dist.list$Var1 != dist.list$Var2, ] # Drop same sample distances
+  return(dist.list)
 }
 
 ### Get elevation differences between plots/subplots ###
-getElevationDistDF <- function(dsi.dist){
-  dist.df <- melt(as.matrix(dsi.dist))
-  #dist.df$e1 <- envdata.bysubplot$Elevation[match(dist.df$Var1, envdata.bysubplot$Plot)]
-  #dist.df$e2 <- envdata.bysubplot$Elevation[match(dist.df$Var2, envdata.bysubplot$Plot)]
-  dist.df$e1 <- envdata.byplot$Elevation[match(dist.df$Var1, envdata.byplot$Plot)]
-  dist.df$e2 <- envdata.byplot$Elevation[match(dist.df$Var2, envdata.byplot$Plot)]
-  dist.df$dist <- abs(dist.df$e1-dist.df$e2)
-  dist.df <- dist.df[dist.df$Var1 != dist.df$Var2, ]
-  return(dist.df)
+getElevationDistDF <- function(dsi.dist, env, env.names=c("Plot","Elevation")){
+  if (! any(env.names %in% colnames(env)) )
+    stop("Cannot find column names from env file ! ", paste(env.names, collapse = ","))
+  dist.list <- melt(as.matrix(dsi.dist))
+  #dist.list$e1 <- env$Elevation[match(dist.list$Var1, env$Plot)]
+  #dist.list$e2 <- env$Elevation[match(dist.list$Var2, env$Plot)]
+  dist.list$e1 <- env[match(dist.list$Var1, env[, env.names[1]]), env.names[2]]
+  dist.list$e2 <- env[match(dist.list$Var2, env[, env.names[1]]), env.names[2]]
+  dist.list$dist <- abs(dist.list$e1-dist.list$e2)
+  dist.list <- dist.list[dist.list$Var1 != dist.list$Var2, ]
+  return(dist.list)
 }
 
 ### Get within-plot spatial distances ###
-getSubplotSpatialDistDF <- function(dsi.dist){
-  dist.df <- melt(as.matrix(dsi.dist))
-  dist.df$p1 <- gsub("-.", "", dist.df$Var1)
-  dist.df$p2 <- gsub("-.", "", dist.df$Var2)
-  dist.df$s1 <- sapply(strsplit(as.character(dist.df$Var1), "-"), "[[", 2)
-  dist.df$s2 <- sapply(strsplit(as.character(dist.df$Var2), "-"), "[[", 2)
-  dist.df <- dist.df[dist.df$p1 == dist.df$p2, ] # Drop between-plot distances
-  dist.df <- dist.df[dist.df$s1 != dist.df$s2, ] # Drop same sample distances
-  dist.df$spair <- strSort(paste0(dist.df$s1, dist.df$s2))
-  dist.df$dist <- subplot.dists$dist[match(dist.df$spair, subplot.dists$pair)]
-  return(dist.df)
+getWithinDistDF <- function(dsi.dist){
+  dist.list <- melt(as.matrix(dsi.dist))
+  dist.list$p1 <- gsub("-.", "", dist.list$Var1)
+  dist.list$p2 <- gsub("-.", "", dist.list$Var2)
+  dist.list$s1 <- sapply(strsplit(as.character(dist.list$Var1), "-"), "[[", 2)
+  dist.list$s2 <- sapply(strsplit(as.character(dist.list$Var2), "-"), "[[", 2)
+  dist.list <- dist.list[dist.list$p1 == dist.list$p2, ] # Drop between-plot distances
+  dist.list <- dist.list[dist.list$s1 != dist.list$s2, ] # Drop same sample distances
+  dist.list$spair <- subplotSort(paste0(dist.list$s1, dist.list$s2))
+  
+  subplot.dists  <- getSubplotDistance()
+  dist.list$dist <- subplot.dists$dist[match(dist.list$spair, subplot.dists$pair)]
+  return(dist.list)
 }
 
 ### Get between-plot spatial distances ###
-getPlotSpatialDistDF <- function(dsi.dist){
-  dist.df <- melt(as.matrix(dsi.dist))
-  dist.df$p1 <- gsub("-.", "", dist.df$Var1)
-  dist.df$p2 <- gsub("-.", "", dist.df$Var2)
-  dist.df <- dist.df[dist.df$p1 != dist.df$p2, ] # Drop within-plot distances
-  dist.df$pair <- plotSort(paste(dist.df$p1, dist.df$p2)) 
-  dist.df$dist <- plot.dists$dist[match(dist.df$pair, plot.dists$pair)]
-  return(dist.df)
+getBetweenDistDF <- function(dsi.dist){
+  dist.list <- melt(as.matrix(dsi.dist))
+  dist.list$p1 <- gsub("-.", "", dist.list$Var1)
+  dist.list$p2 <- gsub("-.", "", dist.list$Var2)
+  dist.list <- dist.list[dist.list$p1 != dist.list$p2, ] # Drop within-plot distances
+  dist.list$pair <- plotSort(paste(dist.list$p1, dist.list$p2)) 
+  
+  plot.dists <- getBetweenPlotDistance()
+  dist.list$dist <- plot.dists$dist[match(dist.list$pair, plot.dists$pair)]
+  return(dist.list)
 }
 
 ### Get correlation statistics ###
