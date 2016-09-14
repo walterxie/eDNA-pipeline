@@ -26,6 +26,12 @@ getAllDSIDist <- function(save.rdata=FALSE) {
   if (save.rdata)
     save(all.dist.list, file = "data/all.dist.RData")
   
+  all.dist.list <- appendDistDF(output.names, metrics, all.dist.list, save.rdata=save.rdata)
+  
+  return(all.dist.list) # a list of list
+}
+
+appendDistDF <- function(output.names, metrics, all.dist.list=list(), save.rdata=FALSE) {
   # all within-between pairwise distances
   cat("\nCalculate all within-between pairwise distances ... \n")
   dist.data <- data.frame(check.names = F)
@@ -95,12 +101,16 @@ getAllDSIDist <- function(save.rdata=FALSE) {
   if (save.rdata)
     save(dist.data, file = "data/elev.diff.RData")
   
-  return(all.dist.list) # a list of list
+  return(all.dist.list)
 }
 
 
 getCorSpatialDSI <- function(by.plot=TRUE, file.figure=NULL) {
   
+  corlist <- get.corr(dist.data)
+  cor.data <- rbindlist(corlist)
+  cor.data$cp1 <- paste0(round(cor.data$corr, 2), " (", round(cor.data$pval, 3), ")")
+  cor.data$cp <- gsub("\\(0\\)", "\\(<0.001\\)", cor.data$cp1)
   
   
   
@@ -169,15 +179,18 @@ getBetweenDistDF <- function(dsi.dist){
 }
 
 ### Get correlation statistics ###
-get.corr <- function(dist.data){
+# One of "pearson", "kendall", or "spearman"
+# analysis less than min.sample is dropped
+getCorrDist <- function(dist.data, cor.method="pearson", min.sample=10, verbose=FALSE){
   corlist <- list()
   i <- 1
   for(g in unique(dist.data$gene)){
     for(m in unique(dist.data$metric)){
-      print(paste(g, m))
+      if (verbose)
+        cat("gene = ", g, ", metric = ", m, "\n")
       x <- dist.data[(dist.data$gene==g & dist.data$metric==m),]
-      if(nrow(x) > 10){
-        t <- cor.test(x$value, x$dist, alternative="greater", method=c("pearson"))
+      if(nrow(x) >= min.sample){
+        t <- cor.test(x$value, x$dist, alternative="greater", method=cor.method)
         res <- list("metric" = m, "gene" = g, "t.stat" = t$statistic, "pval" = t$p.value,
                     "corr" = t$estimate[1], "df" = t$parameter, "95_lower" = t$conf.int[1], "95_upper" = t$conf.int[2], 
                     "alt" = t$alternative)
