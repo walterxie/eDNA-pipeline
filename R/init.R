@@ -69,8 +69,9 @@ getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1")
     input.tg <- "EUKARYOTA"
   # no singleton
   cm <- getCommunityMatrix(data.set, min2=TRUE, by.plot=by.plot, data.folder=cm.folder)
-  tt <- getTaxaTable(data.set, taxa.group=input.tg, data.folder=tt.folder)
-  return(ComMA::subsetCM(cm, tt))
+  tt <- getTaxaTable(data.set, taxa.group=input.tg, rank="superkingdom", data.folder=tt.folder)
+  # ITS tt only up to "order"
+  return(ComMA::subsetCM(cm, tt, col.ranks=c("kingdom", "phylum", "class", "order")))
 }
 
 ###### taxa assignment by reads #####
