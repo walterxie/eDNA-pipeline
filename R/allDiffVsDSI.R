@@ -105,26 +105,69 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), save.rdata
 }
 
 
-getCorSpatialDSI <- function(by.plot=TRUE, file.figure=NULL) {
-  
-  corlist <- get.corr(dist.data)
+plotDistanceCorrelation <- function(dist.data, data.levels = c("16S","18S","26S","ITS","COI-300","COI-650"), 
+                                    method.levels = c("Jaccard","Bray-Curtis","Morisita-Horn","beta1-1",
+                                                      "unweighted Unifrac","weighted Unifrac"),
+                                    wb.levels = c("within", "between"), 
+                                    x.lab="Spatial distance (m)", y.lab="Distance measure") {
+  corlist <- getCorrDist(dist.data)
   cor.data <- rbindlist(corlist)
   cor.data$cp1 <- paste0(round(cor.data$corr, 2), " (", round(cor.data$pval, 3), ")")
   cor.data$cp <- gsub("\\(0\\)", "\\(<0.001\\)", cor.data$cp1)
   
+  dist.data$gene <- factor(dist.data$gene, levels = data.levels, ordered = TRUE)
+  dist.data$metric <- gsub("jaccard","Jaccard", dist.data$metric)
+  dist.data$metric <- gsub("bray.curtis","Bray-Curtis", dist.data$metric)
+  dist.data$metric <- gsub("horn.morisita","Morisita-Horn", dist.data$metric)
+  dist.data$metric <- gsub("unwt.unif","unweighted Unifrac", dist.data$metric)
+  dist.data$metric <- gsub("wt.unif","weighted Unifrac", dist.data$metric)
+  dist.data$metric <- factor(dist.data$metric, levels = method.levels, ordered = TRUE)
+  dist.data$wb <- factor(dist.data$wb, levels = wb.levels, ordered = TRUE)
   
+  ### Distance correlation plots ###
+  p <- ggplot(dist.data, aes(x = dist, y = value)) + 
+    geom_point(shape = 1) + 
+    geom_smooth(method = "lm", se = FALSE) + 
+    ylab(y.lab) + xlab(x.lab) +
+    facet_grid(metric ~ gene, scales = "free") +
+    theme(strip.background = element_blank(), panel.grid = element_blank())
   
+  ### Add correlation data to plot? ###  
+  cor.data$gene <- factor(cor.data$gene, levels = data.levels, ordered = TRUE)
+  cor.data$metric <- gsub("jaccard","Jaccard", dist.data$metric)
+  cor.data$metric <- gsub("bray.curtis","Bray-Curtis", dist.data$metric)
+  cor.data$metric <- gsub("horn.morisita","Morisita-Horn", dist.data$metric)
+  cor.data$metric <- gsub("unwt.unif","unweighted Unifrac", dist.data$metric)
+  cor.data$metric <- gsub("wt.unif","weighted Unifrac", dist.data$metric)
+  cor.data$metric <- factor(cor.data$metric, levels = method.levels, ordered = TRUE)
+  
+  #long cut way to find number of facets
+  len <- length(levels(dist.data$metric))*length(levels(dist.data$gene))
+  vars <- data.frame(expand.grid(levels(dist.data$metric), levels(dist.data$gene)))
+  colnames(vars) <- c("metric", "gene")
+  dat <- data.frame(x = rep(10, len), y = rep(0.5, len), vars) # x and y are coordinates relative to x/y axis scales
+  dat$labs <- cor.data$cp[match(interaction(cor.data$metric, cor.data$gene), interaction(dat$metric, dat$gene))]
+  
+  p + geom_text(data = dat, aes(x, y, label=labs, group=NULL), size = 2)
+  return(p)
 }
 
 
-getCorElevationDSI <- function(by.plot=TRUE, file.figure=NULL) {
-  
-  
+plotWithinBetween <- function(dist.data) {
+  ### Within-between distances boxplot ###
+  ggplot(dist.data, aes(x = wb, y = value, color = wb)) + 
+    geom_boxplot(outlier.shape = 1, outlier.colour = alpha("black", 0.25)) + 
+    ylab("Distance measure") + xlab("") +
+    facet_grid(metric ~ gene, scales = "free") +
+    scale_colour_brewer(palette = "Set1") +
+    theme(strip.background = element_blank(), panel.grid = element_blank(),
+          legend.position = "none")
 }
 
 
 ## Get all within-between pairwise distances ###
 getWithinBetweenDistDF <- function(dsi.dist){
+  require(reshape2)
   dist.list <- melt(as.matrix(dsi.dist))
   dist.list$p1 <- gsub("-.", "", dist.list$Var1)
   dist.list$p2 <- gsub("-.", "", dist.list$Var2)
@@ -139,6 +182,7 @@ getWithinBetweenDistDF <- function(dsi.dist){
 getElevationDistDF <- function(dsi.dist, env, env.names=c("Plot","Elevation")){
   if (! any(env.names %in% colnames(env)) )
     stop("Cannot find column names from env file ! ", paste(env.names, collapse = ","))
+  require(reshape2)
   dist.list <- melt(as.matrix(dsi.dist))
   #dist.list$e1 <- env$Elevation[match(dist.list$Var1, env$Plot)]
   #dist.list$e2 <- env$Elevation[match(dist.list$Var2, env$Plot)]
@@ -151,6 +195,7 @@ getElevationDistDF <- function(dsi.dist, env, env.names=c("Plot","Elevation")){
 
 ### Get within-plot spatial distances ###
 getWithinDistDF <- function(dsi.dist){
+  require(reshape2)
   dist.list <- melt(as.matrix(dsi.dist))
   dist.list$p1 <- gsub("-.", "", dist.list$Var1)
   dist.list$p2 <- gsub("-.", "", dist.list$Var2)
@@ -167,6 +212,7 @@ getWithinDistDF <- function(dsi.dist){
 
 ### Get between-plot spatial distances ###
 getBetweenDistDF <- function(dsi.dist){
+  require(reshape2)
   dist.list <- melt(as.matrix(dsi.dist))
   dist.list$p1 <- gsub("-.", "", dist.list$Var1)
   dist.list$p2 <- gsub("-.", "", dist.list$Var2)
