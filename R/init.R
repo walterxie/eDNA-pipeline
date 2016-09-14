@@ -60,6 +60,19 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 
 # cm.taxa <- ComMA::subsetCM(cm, tt, taxa.group="BACTERIA", rank="kingdom")
 
+getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), by.plot=FALSE, 
+                            cm.folder="./data/OTU_tables", tt.folder="./data/Taxonomy_tables") {
+  data.set <- match.arg(data.set)
+  if (data.set == "16S")
+    input.tg <- "PROKARYOTA"
+  else 
+    input.tg <- "EUKARYOTA"
+  # no singleton
+  cm <- getCommunityMatrix(data.set, min2=TRUE, by.plot=by.plot, data.folder=cm.folder)
+  tt <- getTaxaTable(data.set, taxa.group=input.tg, data.folder=tt.folder)
+  return(ComMA::subsetCM(cm, tt))
+}
+
 ###### taxa assignment by reads #####
 # "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA", "PROTISTS"
 # PROKARYOTA: all prokaryotes (Bacteria + Archaea)
@@ -67,7 +80,7 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 # PROTISTS: "CHROMISTA|PROTOZOA" all micro-eukaryotes
 # tt <- getTaxaTable("16S", taxa.group="BACTERIA")
 getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
-                         data.folder="./data/Taxonomy_tables", taxa.group="all", rank="kingdom") {
+                         taxa.group="all", rank="kingdom", data.folder="./data/Taxonomy_tables") {
   data.set <- match.arg(data.set)
   
   tt.file.path <- file.path(data.folder, paste(data.set, "taxonomy_table.txt", sep="_"))
@@ -81,8 +94,16 @@ getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
 ###### Trees #####
 # tre <- getPhyloTree("16S", "PROKARYOTA")
 getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
-                         taxa.group="PROKARYOTA", data.folder="./data/Trees", verbose=FALSE) {
+                         taxa.group=NA, data.folder="./data/Trees", verbose=FALSE) {
   data.set <- match.arg(data.set)
+  # set taxa.group=NA to auto choose taxa.group
+  if (is.na(taxa.group)) {
+    if (data.set == "16S")
+      taxa.group <- "PROKARYOTA"
+    else 
+      taxa.group <- "EUKARYOTA"
+  }
+  
   input.f <- file.path(data.folder, paste(data.set, tolower(taxa.group), "min2.tre", sep = "-"))
   if (file.exists(input.f)) {
     require(ape)
