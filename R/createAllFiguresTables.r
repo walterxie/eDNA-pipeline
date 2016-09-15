@@ -23,14 +23,14 @@ cat("\\title{Multi-gene meta-barcoding analysis of terrestrial biodiversity on a
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
 ######## figures and tables #######
-source("R/allStatistics.r", local=TRUE)
+source("R/allStatistics.r", init=FALSE, local=TRUE)
 otu.stats <- getOTUStatistics()
 
-source("R/allStatisticsTaxaGroup.r", local=TRUE)
+source("R/allStatisticsTaxaGroup.r", init=FALSE, local=TRUE)
 tg.stats <- getTaxaGroupStatistics()
 
-source("R/allDissimVsDistances.r", local=TRUE)
-# all.dist.subplot <- getDissimVsDistances()
+source("R/allDissimVsDistances.r", init=FALSE, local=TRUE)
+# all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)
 load("data/all.dist.subplot.RData")
 # all.dist.list
 # TODO UniFrac(phy, weighted = TRUE, normalized = TRUE) < 0.1
