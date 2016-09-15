@@ -2,6 +2,7 @@
 # effective biodiversity and overall taxonomic composition of each amplicon
 
 # file.xtable is the file to log xtable
+# otu.stats <- getOTUStatistics()
 getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE, init=TRUE) {
   if (init) source("R/init.R", local=TRUE)
   
