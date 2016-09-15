@@ -33,11 +33,12 @@ source("R/allDissimVsDistances.r", init=FALSE, local=TRUE)
 # all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)
 load("data/all.dist.subplot.RData")
 # all.dist.list
-# TODO UniFrac(phy, weighted = TRUE, normalized = TRUE) < 0.1
+# use phyloseq 1.10.0, new version weighted UniFrac < 0.1
+# subplot
 plotDistanceCorrelation(all.dist.list[["within"]])
-# TODO 
+# plot 
 plotDistanceCorrelation(all.dist.list[["elev.diff"]])
-# TODO 
+# subplot
 plotWithinBetween(all.dist.list[["within.between"]])
 
 
