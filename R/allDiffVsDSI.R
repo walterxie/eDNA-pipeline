@@ -116,6 +116,7 @@ renderMetrics <- function(data, data.levels, method.levels) {
 }
 
 # plotDistanceCorrelation(all.dist.list[["within"]])
+# plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 plotDistanceCorrelation <- function(dist.data, data.levels = c("16S","18S","26S","ITS","COI-300","COI-650"), 
                                     method.levels = c("Jaccard","Bray-Curtis","Morisita-Horn","beta1-1",
                                                       "unweighted Unifrac","weighted Unifrac"),
