@@ -43,7 +43,7 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FA
     # all within-between pairwise distances
     cat("\nCalculate all within-between pairwise distances ... \n")
     dist.data <- data.frame(check.names = F)
-    for (data.id in 1:length(input.names)) {
+    for (data.id in 1:length(output.names)) {
       for(metric in metrics){
         d <- getWithinBetweenDistDF(all.dist.list[[output.names[data.id]]][[metric]])
         if(nrow(d) > 0){
@@ -58,7 +58,7 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FA
     # within-plot spatial distances
     cat("\nCalculate within-plot spatial distances ... \n")
     dist.data <- data.frame(check.names = F)
-    for (data.id in 1:length(input.names)) {
+    for (data.id in 1:length(output.names)) {
       for(metric in metrics){
         d <- getWithinDistDF(all.dist.list[[output.names[data.id]]][[metric]])
         if(nrow(d) > 0){
@@ -73,7 +73,7 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FA
     # between-plot spatial distances
     cat("\nCalculate between-plot spatial distances ... \n")
     dist.data <- data.frame(check.names = F)
-    for (data.id in 1:length(input.names)) {
+    for (data.id in 1:length(output.names)) {
       for(metric in metrics){
         d <- getBetweenDistDF(all.dist.list[[output.names[data.id]]][[metric]])
         if(nrow(d) > 0){
@@ -92,7 +92,7 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FA
   cat("\nCalculate elevation differences between subplots ... \n")
   env <- getEnvData(by.plot=F)
   dist.data <- data.frame(check.names = F)
-  for (data.id in 1:length(input.names)) {
+  for (data.id in 1:length(output.names)) {
     for(metric in metrics){
       d <- getElevationDistDF(all.dist.list[[output.names[data.id]]][[metric]], env)
       if(nrow(d) > 0){
