@@ -2,7 +2,9 @@
 # Figure 8: Correlations between elevation differences and multivariate dissimilarity index (DSI)
 
 # do not have within between, if by.plot=T
-# all.dist.list <- getAllDSIDist(save.rdata=T)
+# all.dist.subplot <- getAllDSIDist()
+# all.dist.plot <- getAllDSIDist(by.plot=T)
+# Use "save.rdata=T", if you want to save it to "all.dist.list".
 getAllDSIDist <- function(by.plot=FALSE, save.rdata=FALSE, init=TRUE) {
   if (init) source("R/init.R", local=TRUE)
   metrics <- c("jaccard", "horn.morisita", "bray.curtis", "beta1-1", "wt.unif", "unwt.unif")
