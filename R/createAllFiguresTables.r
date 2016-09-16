@@ -29,18 +29,19 @@ otu.stats <- getOTUStatistics()
 source("R/allStatisticsTaxaGroup.r", init=FALSE, local=TRUE)
 tg.stats <- getTaxaGroupStatistics()
 
+# use phyloseq 1.10.0, new version weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", init=FALSE, local=TRUE)
 # all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)
+
+# subplot
 load("data/all.dist.subplot.RData")
 # all.dist.list
-# use phyloseq 1.10.0, new version weighted UniFrac < 0.1
-# subplot
 plotDistanceCorrelation(all.dist.list[["within"]])
-# plot 
-plotDistanceCorrelation(all.dist.list[["elev.diff"]])
-# subplot
 plotWithinBetween(all.dist.list[["within.between"]])
 
+# plot 
+load("data/all.dist.subplot.RData")
+plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 
 
 
