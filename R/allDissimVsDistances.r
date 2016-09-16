@@ -90,7 +90,7 @@ appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FA
   
   # elevation differences between subplots
   cat("\nCalculate elevation differences between subplots ... \n")
-  env <- getEnvData(by.plot=F)
+  env <- getEnvData(by.plot=by.plot)
   dist.data <- data.frame(check.names = F)
   for (data.id in 1:length(output.names)) {
     for(metric in metrics){
