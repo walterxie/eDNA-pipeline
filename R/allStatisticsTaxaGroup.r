@@ -23,7 +23,7 @@ getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=
     cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
     tt <- getTaxaTable(input.names[data.id], taxa.group="assigned")
     
-    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = c("kingdom", "phylum"))
+    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = c("superkingdom", "kingdom", "phylum"))
     cm.taxa.list[[output.names[data.id]]] <- cm.taxa
   }
   

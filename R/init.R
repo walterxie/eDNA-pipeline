@@ -55,7 +55,8 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
 
 # cm.taxa <- ComMA::subsetCM(cm, tt, taxa.group="BACTERIA", rank="kingdom")
 
-getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), by.plot=FALSE, 
+getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
+                            by.plot=FALSE, min2=TRUE, 
                             cm.folder="./data/OTU_tables", tt.folder="./data/Taxonomy_tables") {
   data.set <- match.arg(data.set)
   if (data.set == "16S")
@@ -63,7 +64,7 @@ getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1")
   else 
     input.tg <- "EUKARYOTA"
   # no singleton
-  cm <- getCommunityMatrix(data.set, min2=TRUE, by.plot=by.plot, data.folder=cm.folder)
+  cm <- getCommunityMatrix(data.set, min2=min2, by.plot=by.plot, data.folder=cm.folder)
   tt <- getTaxaTable(data.set, taxa.group=input.tg, rank="superkingdom", data.folder=tt.folder)
   # ITS tt only up to "order"
   return(ComMA::subsetCM(cm, tt, col.ranks=c("kingdom", "phylum", "class", "order")))
@@ -86,6 +87,13 @@ getTaxaTable <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
   return(taxa.table)
 }
 
+getTaxaRef <- function(data.folder="./data") {
+  taxa.ref <- ComMA::readFile(file.path(data.folder, "New_taxonomy_from_PLOSONE_2015_cleaned_up.txt"), 
+                             row.names = NULL, quote = "", comment.char = "")
+  # use samll case in ComMA
+  colnames(taxa.ref) <- tolower(colnames(taxa.ref))
+  return(taxa.ref)
+}
 
 ###### Trees #####
 # tre <- getPhyloTree("16S", "PROKARYOTA")
@@ -178,6 +186,11 @@ plotSort <- function(x)
 ### Sort subplot pairs ###
 subplotSort <- function(x)
   sapply(lapply(strsplit(x, NULL), sort), paste, collapse="")
+
+
+
+
+
 
 
 ######## elevations dist #######
