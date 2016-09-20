@@ -22,10 +22,7 @@ getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
     # adjust taxonomy?
     tt$kingdom <- gsub("CHROMISTA|PROTOZOA", "PROTISTS", tt$kingdom)
     ### Remove assorted quirks in taxonomy! ###
-    pattern.x <- "(\\s\\[|\\()(\\=|\\.|\\,|\\s|\\w|\\?)*(\\]|\\))" 
-    tt$superkingdom <- gsub(pattern.x, "", tt$superkingdom, perl = TRUE)
-    tt$kingdom <- gsub(pattern.x, "", tt$kingdom, perl = TRUE)
-    tt$phylum <- gsub(pattern.x, "", tt$phylum, perl = TRUE)
+    tt <- ComMA::getPrettyTaxonomy(tt)
 
     cm.taxa <- ComMA::mergeCMTaxa(cm, tt, assign.unclassified=F, col.ranks = c("superkingdom", "kingdom", "phylum"))
     cm.taxa.list[[output.names[data.id]]] <- cm.taxa
@@ -34,7 +31,7 @@ getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
   
   taxa.ref <- getTaxaRef()
   all.counts.sums <- ComMA::sumReadsOTUs(cm.taxa.list, taxa.ref=taxa.ref, taxa.rank="phylum", group.rank="kingdom", 
-                                         col.ranks=c("superkingdom", "kingdom", "phylum"),
+                                         col.ranks=c("superkingdom", "kingdom", "phylum"), 
                                          pdf.width = 340, pdf.height = 260)
 
   return(all.counts.sums)
