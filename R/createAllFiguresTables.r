@@ -43,8 +43,8 @@ plotWithinBetween(all.dist.list[["within.between"]])
 load("data/all.dist.subplot.RData")
 plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 
-
-
+source("R/allTaxonomyAnalyses.r", init=FALSE, local=TRUE)
+all.counts.sums <- getAllCountsSums()
 
 
 ######## complete report latex #######
