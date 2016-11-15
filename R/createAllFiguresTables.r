@@ -23,15 +23,15 @@ cat("\\title{Multi-gene meta-barcoding analysis of terrestrial biodiversity on a
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
 ######## figures and tables #######
-source("R/allStatistics.r", init=FALSE, local=TRUE)
-otu.stats <- getOTUStatistics()
+source("R/allStatistics.r", local=TRUE)
+otu.stats <- getOTUStatistics(init=FALSE)
 
-source("R/allStatisticsTaxaGroup.r", init=FALSE, local=TRUE)
-tg.stats <- getTaxaGroupStatistics()
+source("R/allStatisticsTaxaGroup.r", local=TRUE)
+tg.stats <- getTaxaGroupStatistics(init=FALSE)
 
 # use phyloseq 1.10.0, new version weighted UniFrac < 0.1
-source("R/allDissimVsDistances.r", init=FALSE, local=TRUE)
-# all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)
+source("R/allDissimVsDistances.r", local=TRUE)
+# all.dist.subplot <- getDissimVsDistances(init=FALSE, save.rdata=TRUE)
 
 # subplot
 load("data/all.dist.subplot.RData")
@@ -43,8 +43,8 @@ plotWithinBetween(all.dist.list[["within.between"]])
 load("data/all.dist.subplot.RData")
 plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 
-source("R/allTaxonomyAnalyses.r", init=FALSE, local=TRUE)
-all.counts.sums <- getAllCountsSums()
+source("R/allTaxonomyAnalyses.r", local=TRUE)
+all.counts.sums <- getAllCountsSums(init=FALSE)
 
 
 ######## complete report latex #######

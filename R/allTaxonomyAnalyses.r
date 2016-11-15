@@ -28,9 +28,10 @@ getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
   }
   cat("\n")
   
-  all.counts.sums <- ComMA::sumReadsOTUs(cm.taxa.list, taxa.rank="phylum", group.rank="kingdom", 
-                                         col.ranks=c("superkingdom", "kingdom", "phylum"), 
-                                         pdf.width = 340, pdf.height = 260)
+  # include figure and table
+  all.counts.sums <- ComMA::summReadsOTUsPipeline(cm.taxa.list, taxa.rank="phylum", group.rank="kingdom", 
+                                                  col.ranks=c("superkingdom", "kingdom", "phylum"), 
+                                                  pdf.width = 340, pdf.height = 260)
 
   return(all.counts.sums)
 }
