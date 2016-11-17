@@ -6,6 +6,7 @@ library(reshape2)
 library(scales)
 #library(phyloseq)
 library(data.table)
+library(NeatMap)
 library(vegan)
 library(vegetarian)
 
@@ -21,7 +22,8 @@ pal <- colorRampPalette(colors)
 sourcepath <- "H:/My Documents/PhD Research PFR folder/R stuff/"
 source(paste0(sourcepath, "beta1_function.R"))
 
-#setwd("C:/Documents and Settings/Andrew/Desktop/LBI_miseq_analysis_stuff/")
+setwd("G:/Documents/PhD/")
+setwd("C:/Users/Andrew/PhD_folder/LBI_U8_OTUs_analyses/")
 setwd("H:/My Documents/PhD Research PFR folder/LBI_miseq_analysis_stuff/")
 
 ### Load environmental data ###
@@ -367,7 +369,11 @@ output.plots <- function(plots, file.label, metric){
   plot.list <- plots[[1]]
   legend <- plots[[2]]
   ### Split plot.list for printing if length > 6 (too many plots for one page) ###
-  if (length(plot.list) <= 3) {  # up to 3 plots; 1 row
+  if (length(plot.list) == 1) {  # up to 3 plots; 1 row
+    pdf(file = paste0("LBI_", file.label, "_min2_norm_", metric, "_procrustes_compact_revised.pdf"),
+        width = 8/2.54, height = 20*(1/3)/2.54, useDingbats = FALSE)
+    print (grid.arrange(plot.list[[1]], legend, ncol=2, nrow=1, widths=c(1, 0.3)))
+  }else if ((length(plot.list) > 1) && (length(plot.list) <= 3)) {  # up to 3 plots; 1 row
     pdf(file = paste0("LBI_", file.label, "_min2_norm_", metric, "_procrustes_compact_revised.pdf"),
         width = 20/2.54, height = 20*(1/3)/2.54, useDingbats = FALSE)
     args.list <- c(plot.list, list(ncol=3, nrow=1))
@@ -416,20 +422,24 @@ file.label <- "all_OTUs_all_genes"
 ### Different taxon within gene comparisons 
 l <- list()
 n <- 1
-genes.taxa <- list(list("18S","fungi"),list("18S","protists"),list("18S","animals"),list("18S","plants"))
-file.label <- "18S_x4"
+genes.taxa <- list(list("18S","fungi"),list("18S","protists"),list("18S","animals"))
+file.label <- "18S_x3"
 l[[n]] <- list(genes.taxa, file.label)
 n <- n + 1
-genes.taxa <- list(list("26S","fungi"),list("26S","protists"),list("26S","animals"),list("26S","plants"))
-file.label <- "26S_x4"
+genes.taxa <- list(list("26S","fungi"),list("26S","protists"),list("26S","animals"))
+file.label <- "26S_x3"
 l[[n]] <- list(genes.taxa, file.label)
 n <- n + 1
-genes.taxa <- list(list("ShCO1","fungi"),list("ShCO1","protists"),list("ShCO1","animals"),list("ShCO1","plants"))
-file.label <- "ShCO1_x4"
+genes.taxa <- list(list("ITS","fungi"),list("ITS","protists"))
+file.label <- "ITS_x2"
 l[[n]] <- list(genes.taxa, file.label)
 n <- n + 1
-genes.taxa <- list(list("FolCO1","protists"),list("FolCO1","animals"),list("FolCO1","plants"),list("FolCO1","bacteria"))
-file.label <- "FolCO1_x4"
+genes.taxa <- list(list("ShCO1","fungi"),list("ShCO1","protists"),list("ShCO1","animals"))
+file.label <- "ShCO1_x3"
+l[[n]] <- list(genes.taxa, file.label)
+n <- n + 1
+genes.taxa <- list(list("FolCO1","protists"),list("FolCO1","animals"))
+file.label <- "FolCO1_x2"
 l[[n]] <- list(genes.taxa, file.label)
 n <- n + 1
 
@@ -488,6 +498,8 @@ n <- n + 1
 genes.taxa <- list(list("16S","bacteria"),list("FolCO1","bacteria"),list("18S","fungi"),list("26S","fungi"),list("ITS","fungi"),list("ShCO1","fungi"),list("18S","protists"),list("26S", "protists"),list("ShCO1","protists"),list("FolCO1","protists"),list("18S","animals"),list("26S", "animals"), list("ShCO1","animals"),list("FolCO1","animals"),list("18S","plants"),list("26S", "plants"), list("ShCO1","plants"),list("FolCO1","plants"))
 file.label <- "ALL_main_groups_all_genes"
 
+genes.taxa <- list("ITS","protists")
+
 for(z in l){
   genes.taxa <- z[[1]]
   file.label <- z[[2]]
@@ -545,88 +557,226 @@ write.table(p.result,
 
 ###############################################################################
 ### Heatmap of correlation values? 
-d1 <- read.table("LBI_U8_OTUs_analyses/LBI_mantel_procrustes_revised/LBI_min2_norm_ALL_main_groups_all_genes_mantel_results_revised.txt", sep = "\t", header = T)
+
+make.tri.dist <- function(d){
+  z <- d
+  z$t1 <- d$t2
+  z$t2 <- d$t1
+  z <- rbind(z, d) # Duplicating/reversing data makes symmetric matrix
+  m <- dcast(z, t1 ~ t2, value.var = "corr")
+  rownames(m) <- m$t1
+  m$t1 <- NULL
+  m <- m[order(rownames(m)), ]
+  m <- m[, order(colnames(m))]
+  #m[lower.tri(m)] <- NA
+  #diag(m) <- 1
+  #m <- as.dist(1-m)
+  return(m)
+}
+
+add.sig.values <- function(d){
+  d$corr_sig <- paste0(round(d$corr, 2), "\n(", d$sig, ")")
+  d$corr_sig <- gsub("0.001", "<0.001", d$corr_sig)
+  d$sig_ind <- ifelse(d$sig == 0.001, "", d$sig)
+  d$sig_ind <- ifelse(d$sig_ind > 0.001 & d$sig_ind <= 0.01, "**", d$sig_ind)
+  d$sig_ind <- ifelse(d$sig_ind > 0.01 & d$sig_ind <= 0.05, "*", d$sig_ind)
+  d$sig_ind <- ifelse(d$sig_ind > 0.05, "ns", d$sig_ind)
+  return(d)
+}
+
+make.tri.heatmap <- function(d){
+  d$Group1 <- row.names(d)
+  d <- na.omit(melt(d, 'Group1', variable.name='Group2', value.name = 'Correlation'))
+  d$Group1 <- gsub("\\s", "\n", d$Group1)
+  d$Group2 <- gsub("\\s", "\n", d$Group2)
+  d$Group1 <- factor(d$Group1, levels=unique(d$Group1))
+  d$Group2 <- factor(d$Group2, levels=rev(unique(d$Group2)))
+  
+  p <- ggplot(d, aes(Group1, Group2)) + theme_bw() +
+    geom_tile(aes(fill = d$Correlation), color='white') +
+    #scale_fill_gradient(low = 'white', high = 'darkblue', space = 'Lab') +
+    scale_fill_gradient2(high="#f46d43", mid="#ffffbf", low="#3288bd", 
+                         midpoint = mean(d$Correlation), limit = c(min(d$Correlation), 1), 
+                         name = "Correlation") + 
+    xlab('') + ylab('') + #scale_y_reverse() +
+    theme(axis.text.x=element_text(angle=90, vjust = 0.5, hjust = 1),
+          axis.ticks=element_blank(),
+          axis.line=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_line(color='#eeeeee'))
+  return(p)
+}
+
+### Load datasets ###
+d1 <- read.table("LBI_mantel_procrustes_revised/LBI_min2_norm_ALL_main_groups_all_genes_mantel_results_revised.txt", sep = "\t", header = T)
+d1 <- d1[!(grepl("plants|COI-650 fungi|COI-650 bacteria|ITS protists|ITS animals", d1$t1)), ]
+d1 <- d1[!(grepl("plants|COI-650 fungi|COI-650 bacteria|ITS protists|ITS animals", d1$t2)), ]
 d1$measure <- "Mantel"
 colnames(d1) <- gsub("man_", "", colnames(d1))
 colnames(d1) <- gsub("stat", "corr", colnames(d1))
+d1 <- d1[order(d1$t1, d1$t2), ]
+#d1 <- add.sig.values(d1)
 # d1$t1 <- factor(d1$t1, levels = d$t1, ordered = TRUE)
 # d1$t2 <- factor(d1$t2, levels = rev(d$t2), ordered = TRUE)
 #d <- d1
 
-d2 <- read.table("LBI_U8_OTUs_analyses/LBI_mantel_procrustes_revised/LBI_min2_norm_ALL_main_groups_all_genes_procrustes_results_revised.txt", sep = "\t", header = T)
+d2 <- read.table("LBI_mantel_procrustes_revised/LBI_min2_norm_ALL_main_groups_all_genes_procrustes_results_revised.txt", sep = "\t", header = T)
+d2 <- d2[!(grepl("plants|COI-650 fungi|COI-650 bacteria|ITS protists|ITS animals", d2$t1)), ]
+d2 <- d2[!(grepl("plants|COI-650 fungi|COI-650 bacteria|ITS protists|ITS animals", d2$t2)), ]
 d2$measure <- "Procrustes"
 d2$pro_ss <- NULL
 colnames(d2) <- gsub("pro_", "", colnames(d2))
-x <- d2$t1 # Flip t1 and t2
-d2$t1 <- d2$t2
-d2$t2 <- x
+d2 <- d2[order(d2$t1, d2$t2), ]
+#d2 <- add.sig.values(d2)
 # d2$t1 <- factor(d2$t1, levels = d2$t1, ordered = TRUE)
 # d2$t2 <- factor(d2$t2, levels = rev(d2$t2), ordered = TRUE)
 #d <- d2
 
-d <- rbind(d1,d2)
+### Heatmap ordered by gene/taxon ###
+d1m <- make.tri.dist(d1) # Mantel stats
+d2m <- make.tri.dist(d2) # Procrustes stats
+d1m[lower.tri(d1m)] <- NA # Produces lower tri in ggplot heatmap
+d2m[upper.tri(d2m)] <- NA # Produces upper tri in ggplot heatmap
+d <- d1m
+#d <- d2m
+d[lower.tri(d)] <- d2m[lower.tri(d2m)] # Combine matrices
 
-### Drop 18s and 26S plants?
-#d <- d[!(grepl("18S plants|26S plants", d$t1)), ]
-#d <- d[!(grepl("18S plants|26S plants", d$t2)), ]
+d$Group1 <- row.names(d)
+#write.table(t(round(d, 3)), file = "LBI_min2_norm_ALL_main_groups_all_genes_mantel_procrustes_stats_by_group_matrix.txt", 
+#            sep = "\t", quote = FALSE)
+d <- na.omit(melt(d, 'Group1', variable.name='Group2', value.name = 'Correlation'))
+d$Group1 <- gsub("\\s", "\n", d$Group1) # Insert line break into labels
+d$Group2 <- gsub("\\s", "\n", d$Group2) # Insert line break into labels
 
-### Taxonomic order
-d$t1 <- factor(d$t1, levels = c("16S bacteria","COI-650 bacteria","18S fungi","26S fungi","ITS fungi",
-                                "COI-300 fungi","18S protists","26S protists","COI-300 protists",
-                                "COI-650 protists","18S animals","26S animals","COI-300 animals",
-                                "COI-650 animals","18S plants","26S plants","COI-300 plants",
-                                "COI-650 plants"), ordered = TRUE)
-d$t2 <- factor(d$t2, levels = c("COI-650 plants","COI-300 plants","26S plants","18S plants","COI-650 animals",
-                                "COI-300 animals","26S animals","18S animals","COI-650 protists","COI-300 protists",
-                                "26S protists","18S protists","COI-300 fungi","ITS fungi","26S fungi","18S fungi",
-                                "COI-650 bacteria","16S bacteria"), ordered = TRUE)
-### Gene order
-d$t1 <- factor(d$t1, levels = c("16S bacteria","18S fungi","18S protists","18S animals","18S plants","26S fungi",
-                                "26S protists","26S animals","26S plants","ITS fungi","COI-300 fungi","COI-300 protists",
-                                "COI-300 animals","COI-300 plants","COI-650 bacteria","COI-650 protists",
-                                "COI-650 animals","COI-650 plants"), ordered = TRUE)
-d$t2 <- factor(d$t2, levels = c("COI-650 plants","COI-650 animals","COI-650 protists","COI-650 bacteria","COI-300 plants",
-                                "COI-300 animals","COI-300 protists","COI-300 fungi","ITS fungi","26S plants",
-                                "26S animals","26S protists","26S fungi","18S plants","18S animals","18S protists",
-                                "18S fungi","16S bacteria"), ordered = TRUE)
-#d$t2 <- factor(d$t2, levels = rev(d$t2), ordered = TRUE)
+#d$Group1 <- factor(d$Group1, levels=unique(d$Group1)) # Gives wrong order (16S last)
+d$Group1 <- factor(d$Group1, levels = c("16S\nbacteria","18S\nanimals","18S\nfungi","18S\nprotists",
+                                        "26S\nanimals","26S\nfungi","26S\nprotists","ITS\nfungi",
+                                        "COI-300\nanimals", "COI-300\nfungi", "COI-300\nprotists",
+                                        "COI-650\nanimals","COI-650\nprotists"))
+d$Group2 <- factor(d$Group2, levels=rev(levels(d$Group1)))
 
-### Cluster results? ###
-z <- dcast(d1, t1 ~ t2, value.var = "corr")
-rownames(z) <- z$t1
-z$t1 <- NULL
-d <- dist(as.matrix(z)) # Euclidean distance
-h <- hclust(d)
-plot(h)
+levels(d$Group1)
+levels(d$Group2)
 
-d1$t1 <- factor(d1$t1, levels = h$labels[h$order], ordered = TRUE)
-d1$t2 <- factor(d1$t2, levels = rev(h$labels[h$order]), ordered = TRUE)
-ggplot(d1) + geom_tile(aes(x = t1, y = t2, fill = corr))
-
-
-
-d$corr_sig <- paste0(round(d$corr, 2), "\n(", d$sig, ")")
-d$corr_sig <- gsub("0.001", "<0.001", d$corr_sig)
-d$sig_ind <- ifelse(d$sig == 0.001, "", d$sig)
-d$sig_ind <- ifelse(d$sig_ind > 0.001 & d$sig_ind <= 0.01, "**", d$sig_ind)
-d$sig_ind <- ifelse(d$sig_ind > 0.01 & d$sig_ind <= 0.05, "*", d$sig_ind)
-d$sig_ind <- ifelse(d$sig_ind > 0.05, "ns", d$sig_ind)
-
-ggplot(d) + geom_tile(aes(x = t1, y = t2, fill = corr)) +
+ggplot(d) + geom_tile(aes(x = Group1, y = Group2, fill = Correlation)) +
   #geom_text(data = d, aes(x = t1, y = t2, label = d$corr_sig), size = 1.8) +
-  geom_text(data = d, aes(x = t1, y = t2, label = d$sig_ind), size = 1.8) +
+  #geom_text(data = d, aes(x = t1, y = t2, label = d$sig_ind), size = 1.8) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 7), 
         axis.text.y = element_text(size = 7), panel.grid = element_blank(), 
-        legend.title = element_text(size = 7), legend.key.width = unit(0.5, "cm")) +
-   scale_fill_gradient2(high = "#f46d43", mid = "#ffffbf", low = "#3288bd",
-                         midpoint = 0.5, limit = c(0,1), name = "Correlation") +
-#  scale_fill_gradient2(high = "#f1a340", mid = "#f7f7f7", low = "#998ec3",
-#                       midpoint = 0.5, limit = c(0,1), name = "Correlation") +
-#  scale_fill_gradient(high = "#f46d43", low = "#3288bd", limit = c(0,1), name = "Correlation") +
+        legend.title = element_text(size = 7), legend.key.width = unit(0.75, "cm")) +
+  scale_fill_gradient2(high = "#f46d43", mid = "#ffffbf", low = "#3288bd",
+                       midpoint = mean(c(min(d$Correlation), 1.01)), limit = c(min(d$Correlation), 1.01), 
+                       breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1.0), name = "Correlation") +
   xlab("") + ylab("")
 
+
+### Heatmap with rows/columns ordered by similarity (problematic!!!) ###
+d1m <- make.tri.dist(d1) # Mantel stats
+d2m <- make.tri.dist(d2) # Procrustes stats
+d1m[lower.tri(d1m)] <- NA # Produces lower tri in ggplot heatmap
+d2m[lower.tri(d2m)] <- NA # Produces lower tri in ggplot heatmap
+d <- d1m
+d <- d2m
+#d[lower.tri(d)] <- d2m[lower.tri(d2m)] # Combine matrices
+
+heatmap1(d1m)
+
+d$Group1 <- row.names(d)
+d <- na.omit(melt(d, 'Group1', variable.name='Group2', value.name = 'Correlation'))
+d$Group1 <- gsub("\\s", "\n", d$Group1) # Insert line break into labels
+d$Group2 <- gsub("\\s", "\n", d$Group2) # Insert line break into labels
+
+#d$Group1 <- factor(d$Group1, levels=unique(d$Group1)) # Gives wrong order (16S last)
+d$Group1 <- factor(d$Group1, levels = c("16S\nbacteria","18S\nanimals","18S\nfungi","18S\nprotists",
+                                        "26S\nanimals","26S\nfungi","26S\nprotists","ITS\nfungi",
+                                        "COI-300\nanimals", "COI-300\nfungi", "COI-300\nprotists",
+                                        "COI-650\nanimals","COI-650\nprotists"))
+d$Group2 <- factor(d$Group2, levels=rev(unique(d$Group2)))
+
+ggplot(d) + geom_tile(aes(x = Group1, y = Group2, fill = Correlation)) +
+  #geom_text(data = d, aes(x = t1, y = t2, label = d$corr_sig), size = 1.8) +
+  #geom_text(data = d, aes(x = t1, y = t2, label = d$sig_ind), size = 1.8) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 7), 
+        axis.text.y = element_text(size = 7), panel.grid = element_blank(), 
+        legend.title = element_text(size = 7), legend.key.width = unit(0.75, "cm")) +
+  scale_fill_gradient2(high = "#f46d43", mid = "#ffffbf", low = "#3288bd",
+                       midpoint = mean(c(min(d$Correlation), 1)), limit = c(min(d$Correlation), 1), 
+                       breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1.0), name = "Correlation") +
+  xlab("") + ylab("")
+
+
+
+
+
+
+z1 <- d1
+z1$t1 <- d1$t2
+z1$t2 <- d1$t1
+z1 <- rbind(z1, d1)
+z1 <- dcast(z1, t1 ~ t2, value.var = "corr")
+rownames(z1) <- z1$t1
+z1$t1 <- NULL
+m <- mean(as.matrix(z1), na.rm=TRUE)
+z1[is.na(z1)] <- m
+
+p1 <- make.heatmap1(d1m, column.method = "nMDS", column.metric="pearson", # Column ordering method
+                    row.method  ="nMDS", row.metric = "pearson", 
+                    column.cluster.method = "none", # Column clustering method
+                    row.cluster.method = "none",
+                    #column.cluster.method = "complete", # Column clustering method
+                    #row.cluster.method = "complete",
+              column.labels = colnames(d1m), row.labels = rownames(d1m),
+              column.label.size = 2.5, row.label.size = 2.5) +
+  scale_fill_gradient2(high="#f46d43", mid="#ffffbf", low="#3288bd", 
+                       midpoint = mean(as.matrix(d1m), na.rm=TRUE), limit = c(min(d1m), 1), name = "Correlation") + 
+  xlab("") + ylab("") + #coord_flip() +
+  theme(panel.grid = element_blank(), panel.border = element_blank(),
+        axis.text = element_blank(), axis.ticks = element_blank()) #+ scale_x_reverse()
+
+gg1 <- ggplotGrob(p1)
+gg1$layout[grepl("panel", gg1$layout$name), ]$clip <- "off"
+
+### Procrustes
+z2 <- d2
+z2$t1 <- d2$t2
+z2$t2 <- d2$t1
+z2 <- rbind(z2, d2)
+z2 <- dcast(z2, t1 ~ t2, value.var = "corr")
+rownames(z2) <- z2$t1
+z2$t1 <- NULL
+m <- mean(as.matrix(z2), na.rm=TRUE)
+z2[is.na(z2)] <- m
+
+p2 <- make.heatmap1(z2, column.method = "nMDS", column.metric="pearson", # Column ordering method
+                    row.method  ="nMDS", row.metric = "pearson", 
+                    column.cluster.method = "none", # Column clustering method
+                    row.cluster.method = "none",
+                    #column.cluster.method = "complete", # Column clustering method
+                    #row.cluster.method = "complete",
+                    column.labels = colnames(z2), row.labels = rownames(z2),
+                    column.label.size = 2.5, row.label.size = 2.5) +
+  scale_fill_gradient2(high="#f46d43", mid="#ffffbf", low="#3288bd", 
+                       midpoint = m, limit = c(min(z2), 1), name = "Correlation") + 
+  xlab("") + ylab("") + #coord_flip() +
+  theme(panel.grid = element_blank(), panel.border = element_blank(),
+        axis.text = element_blank(), axis.ticks = element_blank()) #+ scale_x_reverse()
+  
+gg2 <- ggplotGrob(p2)
+gg2$layout[grepl("panel", gg2$layout$name), ]$clip <- "off"
+  
+# library(phyloseq)
+phy <- phyloseq(otu_table(d2, taxa_are_rows = FALSE))
+ph <- plot_heatmap(phy, method = "RDA", distance = "euclidean") 
+ph <- ph + scale_fill_gradient2(high="#f46d43", mid="#ffffbf", low="#3288bd", midpoint = m) + 
+  theme(axis.text.x=element_text(size = 8, angle = -45, vjust = 1),
+        axis.text.y = element_text(size = 8)) +
+  ylab("Group") + xlab("Sample plot")# + coord_flip()
+ph
+
+
 ### Get average values ###
-d <- d[!(grepl("18S plants|26S plants",d$t1)|grepl("18S plants|26S plants",d$t2)), ]
+#d <- d[!(grepl("18S plants|26S plants",d$t1)|grepl("18S plants|26S plants",d$t2)), ]
+#d <- d[!(grepl("plants|COI-650 bacteria",d$t1)|grepl("plants|COI-650 bacteria",d$t2)), ]
 d$g1 <- sapply(strsplit(as.character(d$t1), " "), "[[", 1)
 d$g2 <- sapply(strsplit(as.character(d$t2), " "), "[[", 1)
 d$gboth <- paste(d$g1, d$g2)
@@ -642,12 +792,12 @@ dt[,mean(corr),by=.(measure, gboth)]
 dt[,mean(corr),by=.(measure, taxboth)]
 
 ###########################################################################
-d1 <- read.table("LBI_U8_OTUs_analyses/LBI_mantel_procrustes_revised/LBI_min2_norm_all_OTUs_all_genes_mantel_results_revised.txt", sep = "\t", header = T)
+d1 <- read.table("LBI_mantel_procrustes_revised/LBI_min2_norm_all_OTUs_all_genes_mantel_results_revised.txt", sep = "\t", header = T)
 d1$measure <- "Mantel"
 colnames(d1) <- gsub("man_", "", colnames(d1))
 colnames(d1) <- gsub("stat", "corr", colnames(d1))
 
-d2 <- read.table("LBI_U8_OTUs_analyses/LBI_mantel_procrustes_revised/LBI_min2_norm_all_OTUs_all_genes_procrustes_results_revised.txt", sep = "\t", header = T)
+d2 <- read.table("LBI_mantel_procrustes_revised/LBI_min2_norm_all_OTUs_all_genes_procrustes_results_revised.txt", sep = "\t", header = T)
 d2$measure <- "Procrustes"
 d2$pro_ss <- NULL
 colnames(d2) <- gsub("pro_", "", colnames(d2))
@@ -668,7 +818,9 @@ ggplot(d) + geom_tile(aes(x = t1, y = t2, fill = corr)) +
         axis.text.y = element_text(size = 7), panel.grid = element_blank(), 
         legend.title = element_text(size = 7), legend.key.width = unit(0.5, "cm")) +
   scale_fill_gradient2(high = "#f46d43", mid = "#ffffbf", low = "#3288bd",
-                       midpoint = 0.5, limit = c(0,1), name = "Correlation") +
+                       #midpoint = 0.5, limit = c(0,1.1), name = "Correlation") +
+  midpoint = mean(c(min(d$corr), 1.01)), limit = c(min(d$corr), 1.01), 
+  breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1.0), name = "Correlation") + 
   #  scale_fill_gradient2(high = "#f1a340", mid = "#f7f7f7", low = "#998ec3",
   #                       midpoint = 0.5, limit = c(0,1), name = "Correlation") +
   #  scale_fill_gradient(high = "#f46d43", low = "#3288bd", limit = c(0,1), name = "Correlation") +
@@ -676,23 +828,23 @@ ggplot(d) + geom_tile(aes(x = t1, y = t2, fill = corr)) +
 
 ###########################################################################
 ### Vegetation heatmap ###
-d1 <- read.table("LBI_U8_OTUs_analyses/LBI_veg_mantel_procrustes_revised/LBI_min2_ALL_main_groups_all_genes_veg_mantel_results_btw_genes_revised.txt", sep = "\t", header = T)
+d1 <- read.table("LBI_veg_mantel_procrustes_revised/LBI_min2_ALL_main_groups_all_genes_veg_mantel_results_btw_genes_revised.txt", sep = "\t", header = T)
 d1$measure <- "Mantel"
 colnames(d1) <- gsub("man_", "", colnames(d1))
 colnames(d1) <- gsub("stat", "corr", colnames(d1))
 
-d2 <- read.table("LBI_U8_OTUs_analyses/LBI_veg_mantel_procrustes_revised/LBI_min2_ALL_main_groups_all_genes_veg_procrustes_results_btw_genes_revised.txt", sep = "\t", header = T)
+d2 <- read.table("LBI_veg_mantel_procrustes_revised/LBI_min2_ALL_main_groups_all_genes_veg_procrustes_results_btw_genes_revised.txt", sep = "\t", header = T)
 d2$measure <- "Procrustes"
 d2$pro_ss <- NULL
 colnames(d2) <- gsub("pro_", "", colnames(d2))
 
-d3 <- read.table("LBI_U8_OTUs_analyses/LBI_veg_mantel_procrustes_revised/LBI_min2_all_OTUs_all_genes_veg_mantel_results_btw_genes_revised.txt", sep = "\t", header = T)
+d3 <- read.table("LBI_veg_mantel_procrustes_revised/LBI_min2_all_OTUs_all_genes_veg_mantel_results_btw_genes_revised.txt", sep = "\t", header = T)
 d3$measure <- "Mantel"
 colnames(d3) <- gsub("man_", "", colnames(d3))
 colnames(d3) <- gsub("stat", "corr", colnames(d3))
 d3$t2 <- paste(d3$t2, "all_OTUs")
 
-d4 <- read.table("LBI_U8_OTUs_analyses/LBI_veg_mantel_procrustes_revised/LBI_min2_all_OTUs_all_genes_veg_procrustes_results_btw_genes_revised.txt", sep = "\t", header = T)
+d4 <- read.table("LBI_veg_mantel_procrustes_revised/LBI_min2_all_OTUs_all_genes_veg_procrustes_results_btw_genes_revised.txt", sep = "\t", header = T)
 d4$measure <- "Procrustes"
 d4$pro_ss <- NULL
 colnames(d4) <- gsub("pro_", "", colnames(d4))
@@ -700,12 +852,16 @@ d4$t2 <- paste(d4$t2, "all_OTUs")
 
 d <- rbind(d1, d2, d3, d4)
 
+### Drop unneeded groups ###
+d <- d[!(grepl("plants", d$t2)), ]
+d <- d[!(grepl("COI-650 bacteria", d$t2)), ]
+
 ### Factors for vegetation heatmap
 d$gene <- sapply(strsplit(as.character(d$t2), " "), "[[", 1)
 d$taxon <- sapply(strsplit(as.character(d$t2), " "), "[[", 2)
 d$gene <- factor(d$gene, levels = rev(c("16S","18S","26S","ITS","COI-300","COI-650")), ordered = TRUE)
 d$taxon <- gsub("_", " ", d$taxon)
-d$taxon <- factor(d$taxon, levels = c("all OTUs","bacteria","fungi","protists","animals","plants"), ordered = TRUE)
+d$taxon <- factor(d$taxon, levels = c("all OTUs","bacteria","fungi","protists","animals"), ordered = TRUE)
 
 d$corr_sig <- paste0(round(d$corr, 2), "\n(", d$sig, ")")
 d$corr_sig <- gsub("0.001", "<0.001", d$corr_sig)
@@ -723,7 +879,7 @@ ggplot(d, aes(x = taxon, y = gene, fill = corr)) + geom_tile() +
         legend.title = element_text(size = 7), legend.key.width = unit(0.5, "cm"),
         strip.background = element_rect(fill=NA, colour = NA)) +
   scale_fill_gradient2(high = "#f46d43", mid = "#ffffbf", low = "#3288bd",
-                       midpoint = 0.5, limit = c(0,1), name = "Correlation") +
+                       midpoint = 0.5, limit = c(0,1.01), name = "Correlation") +
   #  scale_fill_gradient2(high = "#f1a340", mid = "#f7f7f7", low = "#998ec3",
   #                       midpoint = 0.5, limit = c(0,1), name = "Correlation") +
   #  scale_fill_gradient(high = "#f46d43", low = "#3288bd", limit = c(0,1), name = "Correlation") +
