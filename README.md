@@ -16,10 +16,9 @@ Two MiSeq runs were generated. The first was a 2 x 300 bp run containing 16S, 26
 ### OTU clustering
 Filter, trim, dereplicate and cluster OTUs at 97 % identity threshold from the combined fastq file for each gene using Usearch v8.1.1861 for linux64. Use 'usearch8\_pipeline\_miseq\_2015.py' to run usearch commands, as summarised below:
 
-1. Trimming and error filtering, using maximum expected error threshold (maxee) of 1. For 16S, 26S and COI-650 amplicons, truncate at 250 bp, to remove the lowest-quality regions:
-  - 'usearch -fastq\_filter file -fastq\_trunclen 250 -fastq\_maxee 1.0 -fastaout filter\_trim.fasta'
-For 18S, ITS and COI-300 overlapped sequences, use minimum lengths of 310, 180 and 300 bp respectively:
-  - 'usearch -fastq\_filter file -fastq\_minlen 310 -fastq\_maxee 1.0 -fastaout filter\_trim.fasta'
+1. Trimming and error filtering, using maximum expected error threshold (maxee) of 1. For 16S, 26S and COI-650 amplicons, truncate at 250 bp, to remove the lowest-quality regions. For 18S, ITS and COI-300 overlapped sequences, use minimum lengths of 310, 180 and 300 bp respectively. 
+  - 'usearch -fastq\_filter file -fastq\_trunclen 250 -fastq\_maxee 1.0 -fastaout filter\_trim.fasta' (16S, 26S, COI-650)
+  - 'usearch -fastq\_filter file -fastq\_minlen xyz -fastq\_maxee 1.0 -fastaout filter\_trim.fasta' (18S, ITS, COI-300)
 
 2. Dereplicate the filtered sequences (use .uc output file for mapping sequence reads to OTUs later):
   - 'usearch derep\_fulllength filter\_trim.fasta -fastaout uniques.fasta -sizeout -uc derep.uc' 
