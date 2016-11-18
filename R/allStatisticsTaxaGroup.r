@@ -32,7 +32,7 @@ getTaxaGroupStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=
   ta.gr.stats <- ComMA::summaryTaxaGroup(cm.taxa.list, input.list=T, unclassified=3, taxa.group=taxa.group,
                                          group.rank="kingdom", count.rank="phylum")
   
-  merged.stats <- ComMA::merge2DF(ta.gr.stats$otus, ta.gr.stats$rank.count)
+  merged.stats <- ComMA::combineTwoDF(ta.gr.stats$otus, ta.gr.stats$rank.count)
   
   align.v <- rep("r", ncol(merged.stats) + 1)
   ComMA::printXTable(merged.stats, align = align.v, label = "tab:tgroup:stats", 

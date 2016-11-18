@@ -1,135 +1,46 @@
-# eDNA-pipeline
+# Hauturu MiSeq pipeline
 
-In development
+Two MiSeq runs were generated. The first was a 2 x 250 bp run containing 18S, ITS, and COI-300 amplicons. The second was a 2 x 300 bp run containing 16S, 26S, and COI-650 amplicons. Each sequencing run resulted in fastq files corresponding to R1 and R2 reads for each sample.
 
-## Data
+1. Preprocessing part A: 
+For the 2 x 250 bp run, use PEAR (http://sco.h-its.org/exelixis/web/software/pear/) to overlap the R1 and R2 reads. PEAR doesn't work if any irregularities present in files to be processed (e.g. reads missing due to mismatch with primers), so do this before anything else:
+- With all the R1/R2 files in the same folder, use "run\_PEAR.py" to overlap reads with a minimum 50 bp overlap;
+- Outputs overlapped sequences as fastq files corresponding to each pair of input R1/R2 files; 
 
-1. BioProject in NCBI:
-  
-2.  BioSamples (including lat-long, elevation, temperature):
-  
-3. Soil environmental sequences (454) in SRA:
-  
+For the 2 x 300 bp run, the reads don't overlap, so just use the (higher-quality) R1 reads. 
 
-4. Elevations:
-  
+2. Preprocessing part B: 
+Split the overlapped or R1 reads fastq files by gene and remove primers: 
+- use "fastq\_primer\_split\_v3.py";
+- Requires a tab-delimited list of gene names and corresponding primer sequences;
+- Outputs a fastq file for each sample and gene with sequences trimmed of primers, renamed as Sample-ID\_contigs/reads\_gene\_primertrim.fastq;
 
+Add gene and sample names to sequence ids in each split/trimmed fastq file:
+- use "relabel\_reads.py";
+- Requires a tab-delimited list of sequencing IDs and corresponding sample IDs;
+- Outputs relabelled fastq files, with gene and sample ID added to sequence records (format: |gene\_x|sample\_y); 
 
-6. Vegetation survey data:
+Concatenate the trimmed/relabelled fastq files for each gene
+- use "concatenate\_files.py" (or just "cat *.fastq > gene\_all\_contigs/reads.fastq");
 
+3. OTU clustering
+Filter, trim, dereplicate and cluster OTUs at 97 % identity threshold from the combined fastq file for each gene using Usearch v8.1.1861 for linux64.
+- use "usearch8\_pipeline\_miseq\_2015.py" to run usearch commands, summarised below:
+1. Trimming and error filtering:
+- Use maximum expected error threshold (maxee) of 1; 
+- For 18S, ITS and COI-300 overlapped sequences, use minimum lengths of 310, 180 and 300 bp 
+respectively:
+"usearch -fastq\_filter file -fastq\_minlen 310 -fastq\_maxee 1.0 -fastaout filter\_trim.fasta"
+- For 16S, 26S and COI-650 amplicons, truncate at 250 bp, to remove the lowest-quality regions:
+"usearch -fastq\_filter file -fastq\_trunclen 250 -fastq\_maxee 1.0 -fastaout filter\_trim.fasta"
+2. Dereplicate filtered sequences (use uc output file for mapping reads to OTUs later):
+"usearch derep\_fulllength filter\_trim.fasta -fastaout uniques.fasta -sizeout -uc derep.uc" 
+3. Sort dereplicated sequences by size for OTU clustering input:
+"usearch -sortbysize uniques.fasta -fastaout uniques\_sorted.fasta"
+4. Cluster into OTUs at 97 % identity threshold using UPARSE algorithm:
+"usearch -cluster\_otus uniques\_sorted.fasta -otus OTUs.fasta -uparseout OTUs\_out.up"
+5. Make an OTU table based on uparse OTUs\_out.up and sequence counts from derep.uc files:
+- use "make\_otutable\_from\_uparse.py"
 
-8. SraRunTable.txt : 
-  a SRA mapping file to map SRA code to subplot name.
-  
-9. Soil chemistry:
-
-
-## Folder structure in working path 
-
-1. A working folder, such as ./pipeline
-
-2. Folders for each data set (genes), such as ./pipeline/16S
-
-3. Folders for deconvolution, such as ./pipeline/16S/deconvoluted
-
-4. Folders for quality control, such as ./pipeline/16S/qc
-
-5. Folders for each OTU threshold, such as ./pipeline/16S/otus97
-
-For example,
-```
-pipeline
- |___ 16S
- |     |___ deconvoluted
- |     |___ qc
- |     |___ otu?? (e.g. 97)
- |___ 18S
- ...  
-```
-
-
-## Download 454 sequences 
-
-1. Download soil environmental sequences (454) from SRA:
-  http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP050103
-
-2. Convert sra format into fastq using SRA Toolkit, such as:
-  ```
-  /sratoolkit.2.4.3-mac64/bin/fastq-dump SRR1720812.sra
-  ```
-  SRR1720812.fastq will be ready in the same folder.
-
-3. Combine all fastq files from the same marker into one file:
-  ```
-  cat *.fastq > 16S.fastq
-  ```
-  Alternatively, use scripts *downloadData.sh* and *prepareData.sh* as discribed below.
-
-
-## UPARSE 
-
-1. Download USEARCH (http://www.drive5.com/usearch/download.html)
-
-2. Setup USEARCH by copying it to /Applications, and create a link:
-  ```
-  ln -s usearch8.0.??? usearch8
-  ```
-
-3. Create a working folder, such as ./pipeline
-
-4. Copy all scripts in to working folder, such as pipeline/scripts
-
-5. Download data
-  ```
-  scripts/downloadData.sh 
-  scripts/prepareData.sh
-  ```
-
-6. We strongly recommend to use error corrector for 454 data. In this pipeline, 
-we choose Acacia (http://www.nature.com/nmeth/journal/v9/n5/abs/nmeth.1990.html). 
-Please install Acacia and change its path in the script *pipelineDerep.sh* before go to step 7.
-Note that you need to give enough memory according to the size of the largest cluster from your data. 
-We recommend to assign at least 50 GB memory to Acacia (-Xmx50g) for our 16S and 10 GB for the rest of datasets. 
-
-7. Go into each gene folder to run script for either denovo chimera filtering or reference filtering (16S only), e.g.
-  ```
-  cd 16S
-  ../scripts/runOTUsRef.sh ./deconvoluted/16S.fastq 
-  ```
-  or 
-  ```
-  cd COI
-  ../scripts/runOTUsDenovo.sh ./deconvoluted/COI.fastq 
-  ```
-  Note: the reference dataset gold.fa (http://www.drive5.com/usearch/manual/cmd_uchime_ref.html) is required by *runOTUsRef.sh*.
-
-
-## Generate Community Matrix 
-
-Note: USEARCH 8 mixes all sample-based data into one pool,
-therefore the sample information of each duplicate read would be lost during 
-de-replication process. In *createAllCommunityMatrix.r*, we retrive the sample of each duplicate 
-read from the mapping file derep.uc created by a modified command:
-```
-$USEARCH -derep_fulllength ./qc/denoised.fasta -fastaout ./qc/derep.fasta -sizeout -uc ./qc/derep.uc
-```
-to create the community matrix retaining the correct reads' distribution of samples.   
-
-
-##  BLAST 
-
-Use *cleanSizeAnnotation.sh* to clean up the size annotation in the sequence label created by USEARCH, 
-which will cause MEGAN input error. 
-
-
-## Community Matrix Analysis 
-
-The detail is in [R/README.md](R/README.md).
-
-1. Run *createAllCommunityMatrix.r* first to create community matrices.
-
-2. Run *createAllDiversitiesOTUsTable.r* second to get the rarefaction table and OTU threshold table. This is time-consuming.
-If you do not need clustering through different thresholds, you could use faster script *createAllRarefactionTable.r* to generate 
-the rarefaction table at 97% threshold only. 
-
-3. Change source path for pipeline and working path for data into your local path. Run *createAllFiguresTables.r* to get all figures and tables.
+4. Get taxonomic identifications for each OTU
+BLAST each OTU file against the NCBI nr database. Import the resulting BLAST output files into MEGAN metagenome analyser. From MEGAN, output taxonomic paths for each OTU. Reorganise the taxonomic paths into table of taxonomic ranks based on the all-inclusive taxonomy scheme of Ruggiero et al. 2015, using "make\_taxonomy\_table\_v6.py".   
