@@ -5,12 +5,12 @@
 # all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)
 # all.dist.plot <- getDissimVsDistances(by.plot=T, save.rdata=TRUE)
 # Use "save.rdata=T", if you want to save it to "all.dist.list".
-getDissimVsDistances <- function(by.plot=FALSE, save.rdata=FALSE, init=TRUE) {
-  if (init) source("R/init.R", local=TRUE)
-  metrics <- c("jaccard", "horn.morisita", "bray.curtis", "beta1-1", "wt.unif", "unwt.unif")
-  
-  if(!exists("input.names")) stop("input names are missing !")
+getDissimVsDistances <- function(input.names, by.plot=FALSE, save.rdata=FALSE) {
+  if (missing(input.names)) 
+    source("R/init.R", local=TRUE)
   output.names <- getOutputNames(input.names)
+  
+  metrics <- c("jaccard", "horn.morisita", "bray.curtis", "beta1-1", "wt.unif", "unwt.unif")
   
   # calculate all dist
   cat("\nCalculate all dissimilarity ... \n")
@@ -28,7 +28,7 @@ getDissimVsDistances <- function(by.plot=FALSE, save.rdata=FALSE, init=TRUE) {
 #  if (save.rdata)
 #    save(all.dist.list, file = paste("data/all.dist", ifelse(by.plot, "plot", "subplot"), "RData", sep = ".") )
   
-  all.dist.list <- appendDistDF(output.names, metrics, all.dist.list, by.plot=by.plot, init=FALSE)
+  all.dist.list <- appendDistDF(output.names, metrics, all.dist.list, by.plot=by.plot)
   if (save.rdata)
     save(all.dist.list, file = paste("data/all.dist", ifelse(by.plot, "plot", "subplot"), "RData", sep = ".") )
   
@@ -36,9 +36,7 @@ getDissimVsDistances <- function(by.plot=FALSE, save.rdata=FALSE, init=TRUE) {
 }
 
 # do not have within between, if by.plot=T
-appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FALSE, init=TRUE) {
-  if (init) source("R/init.R", local=TRUE)
-  
+appendDistDF <- function(output.names, metrics, all.dist.list=list(), by.plot=FALSE) {
   if (!by.plot) {
     # all within-between pairwise distances
     cat("\nCalculate all within-between pairwise distances ... \n")

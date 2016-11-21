@@ -3,15 +3,13 @@
 
 # file.xtable is the file to log xtable
 # otu.stats <- getOTUStatistics()
-getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE, init=TRUE) {
-  if (init) source("R/init.R", local=TRUE)
-  
-  if(!exists("input.names")) stop("input names are missing !")
+getOTUStatistics <- function(input.names, by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
+  if (missing(input.names)) 
+    source("R/init.R", local=TRUE)
   output.names <- getOutputNames(input.names)
 
   cm.list <- list()
   cm.min2.list <- list()
-  require(ComMA)
   for (data.id in 1:length(input.names)) {
     # inlcude singletons
     min2=FALSE
@@ -29,6 +27,7 @@ getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
   }
   cat("\n")
   
+  require(ComMA)
   # 1. OTU summary
   otu.stats <- ComMA::summaryOTUs(cm.list, input.list=T)
   # hard code to keep rows we need
@@ -38,6 +37,7 @@ getOTUStatistics <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
   # 2. Jost diversity summary
   div.stats <- ComMA::summaryDiversity(cm.min2.list, input.list=T, row.order=c(2,5,8,3,6,9,1,4,7))
   otu.stats <- rbind(otu.stats, div.stats)
+  cat("\n")
   
   # 3. xtable
   align.v <- rep("r", ncol(otu.stats) + 1)

@@ -5,11 +5,11 @@ rm(list=ls())
 # change config below
 setwd("~/WorkSpace/eDNA-pipeline")
 
-tableFile <- file.path("report.tex")
-
 ######## initialise #######
 source("R/init.r", local=TRUE)
 
+# tableFile <- NULL # print to console
+tableFile <- file.path("report.tex")
 # create folder for figures 
 mkdir(file.path("figures"))    
 
@@ -24,14 +24,15 @@ cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append
 
 ######## figures and tables #######
 source("R/allStatistics.r", local=TRUE)
-otu.stats <- getOTUStatistics(init=FALSE)
+otu.stats <- getOTUStatistics(input.names, file.xtable=tableFile)
 
 source("R/allStatisticsTaxaGroup.r", local=TRUE)
-tg.stats <- getTaxaGroupStatistics(init=FALSE)
+tg.stats <- getTaxaGroupStatistics(input.names, file.xtable=tableFile)
+#tg.stats$phyla.list$OTUs
 
 # use phyloseq 1.10.0, new version weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
-# all.dist.subplot <- getDissimVsDistances(init=FALSE, save.rdata=TRUE)
+# all.dist.subplot <- getDissimVsDistances(input.names, init=FALSE, save.rdata=TRUE)
 
 # subplot
 load("data/all.dist.subplot.RData")
