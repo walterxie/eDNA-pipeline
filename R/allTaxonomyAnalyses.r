@@ -4,10 +4,9 @@
 # and filled circles the number of OTUs excluding singleton OTUs.
 
 # all.counts.sums <- getAllCountsSums()
-getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE, init=TRUE) {
-  if (init) source("R/init.R", local=TRUE)
-  
-  if(!exists("input.names")) stop("input names are missing !")
+getAllCountsSums <- function(input.names, by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
+  if (missing(input.names)) 
+    source("R/init.R", local=TRUE)
   output.names <- getOutputNames(input.names)
   
   cm.taxa.list <- list()
@@ -20,10 +19,10 @@ getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
     cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
     tt <- getTaxaTable(input.names[data.id], taxa.group="all")
     # adjust taxonomy?
-    tt$kingdom <- gsub("CHROMISTA|PROTOZOA", "PROTISTS", tt$kingdom)
+    #tt$kingdom <- gsub("CHROMISTA|PROTOZOA", "PROTISTS", tt$kingdom)
     
-    # preprocess taxonomy
-    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = c("superkingdom", "kingdom", "phylum"))
+    # no preprocess to keep original names
+    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, preprocess=F, col.ranks = c("superkingdom", "kingdom", "phylum"))
     cm.taxa.list[[output.names[data.id]]] <- cm.taxa
   }
   cat("\n")
@@ -31,6 +30,11 @@ getAllCountsSums <- function(by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE,
   # include figure and table
   all.counts.sums <- ComMA::summReadsOTUsPipeline(cm.taxa.list, taxa.rank="phylum", group.rank="kingdom", 
                                                   col.ranks=c("superkingdom", "kingdom", "phylum"), 
+                                                  gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650"),
+                                                  group.levels=c("ARCHAEA","BACTERIA","EUKARYOTA","PROTOZOA","CHROMISTA",
+                                                                 "FUNGI","PLANTAE","ANIMALIA","Unknown"),
+                                                  palette=c("orange","red","blue","steelblue","skyblue",
+                                                            "purple","green2","green4","grey"),
                                                   pdf.width = 340, pdf.height = 260)
 
   return(all.counts.sums)

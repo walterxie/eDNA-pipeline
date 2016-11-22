@@ -24,28 +24,34 @@ cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append
 
 ######## figures and tables #######
 source("R/allStatistics.r", local=TRUE)
+# Table 2
 otu.stats <- getOTUStatistics(input.names, file.xtable=tableFile)
 
 source("R/allStatisticsTaxaGroup.r", local=TRUE)
+# Table 2
 tg.stats <- getTaxaGroupStatistics(input.names, file.xtable=tableFile)
 #tg.stats$phyla.list$OTUs
+
+source("R/allTaxonomyAnalyses.r", local=TRUE)
+# Figure 2
+all.counts.sums <- getAllCountsSums(input.names)
 
 # use phyloseq 1.10.0, new version weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
 # all.dist.subplot <- getDissimVsDistances(input.names, init=FALSE, save.rdata=TRUE)
 
-# subplot
+# all.dist.list$by.plot == F 
 load("data/all.dist.subplot.RData")
-# all.dist.list
+# Figure 3a, S1
 plotDistanceCorrelation(all.dist.list[["within"]])
+# Figure 3b, S2
+plotDistanceCorrelation(all.dist.list[["elev.diff"]])
+# Figure S3
 plotWithinBetween(all.dist.list[["within.between"]])
 
-# plot 
-load("data/all.dist.subplot.RData")
-plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 
-source("R/allTaxonomyAnalyses.r", local=TRUE)
-all.counts.sums <- getAllCountsSums(init=FALSE)
+
+
 
 
 ######## complete report latex #######
