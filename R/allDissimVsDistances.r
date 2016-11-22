@@ -1,5 +1,6 @@
-# Figure 7: Correlations between spatial separation and multivariate dissimilarity index (DSI)
-# Figure 8: Correlations between elevation differences and multivariate dissimilarity index (DSI)
+# Figure S1: Correlations between spatial separation and multivariate dissimilarity index (DSI)
+# Figure S2: Correlations between elevation differences and multivariate dissimilarity index (DSI)
+# Figure S3: Within-plot (red) and between-plot (blue) pairwise sample similarities
 
 # do not have within between, if by.plot=T
 # all.dist.subplot <- getDissimVsDistances(save.rdata=TRUE)

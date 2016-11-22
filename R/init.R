@@ -95,6 +95,43 @@ getTaxaRef <- function(data.folder="./data") {
   return(taxa.ref)
 }
 
+
+getCommunityList <- function(genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
+                                             list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
+                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom", "phylum"), drop.taxa=TRUE ) {
+  genes=c("16S","18S","26S","ITS","ShCO1","FolCO1")
+  taxa=tolower(c("all OTUs", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA"))
+  
+  # data frame for statistics
+  cm.taxa.list <- list()
+  require(ComMA)
+  for (z in genes.taxa) {
+    # no singletons
+    min2=TRUE
+    if (!z[[1]] %in% genes || !z[[2]] %in% taxa)
+      stop("Invalid name in genes.taxa ! ", z[[1]], z[[2]])
+    gene <- getOutputNames(z[[1]])
+    taxon <- z[[2]]
+    
+    cat("\n", gene, "data set", taxon, "taxa group,", ifelse(min2, "exclude", "include"), 
+        "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
+    
+    cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
+    tt <- getTaxaTable(input.names[data.id], taxa.group=taxon)
+    
+    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = col.ranks)
+    
+    if (drop.taxa)
+      cm.taxa <- cm.taxa[,-which(names(cm.taxa) %in% col.ranks)]
+    
+    cm.taxa.list[[paste(gene, taxon)]] <- cm.taxa
+  }
+  cat("\n")
+  
+  return(cm.taxa.list)
+}
+
+
 ###### Trees #####
 # tre <- getPhyloTree("16S", "PROKARYOTA")
 getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 

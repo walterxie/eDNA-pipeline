@@ -10,8 +10,9 @@ source("R/init.r", local=TRUE)
 
 # tableFile <- NULL # print to console
 tableFile <- file.path("report.tex")
+fig.folder <- file.path("figures")
 # create folder for figures 
-mkdir(file.path("figures"))    
+mkdir(fig.folder)    
 
 ######## set up report latex #######
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
@@ -34,20 +35,23 @@ tg.stats <- getTaxaGroupStatistics(input.names, file.xtable=tableFile)
 
 source("R/allTaxonomyAnalyses.r", local=TRUE)
 # Figure 2
-all.counts.sums <- getAllCountsSums(input.names)
+p2 <- getAllCountsSums(input.names)
+ggsave(p2, file = file.path(fig.folder, "Overall_taxonomy_OTUs_reads_by_phylum.pdf"), 
+       width = 340, height = 260, units = "mm")
+
 
 # use phyloseq 1.10.0, new version weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
-# all.dist.subplot <- getDissimVsDistances(input.names, init=FALSE, save.rdata=TRUE)
+# all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=TRUE)
 
 # all.dist.list$by.plot == F 
 load("data/all.dist.subplot.RData")
 # Figure 3a, S1
-plotDistanceCorrelation(all.dist.list[["within"]])
+ps1 <- plotDistanceCorrelation(all.dist.list[["within"]])
 # Figure 3b, S2
-plotDistanceCorrelation(all.dist.list[["elev.diff"]])
+ps2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
-plotWithinBetween(all.dist.list[["within.between"]])
+ps3 <- plotWithinBetween(all.dist.list[["within.between"]])
 
 
 
