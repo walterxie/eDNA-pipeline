@@ -5,8 +5,19 @@
 input.names <- c("16S","18S","26S","ITS","ShCO1","FolCO1")
 # names presented in figures and tables
 getOutputNames <- function(input.names) {
-  output.names <- gsub("FolCO1", "COI-650", input.names)
-  output.names <- gsub("ShCO1", "COI-300", output.names)
+  output.names <- gsub("FolCO1", "COI-650", input.names, ignore.case = T)
+  output.names <- gsub("ShCO1", "COI-300", output.names, ignore.case = T)
+}
+# convert taxa names into valid name in taxa table file
+getTaxaNames <- function(taxa.names) {
+  taxa.names <- gsub("protists", "CHROMISTA|PROTOZOA", taxa.names, ignore.case = T)
+  taxa.names <- gsub("animals", "ANIMALIA", taxa.names, ignore.case = T)
+  taxa.names <- gsub("all OTUs", "all", taxa.names, ignore.case = T)
+}
+# find the rank associated to taxa group to be analysed
+getRank <- function(taxon) {
+  if (toupper(taxon) == "PROKARYOTA" || toupper(taxon) == "EUKARYOTA") "superkingdom"
+  else "kingdom"
 }
 
 # most abundant 150 OTUs
@@ -95,12 +106,13 @@ getTaxaRef <- function(data.folder="./data") {
   return(taxa.ref)
 }
 
-
-getCommunityList <- function(genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
+# programmatically get sub-dataset 
+getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
+                             genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
                                              list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
-                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom", "phylum"), drop.taxa=TRUE ) {
-  genes=c("16S","18S","26S","ITS","ShCO1","FolCO1")
-  taxa=tolower(c("all OTUs", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA"))
+                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
+  taxa=c("all", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", 
+         "CHROMISTA|PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA")
   
   # data frame for statistics
   cm.taxa.list <- list()
@@ -108,23 +120,24 @@ getCommunityList <- function(genes.taxa=list(list("16S","bacteria"),list("18S","
   for (z in genes.taxa) {
     # no singletons
     min2=TRUE
-    if (!z[[1]] %in% genes || !z[[2]] %in% taxa)
-      stop("Invalid name in genes.taxa ! ", z[[1]], z[[2]])
     gene <- getOutputNames(z[[1]])
-    taxon <- z[[2]]
+    taxon <- getTaxaNames(z[[2]])
+    rank <- getRank(taxon)
+    if ( !tolower(z[[1]]) %in% tolower(genes) || !tolower(taxon) %in% tolower(taxa) )
+      stop("Invalid name in genes.taxa ! ", gene, " (", z[[1]], ") or ",  taxon, " (", z[[2]], ")")
     
-    cat("\n", gene, "data set", taxon, "taxa group,", ifelse(min2, "exclude", "include"), 
+    cat("\n", gene, "data set", taxon, "group at", rank, ",", ifelse(min2, "exclude", "include"), 
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
-    cm <- getCommunityMatrix(input.names[data.id], min2=min2, by.plot=by.plot)
-    tt <- getTaxaTable(input.names[data.id], taxa.group=taxon)
+    cm <- getCommunityMatrix(z[[1]], min2=min2, by.plot=by.plot)
+    tt <- getTaxaTable(z[[1]], taxa.group=taxon, rank=rank)
     
-    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, col.ranks = col.ranks)
+    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, has.total = 0, col.ranks = col.ranks, preprocess = F)
     
     if (drop.taxa)
       cm.taxa <- cm.taxa[,-which(names(cm.taxa) %in% col.ranks)]
     
-    cm.taxa.list[[paste(gene, taxon)]] <- cm.taxa
+    cm.taxa.list[[paste(gene, z[[2]])]] <- cm.taxa
   }
   cat("\n")
   
@@ -173,6 +186,7 @@ getEnvData <- function(by.plot=TRUE, data.folder="./data/Environmental_data", ve
     env <- NULL
     warning("Cannot find enviornmental data: ", input.f, " !\n") 
   }
+  env[is.na(env)] <- "Unknown"
   return(env) 
 }
 

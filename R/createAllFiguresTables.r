@@ -40,7 +40,7 @@ ggsave(p2, file = file.path(fig.folder, "Overall_taxonomy_OTUs_reads_by_phylum.p
        width = 340, height = 260, units = "mm")
 
 
-# use phyloseq 1.10.0, new version weighted UniFrac < 0.1
+# use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
 # all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=TRUE)
 
@@ -53,9 +53,37 @@ ps2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
 ps3 <- plotWithinBetween(all.dist.list[["within.between"]])
 
-
-
-
+# NMDS
+source("R/allNMDS.r", local=TRUE)
+# Figure 4
+nmds <- getNMDS(input.names)
+ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]], nmds$plot.list[[3]], 
+                                  nmds$plot.list[[4]], nmds$plot.list[[5]], nmds$plot.list[[6]],
+                                  nrow=3, legend.position="right")
+# Figure S4: all OTUs
+nmds <- getNMDS(input.names, genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
+                                             list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) )
+ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]], nmds$plot.list[[3]], 
+                                  nmds$plot.list[[4]], nmds$plot.list[[5]], nmds$plot.list[[6]],
+                                  nrow=3, legend.position="right")
+# Figure S5
+nmds <- getNMDS(input.names, genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
+                                             list("ITS","fungi"),list("ShCO1","fungi")) )
+ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
+                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
+                                  nrow=2, legend.position="right")
+# Figure S6
+nmds <- getNMDS(input.names, genes.taxa=list(list("18S","protists"),list("26S","protists"),
+                                             list("ShCO1","protists"),list("FolCO1","protists")) )
+ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
+                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
+                                  nrow=2, legend.position="right")
+# Figure S7
+nmds <- getNMDS(input.names, genes.taxa=list(list("18S","animals"),list("26S","animals"),
+                                             list("ShCO1","animals"),list("FolCO1","animals")) )
+ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
+                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
+                                  nrow=2, legend.position="right")
 
 
 ######## complete report latex #######
