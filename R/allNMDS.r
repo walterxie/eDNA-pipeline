@@ -9,7 +9,7 @@ getNMDS <- function(input.names, metric="jaccard",
     source("R/init.R", local=TRUE)
 
   cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
-                              col.ranks=c("superkingdom", "kingdom", "phylum"), drop.taxa=TRUE )
+                              col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
   env.subplot <- getEnvData(by.plot=F)
   cat("\n")
   

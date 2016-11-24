@@ -1,74 +1,29 @@
-library(vegan)
-library(vegetarian)
-library(xtable)
 
-# change config below
-#figDir <- figDir, ""
-#sourcePath <- "~/svn/compevol/research/NZGenomicObservatory/Metabarcoding/R/Modules/"
-#setwd(sourcePath)
-#workingPath <- "~/Projects/NZGO/pilot2010/pipeline/"
-#matrixNames <-  c("16S", "18S", "trnL", "ITS", "COI", "COI-spun") # only for cm file name and folder name   
-#matrixNamesNo454 <-  c("seedlings","trees","invertebrates","birds") # need expId correct for "birds","seedlings" 
 
-if(!exists("tableFile")) stop("table file is missing !")
-if(!exists("figDir")) stop("figure folder name is missing !")
-if(!exists("matrixNames")) stop("matrix names are missing !")
-if(!exists("matrixNamesNo454")) stop("matrix names of traditional methods are missing !")
-if(!exists("rmSingleton")) stop("rmSingleton flag is missing !")
 
-n <- length(matrixNames) 
-m <- length(matrixNamesNo454)
-
-otuThr = 97
-
-source("Modules/init.R", local=TRUE)
-
-plots <- c("Plot1","Plot2","Plot3","Plot4","Plot5","Plot6","Plot7","Plot8","Plot9","Plot10")
-
-######## 454 #######
-beta1DisList <- list()
-
-for (expId in 1:n) {	
-    communityMatrix <- init(expId, otuThr, "-by-plot")
-	
-	if ( all( rownames(communityMatrix) != plots ) )
-		stop( paste("community matrix", matrixNames[expId], "plot names are incorrect !") )
-
-	####### beta 1 ########
-	# (45 pairs for 10 plots)
-    d.beta1 <- beta1(communityMatrix)
+# mantel <- getMantel()
+getMantel <- function(input.names, metric="jaccard",
+                    genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
+                                    list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) ) {
+  if (missing(input.names)) 
+    source("R/init.R", local=TRUE)
+  
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
+                              col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
+  cat("\n")
+  
+  
+  
+  
+  
+  plot.list <- list()
+  for (i in 1:length(cm.list)) {
     
-    beta1DisList[[ expId ]] <- d.beta1
-	    
-    print(paste(matrixNames[expId], " (", otuThr, "%) : total = ", sum(communityMatrix), "; min sample per subplot = ", min(rowSums(communityMatrix)), "; max = ", max(rowSums(communityMatrix)), sep=""))
-	
+  }
+  
+  list( plot.list=plot.list, cm.list=cm.list, metric=metric, by.plot=by.plot  )
 }
 
-######## non 454 #######	
-beta1No454DisList <- list()
-
-for (expId in 1:m) {    	
-    communityMatrix <- initNon454ByPlot(expId, otuThr)
-	rownames(communityMatrix) <- gsub("CM30C30", "Plot9", rownames(communityMatrix), ignore.case = T)
-	rownames(communityMatrix) <- gsub("LB1", "Plot10", rownames(communityMatrix), ignore.case = T)
-
-	if (matrixNamesNo454[expId] == "invertebrates") {
-		if ( all( rownames(communityMatrix) != plots[-c(7,8)] ) )
-			stop( paste("community matrix", matrixNamesNo454[expId], "plot names are incorrect !") )
-	} else {
-		if ( all( rownames(communityMatrix) != plots ) )
-			stop( paste("community matrix", matrixNamesNo454[expId], "plot names are incorrect !") )
-	}
-
-	####### beta 1 ########
-	# (45 pairs for 10 plots)
-    d.beta1 <- beta1(communityMatrix)
-    
-    beta1No454DisList[[ expId ]] <- d.beta1
-       
-    print(paste(matrixNamesNo454[expId], " (", otuThr, "%) : total = ", sum(communityMatrix), "; min sample per subplot = ", min(rowSums(communityMatrix)), "; max = ", max(rowSums(communityMatrix)), sep=""))
-
-}
 
 m.mantel <- matrix(0,nrow=(n+m),ncol=(n+m))
 colnames(m.mantel) <- c(matrixNames, matrixNamesNo454)

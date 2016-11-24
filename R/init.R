@@ -12,6 +12,7 @@ getOutputNames <- function(input.names) {
 getTaxaNames <- function(taxa.names) {
   taxa.names <- gsub("protists", "CHROMISTA|PROTOZOA", taxa.names, ignore.case = T)
   taxa.names <- gsub("animals", "ANIMALIA", taxa.names, ignore.case = T)
+  taxa.names <- gsub("plants", "PLANTAE", taxa.names, ignore.case = T)
   taxa.names <- gsub("all OTUs", "all", taxa.names, ignore.case = T)
 }
 # find the rank associated to taxa group to be analysed
@@ -130,14 +131,19 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
     cm <- getCommunityMatrix(z[[1]], min2=min2, by.plot=by.plot)
-    tt <- getTaxaTable(z[[1]], taxa.group=taxon, rank=rank)
     
-    cm.taxa <- ComMA::mergeCMTaxa(cm, tt, has.total = 0, col.ranks = col.ranks, preprocess = F)
-    
-    if (drop.taxa)
-      cm.taxa <- cm.taxa[,-which(names(cm.taxa) %in% col.ranks)]
-    
-    cm.taxa.list[[paste(gene, z[[2]])]] <- cm.taxa
+    if (taxon == "all") {
+      # if all, then no merge
+      cm.taxa.list[[paste(gene, z[[2]])]] <- cm
+    } else {
+      tt <- getTaxaTable(z[[1]], taxa.group=taxon, rank=rank)
+      cm.taxa <- ComMA::mergeCMTaxa(cm, tt, has.total = 0, col.ranks = col.ranks, preprocess = F)
+      
+      if (drop.taxa)
+        cm.taxa <- cm.taxa[,-which(names(cm.taxa) %in% col.ranks)]
+      
+      cm.taxa.list[[paste(gene, z[[2]])]] <- cm.taxa
+    }
   }
   cat("\n")
   
