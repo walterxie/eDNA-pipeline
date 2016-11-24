@@ -1,7 +1,3 @@
-# eDNA-pipeline
-
-In development
-
 ## Python Scripts
 1. run\_PEAR.py is a script to run PEAR paired-end read merger. 
 
