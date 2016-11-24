@@ -7,7 +7,7 @@
 
 3. relabel\_reads.py adds sample names and other info to sequence ids in fastq files, also to rename fastq files by sample. It requires a tab-delimited file with sequence output IDs and corresponding sample names. 
 
-4. concatenate\_files.py simply concatenates fastq files together.
+4. concatenate\_files.py simply concatenates fastq files together into a single file (e.g. for OTU clustering). 
 
 5. usearch8\_pipeline\_miseq.py runs USEARCH v8 commands for error filtering, OTU clustering, etc. on fastq files.
 
