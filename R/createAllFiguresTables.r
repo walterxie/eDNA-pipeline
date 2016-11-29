@@ -86,6 +86,12 @@ ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],
                                   nrow=2, legend.position="right")
 
 
+source("R/allGeneCorrolation.r", local=TRUE)
+# Mantel test (lower triangle) and Procrustes test (upper triangle) 
+corrs <- getMantelAndProcrustes(input.names)
+
+
+
 ######## complete report latex #######
 
 cat("\n\n\\end{document}", file=tableFile, append=TRUE, sep = "\n")
