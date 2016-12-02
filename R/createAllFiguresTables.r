@@ -85,10 +85,26 @@ ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],
                                   nmds$plot.list[[3]], nmds$plot.list[[4]], 
                                   nrow=2, legend.position="right")
 
-
+# community comparison
 source("R/allGeneCorrolation.r", local=TRUE)
 # Mantel test (lower triangle) and Procrustes test (upper triangle) 
 corrs <- getMantelAndProcrustes(input.names)
+# Figure 5
+plots <- plotMantelAndProcrustes(corrs)
+# plots$heatmap; plots$mantel.mds; plots$prot.mds
+
+gene.levels=c("16S bacteria","18S animals","18S fungi","18S protists","26S animals","26S fungi","26S protists",
+              "ITS fungi","COI-300 animals","COI-300 fungi","COI-300 protists","COI-650 animals","COI-650 protists")
+corrs <- getMantelAndProcrustes(input.names, 
+                                genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi"),list("18S","protists"),
+                                                list("26S","animals"),list("26S","fungi"),list("26S","protists"),list("ITS","fungi"),
+                                                list("ShCO1","animals"),list("ShCO1","fungi"),list("ShCO1","protists"),
+                                                list("FolCO1","animals"),list("FolCO1","protists")),
+                                order.by=gene.levels)
+# Figure 6
+plots <- plotMantelAndProcrustes(corrs, gene.levels=gene.levels)
+
+
 
 
 

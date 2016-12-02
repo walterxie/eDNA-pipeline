@@ -108,6 +108,7 @@ getTaxaRef <- function(data.folder="./data") {
 }
 
 # programmatically get sub-dataset 
+# drop.taxa TRUE to only return CM
 getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                              genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
                                              list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
