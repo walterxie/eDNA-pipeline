@@ -20,6 +20,13 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
   prot.tri <- ComMA::getTriMatrix(procrustes$prot.df, order.by=order.by) # Procrustes stats
   corrs <- ComMA::combineTriMatrix(mantel.tri, prot.tri)
 
+  rownames(corrs) <- gsub(" all", "", rownames(corrs))
+  colnames(corrs) <- gsub(" all", "", colnames(corrs))
+  rownames(mantel.tri) <- gsub(" all", "", rownames(mantel.tri))
+  colnames(mantel.tri) <- gsub(" all", "", colnames(mantel.tri))
+  rownames(prot.tri) <- gsub(" all", "", rownames(prot.tri))
+  colnames(prot.tri) <- gsub(" all", "", colnames(prot.tri))
+  
   mantel.s.tri <- ComMA::getTriMatrix(mantel$m.df, value="sign", order.by=order.by) # Mantel stats
   prot.s.tri <- ComMA::getTriMatrix(procrustes$prot.df, value="sign", order.by=order.by) # Procrustes stats
   signs <- ComMA::combineTriMatrix(mantel.s.tri, prot.s.tri)
@@ -30,12 +37,10 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
 }
 
 # plotMantelAndProcrustes(corrs)
-plotMantelAndProcrustes <- function(corrs, gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650")) {
+plotMantelAndProcrustes <- function(corrs, text.repel=T, gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650")) {
   min.cor <- min(corrs$corrs[corrs$corrs>0])
   cat("min correlation is ", min.cor, "max is ", max(corrs$corrs), "\n.")
 
-  rownames(corrs$corrs) <- gsub(" all", "", rownames(corrs$corrs))
-  colnames(corrs$corrs) <- gsub(" all", "", colnames(corrs$corrs))
   m.p.tri <- corrs$corrs
   m.p.tri$gene <- rownames(m.p.tri)
   m.p.tri[m.p.tri==0] <- NA
@@ -46,16 +51,26 @@ plotMantelAndProcrustes <- function(corrs, gene.levels=c("16S", "18S", "26S", "I
                         midpoint = mean(c(0.4, 1)), limit = c(0.4, 1), 
                         breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) )
   
-  p.m.mds <- ComMA::ggNMDSPlot(dist(corrs$mantel.tri), text.or.point=1, text.size=5, title="", text.repel=F) + 
+  p.m.mds <- ComMA::ggNMDSPlot(dist(corrs$mantel.tri), text.or.point=1, text.size=5, text.repel=text.repel,
+                               title="Mantel test", title.add.stress=F, title.hjust=0.5) + 
     expand_limits(x = c(-1, 1), y=c(-1, 1))
-  p.p.mds <- ComMA::ggNMDSPlot(dist(corrs$prot.tri), text.or.point=1, text.size=5, title="", text.repel=T) + 
+  
+  p.p.mds <- ComMA::ggNMDSPlot(dist(corrs$prot.tri), text.or.point=1, text.size=5, text.repel=text.repel,
+                               title="Procrustes test", title.add.stress=F, title.hjust=0.5) + 
     expand_limits(x = c(-1, 1), y=c(-1, 1))
   
   list( heatmap=p.hm, mantel.mds=p.m.mds, prot.mds=p.p.mds, 
         msg="Mantel test (lower triangle) and Procrustes test (upper triangle) correlations"  )
 }
 
-printMantelAndProcrustes <- function(corrs) {
-  
+printMantelAndProcrustes <- function(corrs, label = "tab:gene:comp", file.xtable=NULL, invalid.char=FALSE,
+                                     caption = paste("Mantel and Procrustes test statistics for comparisons", 
+                                                     "between the overall OTU community structure detected in", 
+                                                     "56 soil samples according to meta-barcoding analysis of different amplicons.")) {
+  df <- ComMA::prettyNumbers(corrs$corrs, digits = 3)
+  df[df==0] <- ""
+  align.v <- rep("r", ncol(df) + 1)
+  ComMA::printXTable(df, align = align.v, label = label, file = file.xtable, 
+                     invalid.char=invalid.char, caption = caption)
 }
 
