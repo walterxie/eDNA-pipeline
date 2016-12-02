@@ -57,33 +57,23 @@ ps3 <- plotWithinBetween(all.dist.list[["within.between"]])
 source("R/allNMDS.r", local=TRUE)
 # Figure 4
 nmds <- getNMDS(input.names)
-ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]], nmds$plot.list[[3]], 
-                                  nmds$plot.list[[4]], nmds$plot.list[[5]], nmds$plot.list[[6]],
-                                  nrow=3, legend.position="right")
+ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
 # Figure S4: all OTUs
 nmds <- getNMDS(input.names, genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
                                              list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]], nmds$plot.list[[3]], 
-                                  nmds$plot.list[[4]], nmds$plot.list[[5]], nmds$plot.list[[6]],
-                                  nrow=3, legend.position="right")
+ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
 # Figure S5
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
                                              list("ITS","fungi"),list("ShCO1","fungi")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
-                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
-                                  nrow=2, legend.position="right")
+ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 # Figure S6
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","protists"),list("26S","protists"),
                                              list("ShCO1","protists"),list("FolCO1","protists")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
-                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
-                                  nrow=2, legend.position="right")
+ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 # Figure S7
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","animals"),list("26S","animals"),
                                              list("ShCO1","animals"),list("FolCO1","animals")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list[[1]], nmds$plot.list[[2]],  
-                                  nmds$plot.list[[3]], nmds$plot.list[[4]], 
-                                  nrow=2, legend.position="right")
+ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 
 # community comparison
 source("R/allGeneCorrolation.r", local=TRUE)
@@ -105,6 +95,12 @@ corrs2 <- getMantelAndProcrustes(input.names,
 # Figure 6
 plots <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 
+# Figure 7
+env.subplot <- getEnvData(by.plot=F)
+p7 <- ComMA::plotProcrustes(corrs$procrustes$proc, env.subplot, colour.id="Elevation")
+ComMA::grid_arrange_shared_legend(p7[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
+
+# Figure S8
 
 
 
