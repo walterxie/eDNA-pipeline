@@ -8,8 +8,7 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
-                              col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, drop.taxa=TRUE )
   cat("\n")
   
   dissim <- ComMA::getDissimilarityList(cm.list, metric=metric)

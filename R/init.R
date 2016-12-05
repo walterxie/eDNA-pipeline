@@ -113,8 +113,8 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                              genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
                                              list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
                              by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
-  taxa=c("all", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", 
-         "CHROMISTA|PROTOZOA", "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA")
+  taxa=c("all", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "CHROMISTA|PROTOZOA", 
+         "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA")
   
   # data frame for statistics
   cm.taxa.list <- list()
