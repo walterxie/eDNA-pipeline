@@ -79,7 +79,7 @@ ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position=
 source("R/allGeneCorrolation.r", local=TRUE)
 # Mantel test (lower triangle) and Procrustes test (upper triangle) 
 corrs <- getMantelAndProcrustes(input.names)
-# Figure 5
+# Figure 5 heatmap
 plots <- plotMantelAndProcrustes(corrs)
 # plots$heatmap; plots$mantel.mds; plots$prot.mds
 printMantelAndProcrustes(corrs)
@@ -92,15 +92,19 @@ corrs2 <- getMantelAndProcrustes(input.names,
                                                 list("ShCO1","animals"),list("ShCO1","fungi"),list("ShCO1","protists"),
                                                 list("FolCO1","animals"),list("FolCO1","protists")),
                                 order.by=gene.levels)
-# Figure 6
+# Figure 6 heatmap
 plots <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 
-# Figure 7
+# env data by subplots
 env.subplot <- getEnvData(by.plot=F)
-p7 <- ComMA::plotProcrustes(corrs$procrustes$proc, env.subplot, colour.id="Elevation")
-ComMA::grid_arrange_shared_legend(p7[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
-
 # Figure S8
+pS8 <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, proc.list.pairs=corrs$procrustes$pairs, colour.id="Elevation")
+ComMA::grid_arrange_shared_legend(pS8[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
+# Figure 7, Figure S9-15
+p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
+p.all$gt7 #p.all$gtS9 until gtS15
+
+
 
 
 
