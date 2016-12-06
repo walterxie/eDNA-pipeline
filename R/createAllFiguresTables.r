@@ -106,7 +106,9 @@ p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
 p.all$gt7 #p.all$gtS9 until gtS15
 
 
-
+# community comparison
+source("R/allPlotPrioritisation.r", local=TRUE)
+plot.prio.list <- prioriPlotByJostDiver(input.names, diversities=c("gamma1","beta1","pd.alpha","sp.rich")) 
 
 
 ######## complete report latex #######

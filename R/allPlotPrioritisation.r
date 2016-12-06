@@ -6,7 +6,7 @@
 
 
 
-prioriPlotByJostDiver <- function(input.names, phylo.tree=NA,
+prioriPlotByJostDiver <- function(input.names, 
                                   diversities=c("gamma0","gamma1","beta0","beta1","pd.alpha","sp.rich"), 
                                   genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi"),
                                                   list("18S","protists"), list("26S","animals"),list("26S","fungi"),
@@ -18,10 +18,10 @@ prioriPlotByJostDiver <- function(input.names, phylo.tree=NA,
   
   cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
   cat("\n")
+  tre.list <- getTreeList(genes=input.names, genes.taxa=genes.taxa)
   
-  pd.list <- getPlotPrior(cm.list, input.list=TRUE, is.transposed=FALSE, 
-                          phylo.tree=phylo.tree, diversities=diversities)
-  return(pd.list)
+  plot.prio.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, diversities=diversities)
+  return(plot.prio.list)
 }
 
 
