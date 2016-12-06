@@ -16,10 +16,11 @@ prioriPlotByJostDiver <- function(input.names, phylo.tree=NA,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  t.cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
   cat("\n")
   
-  pd.list <- ComMA::getPlotPrior(t.cm.list, input.list=TRUE, phylo.tree=phylo.tree, diversities=diversities)
+  pd.list <- getPlotPrior(cm.list, input.list=TRUE, is.transposed=FALSE, 
+                          phylo.tree=phylo.tree, diversities=diversities)
   return(pd.list)
 }
 
