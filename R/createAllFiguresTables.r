@@ -86,13 +86,11 @@ printMantelAndProcrustes(corrs)
 
 gene.levels=c("16S bacteria","18S animals","18S fungi","18S protists","26S animals","26S fungi","26S protists",
               "ITS fungi","COI-300 animals","COI-300 fungi","COI-300 protists","COI-650 animals","COI-650 protists")
-corrs2 <- getMantelAndProcrustes(input.names, 
-                                genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi"),
-                                                list("18S","protists"), list("26S","animals"),list("26S","fungi"),
-                                                list("26S","protists"),list("ITS","fungi"), list("ShCO1","animals"),
-                                                list("ShCO1","fungi"),list("ShCO1","protists"),
-                                                list("FolCO1","animals"),list("FolCO1","protists")),
-                                order.by=gene.levels)
+genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi"),list("18S","protists"), 
+                list("26S","animals"),list("26S","fungi"),list("26S","protists"),list("ITS","fungi"), 
+                list("ShCO1","animals"),list("ShCO1","fungi"),list("ShCO1","protists"),
+                list("FolCO1","animals"),list("FolCO1","protists"))
+corrs2 <- getMantelAndProcrustes(input.names, genes.taxa=genes.taxa, order.by=gene.levels)
 # Figure 6 heatmap
 plots <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 
@@ -106,9 +104,28 @@ p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
 p.all$gt7 #p.all$gtS9 until gtS15
 
 
-# community comparison
+# ranking of sample plots
 source("R/allPlotPrioritisation.r", local=TRUE)
-plot.prio.list <- prioriPlotByJostDiver(input.names, diversities=c("gamma1","beta1","pd.alpha","sp.rich")) 
+diversities=c("gamma1","beta1","pd.alpha","sp.rich")
+pp.df.list <- prioriPlotByDiversities(input.names, diversities=diversities) 
+# env data by plots
+env.plot <- getEnvData(by.plot=T)
+# Figure S16
+hm.elv.a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot)
+#plot(hm.elv$heatmap)
+hm.elv.b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot)
+hm.elv.c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot)
+
+# Figure 8
+pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, genes.taxa=genes.taxa) 
+hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot)
+# Figure S17
+hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot)
+# Figure S18
+hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot)
+
+
+
 
 
 ######## complete report latex #######

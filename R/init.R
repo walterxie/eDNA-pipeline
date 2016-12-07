@@ -110,12 +110,11 @@ getTaxaRef <- function(data.folder="./data") {
 # programmatically get sub-dataset 
 # drop.taxa TRUE to only return CM
 getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
+                             taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  
+                                    "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
                              genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
                                              list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
                              by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
-  taxa=c("all", "assigned", "ARCHAEA", "BACTERIA", "CHROMISTA", "PROTOZOA", "CHROMISTA|PROTOZOA", 
-         "FUNGI", "PLANTAE", "ANIMALIA", "EUKARYOTA", "PROKARYOTA")
-  
   # data frame for statistics
   cm.taxa.list <- list()
   require(ComMA)
@@ -125,7 +124,7 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
     gene <- getOutputNames(z[[1]])
     taxon <- getTaxaNames(z[[2]])
     rank <- getRank(taxon)
-    if ( !tolower(z[[1]]) %in% tolower(genes) || !tolower(taxon) %in% tolower(taxa) )
+    if ( !tolower(z[[1]]) %in% tolower(genes) || !tolower(taxon) %in% tolower(taxa.group) )
       stop("Invalid name in genes.taxa ! ", gene, " (", z[[1]], ") or ",  taxon, " (", z[[2]], ")")
     
     cat("\n", gene, "data set", taxon, "group at", rank, ",", ifelse(min2, "exclude", "include"), 
@@ -147,10 +146,25 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
     }
   }
   cat("\n")
-  
   return(cm.taxa.list)
 }
 
+# get list of trees
+getTreeList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
+                        taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  
+                                     "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
+                        genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
+                                        list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")) ) {
+  # data frame for statistics
+  tre.list <- list()
+  for (z in genes.taxa) {
+    gene <- getOutputNames(z[[1]])
+    tre <- getPhyloTree(z[[1]], z[[2]])
+    tre.list[[paste(gene, z[[2]])]] <- tre
+  }
+  cat("\n")
+  return(tre.list)
+}
 
 ###### Trees #####
 # tre <- getPhyloTree("16S", "PROKARYOTA")
@@ -164,6 +178,13 @@ getPhyloTree <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
     else 
       taxa.group <- "EUKARYOTA"
   }
+  if (taxa.group=="all") {
+    taxa.group <- "not-assigned"
+  } else if (taxa.group=="animals") {
+    taxa.group <- "animalia"
+  } else if (taxa.group=="plants") {
+    taxa.group <- "plantae"
+  } 
   
   input.f <- file.path(data.folder, paste(data.set, tolower(taxa.group), "min2.tre", sep = "-"))
   if (file.exists(input.f)) {

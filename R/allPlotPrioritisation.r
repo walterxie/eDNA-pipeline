@@ -2,26 +2,23 @@
 # Figure 8: phylogenetic alpha diversity
 # Figure S16-S18: Jost biodiversity
 
-
-
-
-
-prioriPlotByJostDiver <- function(input.names, 
-                                  diversities=c("gamma0","gamma1","beta0","beta1","pd.alpha","sp.rich"), 
-                                  genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi"),
-                                                  list("18S","protists"), list("26S","animals"),list("26S","fungi"),
-                                                  list("26S","protists"),list("ITS","fungi"), list("ShCO1","animals"),
-                                                  list("ShCO1","fungi"),list("ShCO1","protists"),
-                                                  list("FolCO1","animals"),list("FolCO1","protists"))) {
+prioriPlotByDiversities <- function(input.names, 
+                                    diversities=c("gamma0","gamma1","beta0","beta1","pd.alpha","sp.rich"), 
+                                    genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
+                                                    list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) ) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
   cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
   cat("\n")
+  # need for "pd.alpha","sp.rich"
   tre.list <- getTreeList(genes=input.names, genes.taxa=genes.taxa)
+  cat("\n")
   
-  plot.prio.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, diversities=diversities)
-  return(plot.prio.list)
+  plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, diversities=diversities)
+  #plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, diversities=diversities)
+  pp.df.list <- ComMA::mergePlotPriorListOfDF(plot.prior.list)
+  return(pp.df.list)
 }
 
 
