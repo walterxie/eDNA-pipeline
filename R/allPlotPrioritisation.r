@@ -15,8 +15,10 @@ prioriPlotByDiversities <- function(input.names,
   tre.list <- getTreeList(genes=input.names, genes.taxa=genes.taxa)
   cat("\n")
   
-  plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, diversities=diversities)
+  plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, taxa.match=FALSE,
+                                         diversities=diversities)
   #plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, diversities=diversities)
+  cat("\n")
   pp.df.list <- ComMA::mergePlotPriorListOfDF(plot.prior.list)
   return(pp.df.list)
 }

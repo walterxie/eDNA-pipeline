@@ -19,7 +19,7 @@ cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
 # add packages here
 cat("\\usepackage[utf8]{inputenc}","\\usepackage{graphicx}","\\usepackage{caption}","\n", 
     file=tableFile, append=TRUE, sep = "\n")
-cat("\\title{Multi-gene meta-barcoding analysis of terrestrial biodiversity on a forested island}\n\n", 
+cat("\\title{Spatial patterns of soil biodiversity revealed by multi-gene meta-barcoding analysis in a forested island ecosystem}\n\n", 
     file=tableFile, append=TRUE)
 cat("\\date{\\today}","\\begin{document}", "\\maketitle", file=tableFile, append=TRUE, sep = "\n\n")
 
@@ -57,31 +57,31 @@ ps3 <- plotWithinBetween(all.dist.list[["within.between"]])
 source("R/allNMDS.r", local=TRUE)
 # Figure 4
 nmds <- getNMDS(input.names)
-ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
+gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
 # Figure S4: all OTUs
 nmds <- getNMDS(input.names, genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
                                              list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
+gtS4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
 # Figure S5
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
                                              list("ITS","fungi"),list("ShCO1","fungi")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
+gtS5 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 # Figure S6
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","protists"),list("26S","protists"),
                                              list("ShCO1","protists"),list("FolCO1","protists")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
+gtS6 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 # Figure S7
 nmds <- getNMDS(input.names, genes.taxa=list(list("18S","animals"),list("26S","animals"),
                                              list("ShCO1","animals"),list("FolCO1","animals")) )
-ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
+gtS7 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 
 # community comparison
 source("R/allGeneCorrolation.r", local=TRUE)
 # Mantel test (lower triangle) and Procrustes test (upper triangle) 
 corrs <- getMantelAndProcrustes(input.names)
-# Figure 5 heatmap
 plots <- plotMantelAndProcrustes(corrs)
-# plots$heatmap; plots$mantel.mds; plots$prot.mds
+# Figure 5 heatmap
+p5 <- plots$heatmap # plots$mantel.mds; plots$prot.mds
 printMantelAndProcrustes(corrs)
 
 gene.levels=c("16S bacteria","18S animals","18S fungi","18S protists","26S animals","26S fungi","26S protists",
@@ -91,8 +91,9 @@ genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi")
                 list("ShCO1","animals"),list("ShCO1","fungi"),list("ShCO1","protists"),
                 list("FolCO1","animals"),list("FolCO1","protists"))
 corrs2 <- getMantelAndProcrustes(input.names, genes.taxa=genes.taxa, order.by=gene.levels)
+plots2 <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 # Figure 6 heatmap
-plots <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
+p6 <- plots2$heatmap
 
 # env data by subplots
 env.subplot <- getEnvData(by.plot=F)
@@ -101,28 +102,32 @@ pS8 <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, proc.list.
 ComMA::grid_arrange_shared_legend(pS8[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
 # Figure 7, Figure S9-15
 p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
-p.all$gt7 #p.all$gtS9 until gtS15
-
+gt7 <- p.all$gt7 #p.all$gtS9 until gtS15
 
 # ranking of sample plots
 source("R/allPlotPrioritisation.r", local=TRUE)
 diversities=c("gamma1","beta1","pd.alpha","sp.rich")
-pp.df.list <- prioriPlotByDiversities(input.names, diversities=diversities) 
+pp.df.list <- prioriPlotByDiversities(input.names, diversities=diversities)
+#save(pp.df.list, file = "data/plot.prior.prok.euk.RData" )
 # env data by plots
 env.plot <- getEnvData(by.plot=T)
 # Figure S16
-hm.elv.a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot)
+hm.elv.S16a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot)
 #plot(hm.elv$heatmap)
-hm.elv.b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot)
-hm.elv.c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot)
+hm.elv.S16b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot)
+hm.elv.S16c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot)
 
+pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, genes.taxa=genes.taxa)
+#save(pp.df2.list, file = "data/plot.prior.taxa.subsets.RData" )
 # Figure 8
-pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, genes.taxa=genes.taxa) 
-hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot)
+hm.elv.8 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot)
 # Figure S17
-hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot)
+hm.elv.S17 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot)
 # Figure S18
-hm.elv <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot)
+hm.elv.S18 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot)
+
+# RDA
+source("R/allRedundancyAnalysis.r", local=TRUE)
 
 
 
