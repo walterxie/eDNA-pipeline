@@ -4,8 +4,8 @@
 
 prioriPlotByDiversities <- function(input.names, 
                                     diversities=c("gamma0","gamma1","beta0","beta1","pd.alpha","sp.rich"), 
-                                    genes.taxa=list(list("16S","assigned"),list("18S","assigned"),list("26S","assigned"),
-                                                    list("ITS","assigned"),list("ShCO1","assigned"),list("FolCO1","assigned")) ) {
+                                    genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
+                                                    list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   

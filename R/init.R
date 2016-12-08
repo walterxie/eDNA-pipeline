@@ -107,13 +107,13 @@ getTaxaRef <- function(data.folder="./data") {
   return(taxa.ref)
 }
 
-# programmatically get sub-dataset 
-# drop.taxa TRUE to only return CM
+# programmatically get subsets, drop.taxa TRUE to only return CM,
+# genes and taxa.group are used for validation, genes.taxa to choose the subsets. 
 getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                              taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  
                                     "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
-                             genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
-                                             list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")), 
+                             genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
+                                             list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")), 
                              by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
   # data frame for statistics
   cm.taxa.list <- list()
@@ -149,12 +149,12 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
   return(cm.taxa.list)
 }
 
-# get list of trees
+# get list of trees, same to getCommunityList
 getTreeList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                         taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  
                                      "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
-                        genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
-                                        list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")) ) {
+                        genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
+                                        list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
   # data frame for statistics
   tre.list <- list()
   for (z in genes.taxa) {
