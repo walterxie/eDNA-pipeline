@@ -253,6 +253,37 @@ getWithinPlotDistance <- function(data.folder="./data/Environmental_data", verbo
   return(subplot.dists) 
 }
 
+######## save figures #######
+# use varible name to determine which figure
+saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) {
+  for (i in 1:length(plot.list)) {
+    plot <- plot.list[[i]]
+    p <- gsub("p|gt", "Figure", names(plot.list)[i])
+    
+    if (p=="Figure2") {
+      width = 10; height = 8
+    } else if (p=="FigureS1" || p=="FigureS2") {
+      width = 10; height = 10
+    } else if (p=="Figure4" || p=="FigureS4") {
+      width = 10; height = 10
+    } else if (grepl("^FigureS16",p)) {
+      width = 6; height = 6
+    } else {
+      stop("Cannot recognize plot varible ", names(plot.list)[i], " !")
+    }
+    
+    if (is(plot, "gtable"))
+      pdf.gtable(plot, file.path(fig.folder, paste0(p, ".pdf")), 
+                 width = width, height = height)
+    else if (is(plot, "ggplot"))
+      pdf.ggplot(plot, file.path(fig.folder, paste0(p, ".pdf")), 
+                 width = width, height = height)
+    else 
+      pdf.plot(plot, file.path(fig.folder, paste0(p, ".pdf")), 
+                 width = width, height = height)
+  }
+}
+
 
 ######## plot vs subplots #######
 # get plot names from subplots vector separated by sep
@@ -268,127 +299,6 @@ subplotSort <- function(x)
 
 
 
-
-
-
-
-######## elevations dist #######
-getElevPlotDist <- function(plot.names, env.byplot) { 
-  colElev = 1
-  # case insensitive
-  matched.id <- match(tolower(plot.names), tolower(rownames(env.byplot)))
-  matched.id <- matched.id[!is.na(matched.id)]
-  # match 
-  env.plot.match <- env.plot[matched.id, ]
-  
-  cat("Find", nrow(env.plot.match), "plots having elevations, community matrix has", 
-      length(plot.names), "plots, meta-data file has", nrow(env.plot), "plots.\n")
-  
-  return(dist(env.plot.match[,colElev]))
-}
-
-###### table to plot Phylo Rarefaction ##### 
-getPhyloRareTable <- function(expId, isPlot, min2, taxa.group="assigned") {
-  n <- length(matrixNames) 
-  # hard code for Vegetation that only has plot and always keep singletons
-  if (expId == n) {
-    mid.name <- postfix("all", TRUE, FALSE, sep="-")
-  } else {
-    mid.name <- postfix(taxa.group, isPlot, min2, sep="-") 
-  }
-  
-  input.f <- file.path(workingPath, "data", "pdrf", paste(matrixNames[expId], mid.name, "phylorare", "table.csv", sep="-"))
-  if (file.exists(input.f)) {
-    phylo.rare.df <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
-    if(verbose) 
-      cat("\nUpload phylo rarefaction table from", input.f, "\n") 
-  } else {
-    phylo.rare.df <- NULL
-    cat("Warning: cannot find phylo rarefaction table", input.f, "\n") 
-  }
-  phylo.rare.df
-}
-
-###### table to plot Rarefaction ##### 
-getRarefactionTableTaxa <- function(expId, isPlot, min2, taxa.group, div="alpha1") {
-  pathFileStem <- file.path(workingPath, "data", "rf", paste(matrixNames[expId], 
-                    postfix(taxa.group, isPlot, rmSingleton, sep="-"), sep = "-"))
-  input.f <- paste(pathFileStem, "rare", div, "table.csv", sep = "-")
-  if (file.exists(input.f)) {
-    rare.df <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
-    if(verbose) 
-      cat("\nUpload rarefaction table per sample from", input.f, "\n") 
-  } else {
-    rare.df <- NULL
-    cat("Warning: cannot find rarefaction table per sample", input.f, "\n") 
-  }
-  rare.df
-}
-
-getRarefactionTable <- function(expId, isPlot, min2) {
-  n <- length(matrixNames) 
-  matrixName <- matrixNames[expId]
-  # hard code for Vegetation that only has plot and always keep singletons
-  if (expId == n) {
-    matrixName <- postfix(matrixName, TRUE, FALSE, sep="-")
-  } else {
-    matrixName <- postfix(matrixName, isPlot, min2, sep="-") 
-  }
-  
-  inputRDT <- file.path(workingPath, "data", paste(matrixName, "rarefaction-table.csv", sep="-"))
-  if(verbose) 
-    cat("\nUpload rarefaction table : from", inputRDT, "\n") 
-  
-  rarefactionTable <- read.csv(file=inputRDT, head=TRUE, sep=",", row.names=paste(levels, qs, sep=""), check.names=FALSE)
-}
-
-###### dissimilarity matrix #####
-# Dissimilarity matrix of paired samples
-# diss.fun = "beta1-1", "jaccard", "horn.morisita"
-getDissimilarityMatrix <- function(expId, isPlot, min2, diss.fun="beta1-1", taxa.group="all") {
-  n <- length(matrixNames) 
-  # hard code for Vegetation that only has plot and always keep singletons
-  if (expId == n) {
-    fname <- paste(matrixNames[expId], postfix("all", TRUE, FALSE, sep="-"), diss.fun, sep = "-")
-  } else {
-    fname <- paste(matrixNames[expId], postfix(taxa.group, isPlot, min2, sep="-"), diss.fun, sep = "-") 
-  }
-  
-  inputB <- file.path(workingPath, "data", "dist", paste(fname, "csv", sep = "."))
-  if(verbose) 
-    cat("\nUpload", diss.fun, "matrix of", taxa.group, "taxa group(s) from", inputB, "\n") 
-  
-  diss.matrix <- readFile(file=inputB, sep=",")
-  
-  return(diss.matrix)
-}
-
-###### table to max remained diversity ##### 
-getMaxRemainedDiversity <- function(lev.q, taxa.group="assigned") {
-  input.f <- file.path(workingPath, "data", "maxrd", paste("max-div", lev.q, taxa.group,"table.csv", sep = "-"))
-  if (file.exists(input.f)) {
-    max.rd <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
-    if(verbose) 
-      cat("\nUpload max remained diversity table from", input.f, "\n") 
-  } else {
-    max.rd <- NULL
-    cat("Warning: cannot find max remained diversity table", input.f, "\n") 
-  }
-  max.rd
-}
-
-getMaxRemainedDiversityRank <- function(lev.q, taxa.group="assigned") {
-  input.f <- file.path(workingPath, "data", "maxrd", paste("max-div-rank", lev.q, taxa.group,"table.csv", sep = "-"))
-  if (file.exists(input.f)) {
-    max.rd <- read.csv(file=input.f, head=TRUE, sep=",", row.names=1, check.names=FALSE)
-    if(verbose) 
-      cat("\nUpload max remained diversity rank table from", input.f, "\n") 
-  } else {
-    max.rd <- NULL
-    cat("Warning: cannot find max remained diversity rank table", input.f, "\n") 
-  }
-  max.rd
-}
 
 
 

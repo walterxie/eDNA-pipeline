@@ -36,9 +36,6 @@ tg.stats <- getTaxaGroupStatistics(input.names, file.xtable=tableFile)
 source("R/allTaxonomyAnalyses.r", local=TRUE)
 # Figure 2
 p2 <- getAllCountsSums(input.names)
-ggsave(p2, file = file.path(fig.folder, "Overall_taxonomy_OTUs_reads_by_phylum.pdf"), 
-       width = 340, height = 260, units = "mm")
-
 
 # use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
@@ -46,12 +43,14 @@ source("R/allDissimVsDistances.r", local=TRUE)
 
 # all.dist.list$by.plot == F 
 load("data/all.dist.subplot.RData")
-# Figure 3a, S1
-ps1 <- plotDistanceCorrelation(all.dist.list[["within"]])
-# Figure 3b, S2
-ps2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
+# Figure S1, 3a is subset of S1
+pS1 <- plotDistanceCorrelation(all.dist.list[["within"]])
+# Figure S2, 3b is subset of S2
+pS2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
-ps3 <- plotWithinBetween(all.dist.list[["within.between"]])
+pS3 <- plotWithinBetween(all.dist.list[["within.between"]])
+
+saveFigures(list(p2=p2, pS1=pS1, pS2=pS2, pS3=pS3))
 
 # NMDS
 source("R/allNMDS.r", local=TRUE)
@@ -75,13 +74,14 @@ nmds <- getNMDS(input.names, genes.taxa=list(list("18S","animals"),list("26S","a
                                              list("ShCO1","animals"),list("FolCO1","animals")) )
 gtS7 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
 
+saveFigures(list(gt4=gt4, gtS4=gtS4, gtS5=gtS5, gtS6=gtS6, gtS7=gtS7))
+
 # community comparison
 source("R/allGeneCorrolation.r", local=TRUE)
 # Mantel test (lower triangle) and Procrustes test (upper triangle) 
 corrs <- getMantelAndProcrustes(input.names)
+# Figure 5 heatmap: plots$heatmap; plots$mantel.mds; plots$prot.mds
 plots <- plotMantelAndProcrustes(corrs)
-# Figure 5 heatmap
-p5 <- plots$heatmap # plots$mantel.mds; plots$prot.mds
 printMantelAndProcrustes(corrs)
 
 gene.levels=c("16S bacteria","18S animals","18S fungi","18S protists","26S animals","26S fungi","26S protists",
@@ -91,18 +91,18 @@ genes.taxa=list(list("16S","bacteria"),list("18S","animals"),list("18S","fungi")
                 list("ShCO1","animals"),list("ShCO1","fungi"),list("ShCO1","protists"),
                 list("FolCO1","animals"),list("FolCO1","protists"))
 corrs2 <- getMantelAndProcrustes(input.names, genes.taxa=genes.taxa, order.by=gene.levels)
+# Figure 6 heatmap: plots2$heatmap; plots2$mantel.mds; plots2$prot.mds
 plots2 <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
-# Figure 6 heatmap
-p6 <- plots2$heatmap
 
 # env data by subplots
 env.subplot <- getEnvData(by.plot=F)
 # Figure S8
 pS8 <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, proc.list.pairs=corrs$procrustes$pairs, colour.id="Elevation")
 ComMA::grid_arrange_shared_legend(pS8[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
-# Figure 7, Figure S9-15
+# Figure 7: p.all$gt7; Figure S9-15: p.all$gtS9 until gtS15
 p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
-gt7 <- p.all$gt7 #p.all$gtS9 until gtS15
+
+saveFigures(list(p5=plots$heatmap, p6=plots2$heatmap, pS8=pS8, gt7=p.all$gt7, gtS9=p.all$gtS9))
 
 # ranking of sample plots
 source("R/allPlotPrioritisation.r", local=TRUE)
@@ -111,20 +111,28 @@ pp.df.list <- prioriPlotByDiversities(input.names, diversities=diversities)
 #save(pp.df.list, file = "data/plot.prior.prok.euk.RData" )
 # env data by plots
 env.plot <- getEnvData(by.plot=T)
-# Figure S16
-hm.elv.S16a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot)
-#plot(hm.elv$heatmap)
-hm.elv.S16b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot)
-hm.elv.S16c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot)
+# Figure S16: gtS16a$heatmap
+gtS16a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot, x.lab="Sample plot", 
+                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
+gtS16b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot, x.lab="Sample plot", 
+                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
+gtS16c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot, x.lab="Sample plot", 
+                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
 
 pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, genes.taxa=genes.taxa)
 #save(pp.df2.list, file = "data/plot.prior.taxa.subsets.RData" )
 # Figure 8
-hm.elv.8 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot)
+gt8 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot, x.lab="Sample plot", 
+                                           y.lab="Group", grid.widths = c(8, 3))
 # Figure S17
-hm.elv.S17 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot)
+gtS17 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot, x.lab="Sample plot", 
+                                             y.lab="Group", grid.widths = c(8, 3))
 # Figure S18
-hm.elv.S18 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot)
+gtS18 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot, x.lab="Sample plot", 
+                                             y.lab="Group", grid.widths = c(8, 3))
+
+saveFigures(list(gtS16a=gtS16a$heatmap, gtS16b=gtS16b$heatmap, gtS16c=gtS16c$heatmap, 
+                 gt8=gt8$heatmap, gtS17=gtS17$heatmap, gtS18=gtS18$heatmap))
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)
