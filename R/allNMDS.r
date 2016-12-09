@@ -8,21 +8,21 @@ getNMDS <- function(input.names, metric="jaccard",
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
 
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
+  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
                               col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
   env.subplot <- getEnvData(by.plot=F)
   cat("\n")
   
   plot.list <- list()
-  for (i in 1:length(cm.list)) {
-    cat("NMDS for", names(cm.list)[i], ".\n")
-    gg <- ComMA::ggNMDSPlot(t(cm.list[[i]]), env.subplot, colour.id="Elevation", shape.id="Forest.code", link.id="Plot", 
+  for (i in 1:length(cm.by.subplot.list)) {
+    cat("NMDS for", names(cm.by.subplot.list)[i], ".\n")
+    gg <- ComMA::ggNMDSPlot(t(cm.by.subplot.list[[i]]), env.subplot, colour.id="Elevation", shape.id="Forest.code", link.id="Plot", 
                             distance=metric, shapes=c(15,16,17,0,1,2,5,6,3,4), palette=c("blue", "orange"),
                             shape.levels = c("VS2","VS3","VS5","WF7","WF9","WF11","WF12","WF13","MF20","Unknown"),
-                            title = paste0(names(cm.list)[i], ", ", ComMA::simpleCap(metric), "distance"),
+                            title = paste0(names(cm.by.subplot.list)[i], ", ", ComMA::simpleCap(metric), "distance"),
                             legend.title.shape="Forest Type", legend.title.colour="Elevation (m)", scale.limits.min=0 )
-    plot.list[[names(cm.list)[i]]] <- gg
+    plot.list[[names(cm.by.subplot.list)[i]]] <- gg
   }
   
-  list( plot.list=plot.list, cm.list=cm.list, metric=metric, by.plot=by.plot  )
+  list( plot.list=plot.list, cm.list=cm.by.subplot.list, metric=metric, by.plot=by.plot  )
 }
