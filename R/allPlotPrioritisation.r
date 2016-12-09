@@ -9,13 +9,13 @@ prioriPlotByDiversities <- function(input.names,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
+  cm.by.plot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
   cat("\n")
   # need for "pd.alpha","sp.rich"
   tre.list <- getTreeList(genes=input.names, genes.taxa=genes.taxa)
   cat("\n")
   
-  plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, taxa.match=FALSE,
+  plot.prior.list <- ComMA::getPlotPrior(cm.by.plot.list, is.transposed=FALSE, tre.list=tre.list, taxa.match=FALSE,
                                          diversities=diversities)
   #plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, diversities=diversities)
   cat("\n")

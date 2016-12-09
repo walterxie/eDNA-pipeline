@@ -8,7 +8,7 @@ getRDA <- function(input.names, env.subplot, metric="jaccard",
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, drop.taxa=TRUE )
+  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, drop.taxa=TRUE )
   cat("\n")
   
   
