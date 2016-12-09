@@ -2,9 +2,9 @@
 # Table S3 - S20:
 
 # 
-getRDA <- function(input.names, by.plot=FALSE, metric="jaccard", 
-                   genes.taxa=list(list("16S","prokaryotes"),list("18S","eukaryotes"),list("26S","eukaryotes"),
-                                   list("ITS","eukaryotes"),list("ShCO1","eukaryotes"),list("FolCO1","eukaryotes"))) {
+getRDA <- function(input.names, by.plot=FALSE, 
+                   genes.taxa=genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
+                                              list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
@@ -21,18 +21,23 @@ getRDA <- function(input.names, by.plot=FALSE, metric="jaccard",
   colnames(env) <- gsub("C N.", "C/N ", colnames(env))
   
   rda.list <- list()
+  tcm.list <- list()
+  env.list <- list()
   for (i in 1:length(cm.list)) {
     cm <- cm.list[[i]]
     cat("Start RDA analysis for", names(cm.list)[i], "with", ncol(cm), "samples initially.\n")
     
     # drop CM30b51 and CM30b58, missing aspect data
-    tcm.env <- ComMA::preprocessRDA(cm, env, is.transposed=FALSE, env.var=c(4,5,8,9,14:22), rm="CM30b51|CM30b58")
+    tcm.env <- ComMA::preprocessRDA(cm, env, is.transposed=FALSE, rm="CM30b51|CM30b58", 
+                                    env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11))
+    tcm.list[[names(cm.list)[i]]] <- tcm.env$tcm
+    env.list[[names(cm.list)[i]]] <- tcm.env$env
+    
     rda <- ComMA::proceedRDA(tcm.env$tcm, tcm.env$env)
-    
-    
+    rda.list[[names(cm.list)[i]]] <- rda
   }
   
-  list(rda.list=rda.list, cm.list=cm.list, env=env)
+  list(rda.list=rda.list, tcm.list=tcm.list, env.list=env.list)
 }
 
 
