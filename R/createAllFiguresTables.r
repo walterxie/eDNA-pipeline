@@ -56,24 +56,18 @@ saveFigures(list(p2=p2, pS1=pS1, pS2=pS2, pS3=pS3))
 source("R/allNMDS.r", local=TRUE)
 # Figure 4
 nmds <- getNMDS(input.names)
-gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
-# Figure S4: all OTUs
-nmds <- getNMDS(input.names, genes.taxa=list(list("16S","all"),list("18S","all"),list("26S","all"),
-                                             list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")) )
-gtS4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, legend.position="right")
-# Figure S5
-nmds <- getNMDS(input.names, genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
-                                             list("ITS","fungi"),list("ShCO1","fungi")) )
-gtS5 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
-# Figure S6
-nmds <- getNMDS(input.names, genes.taxa=list(list("18S","protists"),list("26S","protists"),
-                                             list("ShCO1","protists"),list("FolCO1","protists")) )
-gtS6 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
-# Figure S7
-nmds <- getNMDS(input.names, genes.taxa=list(list("18S","animals"),list("26S","animals"),
-                                             list("ShCO1","animals"),list("FolCO1","animals")) )
-gtS7 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, legend.position="right")
-
+gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, 
+                                         legend.position="right", widths=c(0.8, 0.2))
+# Figure S4: all OTUs, Figure S5, S6, S7
+genes.taxa.list <- list(gtS4=list(list("16S","all"),list("18S","all"),list("26S","all"),
+                                  list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")),
+                        gtS5=list(list("18S","fungi"),list("26S","fungi"),
+                                  list("ITS","fungi"),list("ShCO1","fungi")),
+                        gtS6=list(list("18S","protists"),list("26S","protists"),
+                                  list("ShCO1","protists"),list("FolCO1","protists")),
+                        gtS7=list(list("18S","animals"),list("26S","animals"),
+                                  list("ShCO1","animals"),list("FolCO1","animals")) )
+nmds.list <- plotAllNMDS(input.names, genes.taxa.list)
 saveFigures(list(gt4=gt4, gtS4=gtS4, gtS5=gtS5, gtS6=gtS6, gtS7=gtS7))
 
 # community comparison
@@ -136,7 +130,7 @@ saveFigures(list(gtS16a=gtS16a$heatmap, gtS16b=gtS16b$heatmap, gtS16c=gtS16c$hea
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)
-
+rda <- getRDA(input.names)
 
 
 

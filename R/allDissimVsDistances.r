@@ -169,13 +169,14 @@ plotWithinBetween <- function(dist.data, data.levels = c("16S","18S","26S","ITS"
   
   ### Within-between distances boxplot ###
   require(ggplot2)
-  ggplot(dist.data, aes(x = wb, y = value, color = wb)) + 
+  p <- ggplot(dist.data, aes(x = wb, y = value, color = wb)) + 
     geom_boxplot(outlier.shape = 1, outlier.colour = alpha("black", 0.25)) + 
     ylab(y.lab) + xlab(x.lab) +
     facet_grid(metric ~ gene, scales = "free") +
     scale_colour_brewer(palette = "Set1") +
     theme(strip.background = element_blank(), panel.grid = element_blank(),
           legend.position = "none")
+  return(p)
 }
 
 

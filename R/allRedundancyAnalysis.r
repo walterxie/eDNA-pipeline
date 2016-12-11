@@ -3,8 +3,8 @@
 
 # 
 getRDA <- function(input.names, by.plot=FALSE, 
-                   genes.taxa=genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
-                                              list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
+                   genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
+                                   list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
