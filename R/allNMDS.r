@@ -1,16 +1,16 @@
 # Figure 4: Multivariate similarity of non-singleton OTU assemblages
 
 # 16S bacterial (a), 18S protistan (b), 18S fungal (c), 18S animal (d), 26S fungal (e), and COI-300 animal (f)
-# nmds <- getNMDS()
-getNMDS <- function(input.names, metric="jaccard",
+# by.plot=FALSE to have paired subplots linked
+getNMDS <- function(input.names, metric="jaccard", by.plot=FALSE,
                     genes.taxa=list(list("16S","bacteria"),list("18S","protists"),list("18S","fungi"),
                                     list("18S","animals"),list("26S","fungi"),list("ShCO1","animals")) ) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
 
-  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
+  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, 
                               col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
-  env.subplot <- getEnvData(by.plot=F)
+  env.subplot <- getEnvData(by.plot=by.plot)
   cat("\n")
   
   plot.list <- list()
