@@ -30,7 +30,7 @@ getNMDS <- function(input.names, metric="jaccard", by.plot=FALSE,
   list( plot.list=plot.list, cm.list=cm.by.subplot.list, metric=metric, by.plot=by.plot  )
 }
 
-# give genes.taxa to ...
+# give genes.taxa to genes.taxa.list
 plotAllNMDS <- function(input.names, genes.taxa.list) {
   nmds.list <- list()
   for (i in 1:length(genes.taxa.list)) {

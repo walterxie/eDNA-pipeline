@@ -90,42 +90,36 @@ plots2 <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 # env data by subplots
 env.subplot <- getEnvData(by.plot=F)
 # Figure S8
-pS8 <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, proc.list.pairs=corrs$procrustes$pairs, colour.id="Elevation")
-ComMA::grid_arrange_shared_legend(pS8[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(1, 0.1, 0.1))
+pS8.list <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, 
+                                  proc.list.pairs=corrs$procrustes$pairs, colour.id="Elevation")
+pS8 <- ComMA::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
+                                         legend.position="right", widths=c(0.8, 0.15, 0))
 # Figure 7: p.all$gt7; Figure S9-15: p.all$gtS9 until gtS15
 p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
 
-saveFigures(list(p5=plots$heatmap, p6=plots2$heatmap, pS8=pS8, gt7=p.all$gt7, gtS9=p.all$gtS9))
+saveFigures(list(p5=plots$heatmap, p6=plots2$heatmap, pS8=pS8, gt7=p.all$gt7, 
+                 gtS9=p.all$gtS9, gtS10=p.all$gtS10, gtS11=p.all$gtS11, gtS12=p.all$gtS12, 
+                 gtS13=p.all$gtS13, gtS14=p.all$gtS14, gtS15=p.all$gtS15))
 
 # ranking of sample plots
 source("R/allPlotPrioritisation.r", local=TRUE)
 diversities=c("gamma1","beta1","pd.alpha","sp.rich")
 pp.df.list <- prioriPlotByDiversities(input.names, diversities=diversities)
 #save(pp.df.list, file = "data/plot.prior.prok.euk.RData" )
-# env data by plots
-env.plot <- getEnvData(by.plot=T)
-# Figure S16: gtS16a$heatmap
-gtS16a <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["pd.alpha"]], env.plot, x.lab="Sample plot", 
-                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
-gtS16b <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["sp.rich"]], env.plot, x.lab="Sample plot", 
-                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
-gtS16c <- ComMA::plotPrioritisation.Attribute(pp.df.list[["rank"]][["gamma1"]], env.plot, x.lab="Sample plot", 
-                                              y.lab="Amplicon dataset", grid.widths = c(6, 3))
-
 pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, genes.taxa=genes.taxa)
 #save(pp.df2.list, file = "data/plot.prior.taxa.subsets.RData" )
-# Figure 8
-gt8 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["pd.alpha"]], env.plot, x.lab="Sample plot", 
-                                           y.lab="Group", grid.widths = c(8, 3))
-# Figure S17
-gtS17 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["sp.rich"]], env.plot, x.lab="Sample plot", 
-                                             y.lab="Group", grid.widths = c(8, 3))
-# Figure S18
-gtS18 <- ComMA::plotPrioritisation.Attribute(pp.df2.list[["rank"]][["gamma1"]], env.plot, x.lab="Sample plot", 
-                                             y.lab="Group", grid.widths = c(8, 3))
-
-saveFigures(list(gtS16a=gtS16a$heatmap, gtS16b=gtS16b$heatmap, gtS16c=gtS16c$heatmap, 
-                 gt8=gt8$heatmap, gtS17=gtS17$heatmap, gtS18=gtS18$heatmap))
+# env data by plots
+env.plot <- getEnvData(by.plot=T)
+# Figure S16 a b c
+hm.list <- plotAllHeatmaps(list(gtS16a=pp.df.list[["rank"]][["pd.alpha"]], gtS16b=pp.df.list[["rank"]][["sp.rich"]], 
+                                gtS16c=pp.df.list[["rank"]][["gamma1"]]), env.plot, 
+                           x.lab="Sample plot", y.lab="Amplicon dataset", grid.widths = c(6, 3) )
+saveFigures(list(hm.list))
+# Figure 8, S17, S18
+hm.list <- plotAllHeatmaps(list(gt8=pp.df2.list[["rank"]][["pd.alpha"]], gtS17=pp.df2.list[["rank"]][["sp.rich"]], 
+                                gtS18=pp.df2.list[["rank"]][["gamma1"]]), env.plot, 
+                           x.lab="Group", y.lab="Amplicon dataset", grid.widths = c(8, 3) )
+saveFigures(list(hm.list))
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)

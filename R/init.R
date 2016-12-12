@@ -261,19 +261,29 @@ saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) 
     p <- gsub("p|gt", "Figure", names(plot.list)[i])
     
     if (p=="Figure2") {
-      width = 10; height = 8
+      width = 12; height = 10
     } else if (p=="FigureS1" || p=="FigureS2" || p=="FigureS3") {
       width = 9; height = 9
     } else if (p=="Figure4" || p=="FigureS4") {
       width = 10; height = 12
     } else if (p=="FigureS5" || p=="FigureS6" || p=="FigureS7") {
       width = 10; height = 8
-    } else if (p=="FigureS8") {
-      width = 10; height = 10
+    } else if (p=="Figure5") {
+      width = 7; height = 6
+    } else if (p=="Figure6") {
+      width = 11; height = 10
+    } else if (p=="Figure7" || p=="FigureS8") {
+      width = 7; height = 10
     } else if (p=="FigureS9" || p=="FigureS10" || p=="FigureS11") {
+      width = 7; height = 4
+    } else if (p=="FigureS12" || p=="FigureS13" || p=="FigureS14") {
+      width = 7; height = 2
+    } else if (p=="FigureS15") {
+      width = 5; height = 2
+    } else if (p=="Figure8" || p=="FigureS17" || p=="FigureS18") {
       width = 10; height = 6
     } else if (grepl("^FigureS16",p)) {
-      width = 9; height = 6
+      width = 6; height = 6
     } else {
       stop("Cannot recognize plot varible ", names(plot.list)[i], " !")
     }
