@@ -24,18 +24,17 @@ prioriPlotByDiversities <- function(input.names,
 }
 
 # give ranks to pp.df.list, such as pp.df.list[["rank"]][["pd.alpha"]]
-plotAllHeatmaps <- function(ranks.list, env.plot, x.lab="Sample plot", 
-                            y.lab="Amplicon dataset", grid.widths = c(6, 3)) {
+plotAllHeatmaps <- function(ranks.list, env.plot, pattern="\\..*", replacement="", y.lab="Sample plot", 
+                            x.lab="Amplicon dataset", grid.widths = c(8, 3)) {
   hm.list <- list()
   for (i in 1:length(ranks.list)) {
     gt.name <- names(ranks.list)[i]
-    gt <- ComMA::plotPrioritisation.Attribute(ranks.list[[i]], env.plot, x.lab=x.lab, 
-                                              y.lab=y.lab, grid.widths = grid.widths)
+    ranks <- replaceColNames(ranks.list[[i]], pattern=pattern, replacement=replacement)
+    gt <- ComMA::plotPrioritisation.Attribute(ranks, env.plot, x.lab=x.lab, y.lab=y.lab, grid.widths=grid.widths)
     hm.list[[gt.name]] <- gt$heatmap
   }
   return(hm.list)
 }
-
 
 
 

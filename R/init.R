@@ -256,6 +256,8 @@ getWithinPlotDistance <- function(data.folder="./data/Environmental_data", verbo
 ######## save figures #######
 # use varible name to determine which figure
 saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) {
+  if (is.null(names(plot.list)))
+    stop("Cannot find plot.list names !")
   for (i in 1:length(plot.list)) {
     plot <- plot.list[[i]]
     p <- gsub("p|gt", "Figure", names(plot.list)[i])
@@ -283,7 +285,9 @@ saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) 
     } else if (p=="Figure8" || p=="FigureS17" || p=="FigureS18") {
       width = 10; height = 6
     } else if (grepl("^FigureS16",p)) {
-      width = 6; height = 6
+      width = 7; height = 6
+    } else if (p=="Figure20" || p=="FigureS21" || p=="FigureS22") {
+      width = 9; height = 9
     } else {
       stop("Cannot recognize plot varible ", names(plot.list)[i], " !")
     }
@@ -295,11 +299,30 @@ saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) 
       pdf.ggplot(plot, file.path(fig.folder, paste0(p, ".pdf")), 
                  width = width, height = height)
     else 
-      pdf.plot(plot, file.path(fig.folder, paste0(p, ".pdf")), 
-                 width = width, height = height)
+      stop("Cannot find gtable/ggplot object ", class(plot), " !\nTry pdf.plot")
   }
 }
 
+replaceColNames <- function(df, pattern="\\..*", replacement="") {
+  if (nchar(pattern) > 0)
+    colnames(df) <- gsub(pattern, replacement, toupper(colnames(df))) 
+  return(df)
+}
+
+# create pdf for plotCorrelations which cannot save to list
+# Figure S19 S20 S21 S22 S23
+pdfAllCorrelationsRanks <- function(ranks.list, fig.folder="figures", pattern="\\..*", 
+                                    replacement="", width = 4, height = 4) {
+  if (is.null(names(ranks.list)))
+    stop("Cannot find ranks.list names !")
+  for (i in 1:length(ranks.list)) {
+    ranks <- replaceColNames(ranks.list[[i]], pattern=pattern, replacement=replacement)
+    p <- gsub("p|gt", "Figure", names(ranks.list)[i])
+    fig.file <- file.path(fig.folder, paste0(p, ".pdf"))
+    pdf.plot(ComMA::plotCorrelations(ranks), fig.file, width = width, height = height)
+    cat("Save pdf", i, " to ", fig.file, "\n")
+  }
+}
 
 ######## plot vs subplots #######
 # get plot names from subplots vector separated by sep

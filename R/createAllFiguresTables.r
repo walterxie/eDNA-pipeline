@@ -40,9 +40,9 @@ printAllCountsSums(all.co.su, file.xtable=tableFile)
 
 # use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
-# all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=TRUE)
+all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=F)
 # all.dist.list$by.plot == F 
-load("data/all.dist.subplot.RData")
+#load("data/all.dist.subplot.RData")
 # Figure S1, 3a is subset of S1
 pS1 <- plotDistanceCorrelation(all.dist.list[["within"]])
 # Figure S2, 3b is subset of S2
@@ -113,20 +113,28 @@ pp.df2.list <- prioriPlotByDiversities(input.names, diversities=diversities, gen
 env.plot <- getEnvData(by.plot=T)
 # Figure S16 a b c
 hm.list <- plotAllHeatmaps(list(gtS16a=pp.df.list[["rank"]][["pd.alpha"]], gtS16b=pp.df.list[["rank"]][["sp.rich"]], 
-                                gtS16c=pp.df.list[["rank"]][["gamma1"]]), env.plot, 
-                           x.lab="Sample plot", y.lab="Amplicon dataset", grid.widths = c(6, 3) )
-saveFigures(list(hm.list))
+                                gtS16c=pp.df.list[["rank"]][["gamma1"]]), env.plot)
+saveFigures(hm.list)
 # Figure 8, S17, S18
 hm.list <- plotAllHeatmaps(list(gt8=pp.df2.list[["rank"]][["pd.alpha"]], gtS17=pp.df2.list[["rank"]][["sp.rich"]], 
                                 gtS18=pp.df2.list[["rank"]][["gamma1"]]), env.plot, 
-                           x.lab="Group", y.lab="Amplicon dataset", grid.widths = c(8, 3) )
-saveFigures(list(hm.list))
+                           pattern="\\.", replacement="\n", x.lab="Group", grid.widths = c(8, 1.75) )
+saveFigures(hm.list)
+# Figure S19 a b c
+pdfAllCorrelationsRanks(list(gtS19a=pp.df.list[["rank"]][["pd.alpha"]], 
+                             gtS19b=pp.df.list[["rank"]][["sp.rich"]], 
+                             gtS19c=pp.df.list[["rank"]][["gamma1"]]) )
+# Figure S20 S21 S22
+pdfAllCorrelationsRanks(list(gtS20=pp.df2.list[["rank"]][["pd.alpha"]], 
+                             gtS21=pp.df2.list[["rank"]][["sp.rich"]], 
+                             gtS22=pp.df2.list[["rank"]][["gamma1"]]), 
+                        pattern="\\.", replacement="\n", width = 10, height = 10 )
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)
 rda <- getRDA(input.names)
 
-
+pdfAllCorrelationsRanks(list(gtS23=), pattern="", width = 10, height = 10 )
 
 
 ######## complete report latex #######
