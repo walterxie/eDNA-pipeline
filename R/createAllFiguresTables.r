@@ -35,7 +35,8 @@ tg.stats <- getTaxaGroupStatistics(input.names, file.xtable=tableFile)
 
 source("R/allTaxonomyAnalyses.r", local=TRUE)
 # Figure 2
-p2 <- getAllCountsSums(input.names)
+all.co.su <- getAllCountsSums(input.names)
+printAllCountsSums(all.co.su, file.xtable=tableFile)
 
 # use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
@@ -48,7 +49,7 @@ pS1 <- plotDistanceCorrelation(all.dist.list[["within"]])
 pS2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
 pS3 <- plotWithinBetween(all.dist.list[["within.between"]])
-saveFigures(list(p2=p2, pS1=pS1, pS2=pS2, pS3=pS3))
+saveFigures(list(p2=all.co.su$ggplot, pS1=pS1, pS2=pS2, pS3=pS3))
 
 # NMDS
 source("R/allNMDS.r", local=TRUE)

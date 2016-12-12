@@ -4,7 +4,7 @@
 # and filled circles the number of OTUs excluding singleton OTUs.
 
 # all.counts.sums <- getAllCountsSums()
-getAllCountsSums <- function(input.names, by.plot=TRUE, file.xtable=NULL, invalid.char=FALSE) {
+getAllCountsSums <- function(input.names, by.plot=TRUE) {
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   output.names <- getOutputNames(input.names)
@@ -28,20 +28,21 @@ getAllCountsSums <- function(input.names, by.plot=TRUE, file.xtable=NULL, invali
   cat("\n")
   
   # include figure and table
-  taxa.rank="phylum"
-  pipeline <- ComMA::summReadsOTUsPipeline(cm.taxa.list, taxa.rank=taxa.rank, group.rank="kingdom", 
+  all.counts.sums <- ComMA::summReadsOTUsPipeline(cm.taxa.list, taxa.rank="phylum", group.rank="kingdom", 
                                            col.ranks=c("superkingdom", "kingdom", "phylum"), 
                                            gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650"),
                                            group.levels=c("ARCHAEA","BACTERIA","EUKARYOTA","PROTOZOA","CHROMISTA",
                                                           "FUNGI","PLANTAE","ANIMALIA","Unknown"),
                                            palette=c("orange","red","blue","steelblue","skyblue",
-                                                     "purple","green2","green4","grey"))
+                                                     "purple","green2","green4","grey"),
+                                           legend.title = "(Super)Kingdom")
   
-  align.v <- rep("r", ncol(pipeline$all.counts.sums) + 1)
-  ComMA::printXTable(pipeline$all.counts.sums, align = align.v, label = "tab:counts:sums", 
-                     file = file.xtable, invalid.char=invalid.char,
-                     caption = paste("The summary of number of reads and OTUs assigned to", taxa.rank) )
-  
-  return(pipeline$ggplot)
+  return(all.counts.sums)
 }
 
+printAllCountsSums <- function(all.counts.sums, taxa.rank="phylum", file.xtable=NULL, invalid.char=FALSE) {
+  align.v <- rep("r", ncol(all.counts.sums$all.counts.sums) + 1)
+  ComMA::printXTable(all.counts.sums$all.counts.sums, align = align.v, label = "tab:counts:sums", 
+                     file = file.xtable, invalid.char=invalid.char,
+                     caption = paste("The summary of number of reads and OTUs assigned to", taxa.rank) )
+}
