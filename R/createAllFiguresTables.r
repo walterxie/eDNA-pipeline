@@ -40,7 +40,6 @@ p2 <- getAllCountsSums(input.names)
 # use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
 # all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=TRUE)
-
 # all.dist.list$by.plot == F 
 load("data/all.dist.subplot.RData")
 # Figure S1, 3a is subset of S1
@@ -49,7 +48,6 @@ pS1 <- plotDistanceCorrelation(all.dist.list[["within"]])
 pS2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
 pS3 <- plotWithinBetween(all.dist.list[["within.between"]])
-
 saveFigures(list(p2=p2, pS1=pS1, pS2=pS2, pS3=pS3))
 
 # NMDS
@@ -68,7 +66,8 @@ genes.taxa.list <- list(gtS4=list(list("16S","all"),list("18S","all"),list("26S"
                         gtS7=list(list("18S","animals"),list("26S","animals"),
                                   list("ShCO1","animals"),list("FolCO1","animals")) )
 nmds.list <- plotAllNMDS(input.names, genes.taxa.list)
-saveFigures(list(gt4=gt4, gtS4=gtS4, gtS5=gtS5, gtS6=gtS6, gtS7=gtS7))
+nmds.list[["gt4"]] <- gt4
+saveFigures(nmds.list)
 
 # community comparison
 source("R/allGeneCorrolation.r", local=TRUE)
