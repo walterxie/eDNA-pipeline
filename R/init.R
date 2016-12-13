@@ -115,7 +115,7 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                              genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
                                              list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")), 
                              by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE, 
-                             pre.cm=TRUE, rm.samples=c("CM30b51","CM30b58"), min.abund=5, mean.abund.thr=0.025 ) {
+                             pre.cm=TRUE, rm.samples=c(), min.abund=5, mean.abund.thr=0.025 ) {
   # data frame for statistics
   cm.taxa.list <- list()
   require(ComMA)

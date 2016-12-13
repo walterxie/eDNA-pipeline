@@ -23,7 +23,8 @@ getRDA <- function(input.names, by.plot=FALSE,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE )
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE, 
+                              rm.samples=c("CM30b51","CM30b58") )
   cat("\n")
   env <- getEnvData(by.plot=by.plot)
   names(env)[names(env) == 'mean_T_surface'] <- 'Temp.'
