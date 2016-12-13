@@ -75,10 +75,11 @@ printMantelAndProcrustes <- function(corrs, label = "tab:gene:comp", file.xtable
 
 # corrs$procrustes
 plotProcrustes.allOTUs <- function(procrustes, env.subplot) {
+  cat("Max elevation is ", max(env.subplot[,"Elevation"]), "\n")
   theme_set(theme_bw(base_size=8))
   # Figure S8
-  pS8.list <- ComMA::plotProcrustes(procrustes$proc.list, env.subplot, 
-                                    proc.list.pairs=procrustes$pairs, colour.id="Elevation")
+  pS8.list <- ComMA::plotProcrustes(procrustes$proc.list, env.subplot, proc.list.pairs=procrustes$pairs, 
+                                    colour.id="Elevation", limits=c(0,650))
   pS8 <- ComMA::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
                                            legend.position="right", widths=c(0.8, 0.15, 0))
 }
@@ -93,38 +94,46 @@ plotAllProcrustes <- function(procrustes, env.subplot) {
                                                      list("18S protists","18S animals"),list("18S protists","26S fungi"),list("18S protists","COI-300 animals"),
                                                      list("18S fungi","18S animals"),list("18S fungi","26S fungi"),list("18S fungi","COI-300 animals"),
                                                      list("18S animals","26S fungi"),list("18S animals","COI-300 animals"),list("26S fungi","COI-300 animals")) )
-  p7 <- ComMA::plotProcrustes(p7.list$sub.list, env.subplot, proc.list.pairs=p7.list$sub.pairs, colour.id="Elevation")
+  p7 <- ComMA::plotProcrustes(p7.list$sub.list, env.subplot, proc.list.pairs=p7.list$sub.pairs, 
+                              colour.id="Elevation", limits=c(0,650))
   # Figure S9
   pS9.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("18S fungi","26S fungi"),list("18S fungi","ITS fungi"),list("18S fungi","COI-300 fungi"),
                                                       list("26S fungi","ITS fungi"),list("26S fungi","COI-300 fungi"),list("ITS fungi","COI-300 fungi")) )
-  pS9 <- ComMA::plotProcrustes(pS9.list$sub.list, env.subplot, proc.list.pairs=pS9.list$sub.pairs, colour.id="Elevation")
+  pS9 <- ComMA::plotProcrustes(pS9.list$sub.list, env.subplot, proc.list.pairs=pS9.list$sub.pairs, 
+                               colour.id="Elevation", limits=c(0,650))
   # Figure S10
   S10.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("18S protists","26S protists"),list("18S protists","COI-300 protists"),list("18S protists","COI-650 protists"),
                                                       list("26S protists","COI-300 protists"),list("26S protists","COI-650 protists"),list("COI-300 protists","COI-650 protists")) )
-  S10 <- ComMA::plotProcrustes(S10.list$sub.list, env.subplot, proc.list.pairs=S10.list$sub.pairs, colour.id="Elevation")
+  S10 <- ComMA::plotProcrustes(S10.list$sub.list, env.subplot, proc.list.pairs=S10.list$sub.pairs, 
+                               colour.id="Elevation", limits=c(0,650))
   # Figure S11
   pS11.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("18S animals","26S animals"),list("18S animals","COI-300 animals"),list("18S animals","COI-650 animals"),
                                                       list("26S animals","COI-300 animals"),list("26S animals","COI-650 animals"),list("COI-300 animals","COI-650 animals")) )
-  pS11 <- ComMA::plotProcrustes(pS11.list$sub.list, env.subplot, proc.list.pairs=pS11.list$sub.pairs, colour.id="Elevation")
+  pS11 <- ComMA::plotProcrustes(pS11.list$sub.list, env.subplot, proc.list.pairs=pS11.list$sub.pairs, 
+                                colour.id="Elevation", limits=c(0,650))
   # Figure S12
   pS12.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("18S fungi","18S protists"),list("18S fungi","18S animals"),list("18S protists","18S animals")) )
-  pS12 <- ComMA::plotProcrustes(pS12.list$sub.list, env.subplot, proc.list.pairs=pS12.list$sub.pairs, colour.id="Elevation")
+  pS12 <- ComMA::plotProcrustes(pS12.list$sub.list, env.subplot, proc.list.pairs=pS12.list$sub.pairs, 
+                                colour.id="Elevation", limits=c(0,650))
   # Figure S13
   pS13.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("26S fungi","26S protists"),list("26S fungi","26S animals"),list("26S protists","26S animals")) )
-  pS13 <- ComMA::plotProcrustes(pS13.list$sub.list, env.subplot, proc.list.pairs=pS13.list$sub.pairs, colour.id="Elevation")
+  pS13 <- ComMA::plotProcrustes(pS13.list$sub.list, env.subplot, proc.list.pairs=pS13.list$sub.pairs, 
+                                colour.id="Elevation", limits=c(0,650))
   # Figure S14
   pS14.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("COI-300 fungi","COI-300 protists"),list("COI-300 fungi","COI-300 animals"),list("COI-300 protists","COI-300 animals")) )
-  pS14 <- ComMA::plotProcrustes(pS14.list$sub.list, env.subplot, proc.list.pairs=pS14.list$sub.pairs, colour.id="Elevation")
+  pS14 <- ComMA::plotProcrustes(pS14.list$sub.list, env.subplot, proc.list.pairs=pS14.list$sub.pairs, 
+                                colour.id="Elevation", limits=c(0,650))
   # Figure S15
   pS15.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                     subset.pairs=list(list("COI-650 protists","COI-650 animals")) )
-  pS15 <- ComMA::plotProcrustes(pS15.list$sub.list, env.subplot, proc.list.pairs=pS15.list$sub.pairs, colour.id="Elevation")
+  pS15 <- ComMA::plotProcrustes(pS15.list$sub.list, env.subplot, proc.list.pairs=pS15.list$sub.pairs, 
+                                colour.id="Elevation", limits=c(0,650))
   
   # return a list of gtable
   list(gt7=ComMA::grid_arrange_shared_legend(p7[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(0.8, 0.15, 0)),
