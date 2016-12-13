@@ -127,6 +127,7 @@ plotDistanceCorrelation <- function(dist.data, data.levels = c("16S","18S","26S"
   
   ### Distance correlation plots ###
   require(ggplot2)
+  theme_set(theme_bw(base_size=8))
   p <- ggplot(dist.data, aes(x = dist, y = value)) + 
     geom_point(shape = 1) + 
     geom_smooth(method = "lm", se = FALSE) + 
@@ -169,6 +170,7 @@ plotWithinBetween <- function(dist.data, data.levels = c("16S","18S","26S","ITS"
   
   ### Within-between distances boxplot ###
   require(ggplot2)
+  theme_set(theme_bw(base_size=8))
   p <- ggplot(dist.data, aes(x = wb, y = value, color = wb)) + 
     geom_boxplot(outlier.shape = 1, outlier.colour = alpha("black", 0.25)) + 
     ylab(y.lab) + xlab(x.lab) +

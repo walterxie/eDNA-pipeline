@@ -73,8 +73,19 @@ printMantelAndProcrustes <- function(corrs, label = "tab:gene:comp", file.xtable
                      invalid.char=invalid.char, caption = caption)
 }
 
+# corrs$procrustes
+plotProcrustes.allOTUs <- function(procrustes, env.subplot) {
+  theme_set(theme_bw(base_size=8))
+  # Figure S8
+  pS8.list <- ComMA::plotProcrustes(procrustes$proc.list, env.subplot, 
+                                    proc.list.pairs=procrustes$pairs, colour.id="Elevation")
+  pS8 <- ComMA::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
+                                           legend.position="right", widths=c(0.8, 0.15, 0))
+}
+
 # corrs2$procrustes
 plotAllProcrustes <- function(procrustes, env.subplot) {
+  theme_set(theme_bw(base_size=8))
   # Figure 7
   p7.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 
                                    subset.pairs=list(list("16S bacteria","18S protists"),list("16S bacteria","18S fungi"),list("16S bacteria","18S animals"),

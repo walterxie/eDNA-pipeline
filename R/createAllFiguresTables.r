@@ -40,15 +40,17 @@ printAllCountsSums(all.co.su, file.xtable=tableFile)
 
 # use phyloseq 1.10.0, new version bug weighted UniFrac < 0.1
 source("R/allDissimVsDistances.r", local=TRUE)
-all.dist.subplot <- getDissimVsDistances(input.names, by.plot=FALSE, save.rdata=F)
-# all.dist.list$by.plot == F 
+all.dist.list <- getDissimVsDistances(input.names, by.plot=F, save.rdata=F)
+# Use subplots for Figure S1 and S3, but plots for S2 (all.dist.list$by.plot == F) 
 #load("data/all.dist.subplot.RData")
-# Figure S1, 3a is subset of S1
+# Figure S1, Figure 3a is subset of Figure S1
 pS1 <- plotDistanceCorrelation(all.dist.list[["within"]])
-# Figure S2, 3b is subset of S2
-pS2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 # Figure S3
 pS3 <- plotWithinBetween(all.dist.list[["within.between"]])
+#load("data/all.dist.plot.RData")
+all.dist.list <- getDissimVsDistances(input.names, by.plot=T, save.rdata=F)
+# Figure S2, Figure 3b is subset of Figure S2
+pS2 <- plotDistanceCorrelation(all.dist.list[["elev.diff"]])
 saveFigures(list(p2=all.co.su$ggplot, pS1=pS1, pS2=pS2, pS3=pS3))
 
 # NMDS
@@ -91,10 +93,7 @@ plots2 <- plotMantelAndProcrustes(corrs2, gene.levels=gene.levels)
 # env data by subplots
 env.subplot <- getEnvData(by.plot=F)
 # Figure S8
-pS8.list <- ComMA::plotProcrustes(corrs$procrustes$proc.list, env.subplot, 
-                                  proc.list.pairs=corrs$procrustes$pairs, colour.id="Elevation")
-pS8 <- ComMA::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
-                                         legend.position="right", widths=c(0.8, 0.15, 0))
+pS8 <- plotProcrustes.allOTUs(corrs$procrustes, env.subplot)
 # Figure 7: p.all$gt7; Figure S9-15: p.all$gtS9 until gtS15
 p.all <- plotAllProcrustes(corrs2$procrustes, env.subplot)
 
