@@ -78,7 +78,7 @@ source("R/allGeneCorrolation.r", local=TRUE)
 corrs <- getMantelAndProcrustes(input.names)
 # Figure 5 heatmap: plots$heatmap; plots$mantel.mds; plots$prot.mds
 plots <- plotMantelAndProcrustes(corrs)
-printMantelAndProcrustes(corrs)
+printMantelAndProcrustes(corrs, file.xtable=tableFile)
 
 gene.levels=c("16S bacteria","18S animals","18S fungi","18S protists","26S animals","26S fungi","26S protists",
               "ITS fungi","COI-300 animals","COI-300 fungi","COI-300 protists","COI-650 animals","COI-650 protists")

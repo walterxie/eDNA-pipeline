@@ -114,8 +114,7 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                                     "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
                              genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
                                              list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")), 
-                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE, 
-                             pre.cm=TRUE, rm.samples=c(), min.abund=5, mean.abund.thr=0.025 ) {
+                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
   # data frame for statistics
   cm.taxa.list <- list()
   require(ComMA)
@@ -132,9 +131,6 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
         "singletons, samples are based on", ifelse(by.plot, "plot", "subplot"), ".\n") 
     
     cm <- getCommunityMatrix(z[[1]], min2=min2, by.plot=by.plot)
-    
-    if (pre.cm)
-      cm <- ComMA::preprocessCM(cm, rm.samples=rm.samples, min.abund=min.abund, mean.abund.thr=mean.abund.thr)
     
     if (taxon == "all") {
       # if all, then no merge
