@@ -58,15 +58,14 @@ getCommunityMatrix <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO
   return(community.matrix)
 }
 # t.cm <- transposeCM(cm)
-
 # taxa.table <- getTaxaTable("16S", taxa.group="assigned")
 # tt.sub <- subsetTaxaTable(taxa.table, taxa.group="BACTERIA", rank="kingdom")
 # cm.taxa <- mergeCMTaxa(cm, taxa.table)
 # taxa.assign <- assignTaxaByRank(cm.taxa)
 # sum(taxa.assign[[rank]])
-
 # cm.taxa <- ComMA::subsetCM(cm, tt, taxa.group="BACTERIA", rank="kingdom")
 
+# particularly used for spatial patterns, same as getCommunityList, but different default settings
 getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1"), 
                             by.plot=FALSE, min2=TRUE, 
                             cm.folder="./data/OTU_tables", tt.folder="./data/Taxonomy_tables") {
@@ -107,7 +106,7 @@ getTaxaRef <- function(data.folder="./data") {
   return(taxa.ref)
 }
 
-# programmatically get subsets, drop.taxa TRUE to only return CM,
+# programmatically get subsets, used in all communities analyses,
 # genes and taxa.group are used for validation, genes.taxa to choose the subsets. 
 getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                              taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  

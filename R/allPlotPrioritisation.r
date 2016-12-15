@@ -11,7 +11,7 @@ prioriPlotByDiversities <- function(input.names,
   
   cm.by.plot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T )
   cat("\n")
-  cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
+  cm.prep.list <- preprocessCMList(cm.by.plot.list) 
   cat("\n")
   
   # need for "pd.alpha","sp.rich"
