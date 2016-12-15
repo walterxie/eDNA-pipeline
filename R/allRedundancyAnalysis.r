@@ -23,8 +23,7 @@ getRDA <- function(input.names, by.plot=FALSE,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE, 
-                              rm.samples=c("CM30b51","CM30b58") )
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE )
   cat("\n")
   env <- getEnvData(by.plot=by.plot)
   names(env)[names(env) == 'mean_T_surface'] <- 'Temp.'
@@ -35,23 +34,27 @@ getRDA <- function(input.names, by.plot=FALSE,
   colnames(env) <- gsub("\\.C", " C", colnames(env))                                  
   colnames(env) <- gsub("EC", "E.C.", colnames(env))
   colnames(env) <- gsub("C N.", "C/N ", colnames(env))
+  # drop CM30b51 and CM30b58, missing aspect data
+  env.prep <- ComMA::preprocessEnv(env, rm.samples=c("CM30b51","CM30b58"), 
+                                   sel.env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11) )
   
   rda.list <- list()
   tcm.list <- list()
   env.list <- list()
   for (i in 1:length(cm.list)) {
-    cm <- cm.list[[i]]
-    cat("Start RDA analysis for", names(cm.list)[i], "...\n")
-    
+    cm.name <- names(cm.list)[i]
+    cat("Start RDA analysis for", cm.name, "...\n")
     # drop CM30b51 and CM30b58, missing aspect data
-    tcm.env <- ComMA::preprocessRDA(cm.list[[1]], env, rm.samples=c("CM30b51","CM30b58"), 
-                                    min.abund=mean(colSums(cm.list[[1]]))*0.025, 
-                                    sel.env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11))
-    tcm.list[[names(cm.list)[i]]] <- tcm.env$tcm
-    env.list[[names(cm.list)[i]]] <- tcm.env$env
+    cm.prep <- ComMA::preprocessCM(cm.list[[cm.name]], rm.samples=c("CM30b51","CM30b58"), 
+                                   min.abund=5, mean.abund.thr=0.025 )
+
+    
+    tcm.env <- ComMA::preprocessRDA(cm.prep, env.prep)
+    tcm.list[[cm.name]] <- tcm.env$tcm
+    env.list[[cm.name]] <- tcm.env$env
     
     rda <- ComMA::proceedRDA(tcm.env$tcm, tcm.env$env)
-    rda.list[[names(cm.list)[i]]] <- rda
+    rda.list[[cm.name]] <- rda
   }
   
   list(rda.list=rda.list, tcm.list=tcm.list, env.list=env.list)

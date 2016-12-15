@@ -55,11 +55,7 @@ saveFigures(list(p2=all.co.su$ggplot, pS1=pS1, pS2=pS2, pS3=pS3))
 
 # NMDS
 source("R/allNMDS.r", local=TRUE)
-# Figure 4
-nmds <- getNMDS(input.names)
-gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, 
-                                         legend.position="right", widths=c(0.8, 0.2))
-# Figure S4: all OTUs, Figure S5, S6, S7
+# Figure 4, S4: all OTUs, Figure S5, S6, S7
 genes.taxa.list <- list(gtS4=list(list("16S","all"),list("18S","all"),list("26S","all"),
                                   list("ITS","all"),list("ShCO1","all"),list("FolCO1","all")),
                         gtS5=list(list("18S","fungi"),list("26S","fungi"),
@@ -68,8 +64,8 @@ genes.taxa.list <- list(gtS4=list(list("16S","all"),list("18S","all"),list("26S"
                                   list("ShCO1","protists"),list("FolCO1","protists")),
                         gtS7=list(list("18S","animals"),list("26S","animals"),
                                   list("ShCO1","animals"),list("FolCO1","animals")) )
+# inlcude gt4
 nmds.list <- plotAllNMDS(input.names, genes.taxa.list)
-nmds.list[["gt4"]] <- gt4
 saveFigures(nmds.list)
 
 # community comparison

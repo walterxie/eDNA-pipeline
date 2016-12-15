@@ -10,8 +10,16 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
   
   cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, drop.taxa=TRUE )
   cat("\n")
+  cm.list <- list()
+  for (i in 1:length(cm.by.subplot.list)) {
+    cm.name <- names(cm.by.subplot.list)[i]
+    cat("Preprocess ", cm.name, ".\n")
+    cm.prep <- ComMA::preprocessCM(cm.by.subplot.list[[cm.name]], min.abund=5, mean.abund.thr=0.025 )
+    cm.list[[cm.name]] <- cm.prep
+  }
+  cat("\n")
   
-  dissim <- ComMA::getDissimilarityList(cm.by.subplot.list, metric=metric)
+  dissim <- ComMA::getDissimilarityList(cm.list, metric=metric)
   mantel <- ComMA::mantelComparison(dissim$dist.list)
   procrustes <- ComMA::procrustesComparison(dissim$dist.list)
   
@@ -37,6 +45,7 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
 
 # plotMantelAndProcrustes(corrs)
 plotMantelAndProcrustes <- function(corrs, text.repel=T, gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650")) {
+  theme_set(theme_bw(base_size=8))
   min.cor <- min(corrs$corrs[corrs$corrs>0])
   cat("min correlation is ", min.cor, "max is ", max(corrs$corrs), "\n.")
 
