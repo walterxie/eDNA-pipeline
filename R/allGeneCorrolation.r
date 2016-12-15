@@ -8,7 +8,7 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, drop.taxa=TRUE )
+  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F)
   cat("\n")
   cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
   cat("\n")
@@ -39,6 +39,7 @@ getMantelAndProcrustes <- function(input.names, metric="jaccard",
 
 # plotMantelAndProcrustes(corrs)
 plotMantelAndProcrustes <- function(corrs, text.repel=T, gene.levels=c("16S", "18S", "26S", "ITS", "COI-300", "COI-650")) {
+  require(ggplot2)
   theme_set(theme_bw(base_size=8))
   min.cor <- min(corrs$corrs[corrs$corrs>0])
   cat("min correlation is ", min.cor, "max is ", max(corrs$corrs), "\n.")
@@ -79,6 +80,7 @@ printMantelAndProcrustes <- function(corrs, label = "tab:gene:comp", file.xtable
 # corrs$procrustes
 plotProcrustes.allOTUs <- function(procrustes, env.subplot) {
   cat("Max elevation is ", max(env.subplot[,"Elevation"]), "\n")
+  require(ggplot2)
   theme_set(theme_bw(base_size=8))
   # Figure S8
   pS8.list <- ComMA::plotProcrustes(procrustes$proc.list, env.subplot, proc.list.pairs=procrustes$pairs, 
@@ -89,6 +91,7 @@ plotProcrustes.allOTUs <- function(procrustes, env.subplot) {
 
 # corrs2$procrustes
 plotAllProcrustes <- function(procrustes, env.subplot) {
+  require(ggplot2)
   theme_set(theme_bw(base_size=8))
   # Figure 7
   p7.list <- ComMA::sublistByPairs(procrustes$proc.list, procrustes$pairs, 

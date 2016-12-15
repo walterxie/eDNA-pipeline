@@ -9,7 +9,7 @@ prioriPlotByDiversities <- function(input.names,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.by.plot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
+  cm.by.plot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T )
   cat("\n")
   cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
   cat("\n")
@@ -29,6 +29,7 @@ prioriPlotByDiversities <- function(input.names,
 # give ranks to pp.df.list, such as pp.df.list[["rank"]][["pd.alpha"]]
 plotAllHeatmaps <- function(ranks.list, env.plot, pattern="\\..*", replacement="", y.lab="Sample plot", 
                             x.lab="Amplicon dataset", grid.widths = c(8, 2)) {
+  require(ggplot2)
   theme_set(theme_bw(base_size=8))
   hm.list <- list()
   for (i in 1:length(ranks.list)) {

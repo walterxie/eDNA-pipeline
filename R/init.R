@@ -79,7 +79,7 @@ getIdentifiedCM <- function(data.set=c("16S","18S","26S","ITS","FolCO1","ShCO1")
   cm <- getCommunityMatrix(data.set, min2=min2, by.plot=by.plot, data.folder=cm.folder)
   tt <- getTaxaTable(data.set, taxa.group=input.tg, rank="superkingdom", data.folder=tt.folder)
   # ITS tt only up to "order"
-  return(ComMA::subsetCM(cm, tt, col.ranks=c("kingdom", "phylum", "class", "order")))
+  return(ComMA::subsetCM(cm, tt))
 }
 
 ###### taxa assignment by reads #####
@@ -114,7 +114,7 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                                     "CHROMISTA|PROTOZOA","FUNGI","PLANTAE","ANIMALIA","EUKARYOTA","PROKARYOTA"),
                              genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
                                              list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")), 
-                             by.plot=TRUE, col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE ) {
+                             by.plot=TRUE ) {
   # data frame for statistics
   cm.taxa.list <- list()
   require(ComMA)
@@ -137,12 +137,9 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
       cm.taxa.list[[paste(gene, z[[2]])]] <- cm
     } else {
       tt <- getTaxaTable(z[[1]], taxa.group=taxon, rank=rank)
-      cm.taxa <- ComMA::mergeCMTaxa(cm, tt, has.total = 0, col.ranks = col.ranks, preprocess = F)
+      cm.sub <- ComMA::subsetCM(cm, tt)
       
-      if (drop.taxa)
-        cm.taxa <- cm.taxa[,-which(names(cm.taxa) %in% col.ranks)]
-      
-      cm.taxa.list[[paste(gene, z[[2]])]] <- cm.taxa
+      cm.taxa.list[[paste(gene, z[[2]])]] <- cm.sub
     }
   }
   cat("\n")

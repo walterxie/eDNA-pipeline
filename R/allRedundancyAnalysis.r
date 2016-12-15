@@ -23,7 +23,7 @@ getRDA <- function(input.names, by.plot=FALSE,
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
   
-  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE )
+  cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot )
   cat("\n")
   # drop CM30b51 and CM30b58, missing aspect data
   cm.prep.list <- preprocessCMList(cm.list, rm.samples=c("CM30b51","CM30b58")) 

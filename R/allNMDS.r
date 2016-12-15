@@ -9,7 +9,7 @@ getNMDS <- function(input.names, metric="jaccard",
     source("R/init.R", local=TRUE)
 
   cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
-                              col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
+                              col.ranks=c("superkingdom", "kingdom") )
   cat("\n")
   cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
   cat("\n")
@@ -38,6 +38,7 @@ getNMDS <- function(input.names, metric="jaccard",
 
 # besides gt4, give genes.taxa to genes.taxa.list
 plotAllNMDS <- function(input.names, genes.taxa.list) {
+  require(ggplot2)
   theme_set(theme_bw(base_size=8))
   nmds <- getNMDS(input.names)
   gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, 
