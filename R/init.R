@@ -149,6 +149,22 @@ getCommunityList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
   return(cm.taxa.list)
 }
 
+# Exclude any samples with excessively low abundance
+# used in NMDS, Mantel/Procrustes, community comparisons, Plot Prioritisation, RDA
+preprocessCMList <- function(cm.list, rm.samples=c(), min.abund=5, mean.abund.thr=0.025, print.col.sum=T ) {
+  cm.prep.list <- list()
+  for (i in 1:length(cm.list)) {
+    cm.name <- names(cm.list)[i]
+    cat("Preprocess ", cm.name, ".\n")
+    cm.prep <- ComMA::preprocessCM(cm.list[[cm.name]], rm.samples=rm.samples, 
+                                   min.abund=min.abund, mean.abund.thr=mean.abund.thr )
+    cm.prep.list[[cm.name]] <- cm.prep
+    if (print.col.sum) print(colSums(cm.prep))
+    cat("\n")
+  }
+  return(cm.prep.list)
+}
+
 # get list of trees, same to getCommunityList
 getTreeList <- function(genes=c("16S","18S","26S","ITS","FolCO1","ShCO1"),
                         taxa.group=c("all","assigned","ARCHAEA","BACTERIA","CHROMISTA","PROTOZOA",  

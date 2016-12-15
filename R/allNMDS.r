@@ -10,16 +10,17 @@ getNMDS <- function(input.names, metric="jaccard",
 
   cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
                               col.ranks=c("superkingdom", "kingdom"), drop.taxa=TRUE )
-  
+  cat("\n")
+  cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
+  cat("\n")
   env.subplot <- getEnvData(by.plot=F)
   cat("\n")
   
   plot.list <- list()
-  cm.list <- list()
-  for (i in 1:length(cm.by.subplot.list)) {
-    cm.name <- names(cm.by.subplot.list)[i]
+  for (i in 1:length(cm.prep.list)) {
+    cm.name <- names(cm.prep.list)[i]
     cat("NMDS for", cm.name, ".\n")
-    cm.prep <- ComMA::preprocessCM(cm.by.subplot.list[[cm.name]], min.abund=5, mean.abund.thr=0.025 )
+    cm.prep <- cm.prep.list[[cm.name]]
     
     gg <- ComMA::ggNMDSPlot(t(cm.prep), env.subplot, colour.id="Elevation", 
                             shape.id="Forest.code", link.id="Plot", distance=metric, 
@@ -30,10 +31,9 @@ getNMDS <- function(input.names, metric="jaccard",
                             x.lab="", y.lab="", stress.digits=3, scale.limits.min=0,
                             legend.title.shape="Forest Type", legend.title.colour="Elevation (m)" )
     plot.list[[cm.name]] <- gg
-    cm.list[[cm.name]] <- cm.prep
   }
   
-  list( plot.list=plot.list, cm.list=cm.prep, metric=metric, by.plot=F  )
+  list( plot.list=plot.list, cm.list=cm.prep.list, metric=metric, by.plot=F  )
 }
 
 # besides gt4, give genes.taxa to genes.taxa.list

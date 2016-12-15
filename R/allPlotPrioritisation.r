@@ -11,22 +11,16 @@ prioriPlotByDiversities <- function(input.names,
   
   cm.by.plot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=T, drop.taxa=TRUE )
   cat("\n")
+  cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
+  cat("\n")
+  
   # need for "pd.alpha","sp.rich"
   tre.list <- getTreeList(genes=input.names, genes.taxa=genes.taxa)
   cat("\n")
   
-  cm.list <- list()
-  for (i in 1:length(cm.by.plot.list)) {
-    cm.name <- names(cm.by.plot.list)[i]
-    cat("Preprocess ", cm.name, ".\n")
-    cm.prep <- ComMA::preprocessCM(cm.by.plot.list[[cm.name]], min.abund=5, mean.abund.thr=0.025 )
-    cm.list[[cm.name]] <- cm.prep
-  }
-  cat("\n")
-  
-  plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, tre.list=tre.list, taxa.match=FALSE,
+  plot.prior.list <- ComMA::getPlotPrior(cm.prep.list, is.transposed=FALSE, tre.list=tre.list, taxa.match=FALSE,
                                          diversities=diversities)
-  #plot.prior.list <- ComMA::getPlotPrior(cm.list, is.transposed=FALSE, diversities=diversities)
+  #plot.prior.list <- ComMA::getPlotPrior(cm.prep.list, is.transposed=FALSE, diversities=diversities)
   cat("\n")
   pp.df.list <- ComMA::mergePlotPriorListOfDF(plot.prior.list)
   return(pp.df.list)

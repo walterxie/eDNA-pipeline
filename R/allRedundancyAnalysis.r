@@ -25,7 +25,12 @@ getRDA <- function(input.names, by.plot=FALSE,
   
   cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot, drop.taxa=TRUE )
   cat("\n")
+  # drop CM30b51 and CM30b58, missing aspect data
+  cm.prep.list <- preprocessCMList(cm.list, rm.samples=c("CM30b51","CM30b58")) 
+  cat("\n")
   env <- getEnvData(by.plot=by.plot)
+  cat("\n")
+  
   names(env)[names(env) == 'mean_T_surface'] <- 'Temp.'
   names(env)[names(env) == 'Northness'] <- 'sin.aspect'
   names(env)[names(env) == 'Eastness'] <- 'cos.aspect'
@@ -44,12 +49,8 @@ getRDA <- function(input.names, by.plot=FALSE,
   for (i in 1:length(cm.list)) {
     cm.name <- names(cm.list)[i]
     cat("Start RDA analysis for", cm.name, "...\n")
-    # drop CM30b51 and CM30b58, missing aspect data
-    cm.prep <- ComMA::preprocessCM(cm.list[[cm.name]], rm.samples=c("CM30b51","CM30b58"), 
-                                   min.abund=5, mean.abund.thr=0.025 )
-
     
-    tcm.env <- ComMA::preprocessRDA(cm.prep, env.prep)
+    tcm.env <- ComMA::preprocessRDA(cm.prep.list[[cm.name]], env.prep)
     tcm.list[[cm.name]] <- tcm.env$tcm
     env.list[[cm.name]] <- tcm.env$env
     
