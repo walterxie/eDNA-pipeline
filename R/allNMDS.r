@@ -21,8 +21,10 @@ getNMDS <- function(input.names, metric="jaccard",
     cat("NMDS for", cm.name, ".\n")
     cm.prep <- cm.prep.list[[cm.name]]
     
-    gg <- ComMA::ggNMDSPlot(t(cm.prep), env.subplot, colour.id="Elevation", 
-                            shape.id="Forest.code", link.id="Plot", distance=metric, 
+    dsi.dist <- ComMA::getDissimilarity(cm.prep, method=metric)
+    
+    gg <- ComMA::ggNMDSPlot(dsi.dist, env.subplot, colour.id="Elevation", 
+                            shape.id="Forest.code", link.id="Plot", 
                             shapes=c(15,16,17,0,1,2,5,6,3,4), palette=c("blue", "orange"),
                             shape.levels = c("VS2","VS3","VS5","WF7","WF9","WF11","WF12","WF13","MF20","Unknown"),
                             title = paste0(letters[i], ". ", cm.name, ", ", 

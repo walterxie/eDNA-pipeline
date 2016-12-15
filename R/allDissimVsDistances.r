@@ -21,7 +21,7 @@ getDissimVsDistances <- function(input.names, by.plot=FALSE, save.rdata=FALSE) {
     tree <- getPhyloTree(input.names[data.id])
     
     for(metric in metrics){
-      dsi.dist <- getDissimilarity(cm, tree=tree, method=metric)
+      dsi.dist <- ComMA::getDissimilarity(cm, tree=tree, method=metric)
       all.dist.list[[output.names[data.id]]][[metric]] <- dsi.dist
     }
   }
