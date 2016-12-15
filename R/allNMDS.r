@@ -8,8 +8,7 @@ getNMDS <- function(input.names, metric="jaccard",
   if (missing(input.names)) 
     source("R/init.R", local=TRUE)
 
-  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F, 
-                              col.ranks=c("superkingdom", "kingdom") )
+  cm.by.subplot.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=F )
   cat("\n")
   cm.prep.list <- preprocessCMList(cm.by.subplot.list) 
   cat("\n")
