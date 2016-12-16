@@ -16,12 +16,14 @@ getNMDS <- function(input.names, metric="jaccard",
   cat("\n")
   
   plot.list <- list()
+  dist.list <- list()
   for (i in 1:length(cm.prep.list)) {
     cm.name <- names(cm.prep.list)[i]
     cat("NMDS for", cm.name, ".\n")
     cm.prep <- cm.prep.list[[cm.name]]
     
     dsi.dist <- ComMA::getDissimilarity(cm.prep, method=metric)
+    dist.list[[cm.name]] <- dsi.dist
     
     gg <- ComMA::ggNMDSPlot(dsi.dist, env.subplot, colour.id="Elevation", 
                             shape.id="Forest.code", link.id="Plot", 
@@ -34,7 +36,7 @@ getNMDS <- function(input.names, metric="jaccard",
     plot.list[[cm.name]] <- gg
   }
   
-  list( plot.list=plot.list, cm.list=cm.prep.list, metric=metric, by.plot=F  )
+  list( plot.list=plot.list, cm.list=cm.prep.list, dist.list=dist.list, metric=metric, by.plot=F  )
 }
 
 # besides gt4, give genes.taxa to genes.taxa.list
