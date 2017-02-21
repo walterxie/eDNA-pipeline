@@ -323,15 +323,16 @@ replaceColNames <- function(df, pattern="\\..*", replacement="") {
 
 # create pdf for plotCorrelations which cannot save to list
 # Figure S19 S20 S21 S22 S23
-pdfAllCorrelationsRanks <- function(ranks.list, fig.folder="figures", pattern="\\..*", 
+pdfAllCorrelations <- function(data.list, fig.folder="figures", pattern="\\..*", 
                                     replacement="", width = 4, height = 4) {
-  if (is.null(names(ranks.list)))
-    stop("Cannot find ranks.list names !")
-  for (i in 1:length(ranks.list)) {
-    ranks <- replaceColNames(ranks.list[[i]], pattern=pattern, replacement=replacement)
-    p <- gsub("p|gt", "Figure", names(ranks.list)[i])
-    fig.file <- file.path(fig.folder, paste0(p, ".pdf"))
-    pdf.plot(ComMA::plotCorrelations(ranks), fig.file, width = width, height = height)
+  if (is.null(names(data.list)))
+    stop("Cannot find data.list names !")
+  require(gg1L)
+  for (i in 1:length(data.list)) {
+    data <- replaceColNames(data.list[[i]], pattern=pattern, replacement=replacement)
+    pn <- gsub("p|gt", "Figure", names(data.list)[i])
+    fig.file <- file.path(fig.folder, paste0(pn, ".pdf"))
+    gg1L::pdf.plot(ComMA::plotCorrelations(data), fig.file, width = width, height = height)
     cat("Save pdf", i, " to ", fig.file, "\n")
   }
 }

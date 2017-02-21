@@ -6,13 +6,16 @@ rm(list=ls())
 setwd("~/WorkSpace/eDNA-pipeline")
 
 ######## initialise #######
+library(gg1L)
+library(ComMA)
 source("R/init.r", local=TRUE)
+cat("Config: set input.names = ", paste(input.names, collapse = ", "), "\n")
 
 # tableFile <- NULL # print to console
 tableFile <- file.path("report.tex")
 fig.folder <- file.path("figures")
 # create folder for figures 
-mkdir(fig.folder)    
+mkDir(fig.folder)    
 
 ######## set up report latex #######
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
@@ -116,20 +119,22 @@ hm.list <- plotAllHeatmaps(list(gt8=pp.df2.list[["rank"]][["pd.alpha"]], gtS17=p
                            pattern="\\.", replacement="\n", x.lab="Group", grid.widths = c(8, 1.75) )
 saveFigures(hm.list)
 # Figure S19 a b c
-pdfAllCorrelationsRanks(list(gtS19a=pp.df.list[["rank"]][["pd.alpha"]], 
-                             gtS19b=pp.df.list[["rank"]][["sp.rich"]], 
-                             gtS19c=pp.df.list[["rank"]][["gamma1"]]) )
+pdfAllCorrelations(list(gtS19a=pp.df.list[["rank"]][["pd.alpha"]], 
+                        gtS19b=pp.df.list[["rank"]][["sp.rich"]], 
+                        gtS19c=pp.df.list[["rank"]][["gamma1"]]) )
 # Figure S20 S21 S22
-pdfAllCorrelationsRanks(list(gtS20=pp.df2.list[["rank"]][["pd.alpha"]], 
-                             gtS21=pp.df2.list[["rank"]][["sp.rich"]], 
-                             gtS22=pp.df2.list[["rank"]][["gamma1"]]), 
+pdfAllCorrelations(list(gtS20=pp.df2.list[["rank"]][["pd.alpha"]], 
+                        gtS21=pp.df2.list[["rank"]][["sp.rich"]], 
+                        gtS22=pp.df2.list[["rank"]][["gamma1"]]), 
                         pattern="\\.", replacement="\n", width = 10, height = 10 )
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)
+env.prep <- getEnv()
+pdfAllCorrelations(list(gtS23=env.prep), pattern="", width = 10, height = 10 )
+
 rda <- getRDA(input.names)
 
-pdfAllCorrelationsRanks(list(gtS23=), pattern="", width = 10, height = 10 )
 
 
 ######## complete report latex #######

@@ -12,8 +12,10 @@ getEnv <- function(by.plot=FALSE) {
   colnames(env) <- gsub("\\.C", " C", colnames(env))                                  
   colnames(env) <- gsub("EC", "E.C.", colnames(env))
   colnames(env) <- gsub("C N.", "C/N ", colnames(env))
-  
-  return(env)
+  # drop CM30b51 and CM30b58, missing aspect data
+  env.prep <- ComMA::preprocessEnv(env, rm.samples=c("CM30b51","CM30b58"), 
+                                   sel.env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11) )
+  return(env.prep)
 }
 
 # 
@@ -28,20 +30,8 @@ getRDA <- function(input.names, by.plot=FALSE,
   # drop CM30b51 and CM30b58, missing aspect data
   cm.prep.list <- preprocessCMList(cm.list, rm.samples=c("CM30b51","CM30b58")) 
   cat("\n")
-  env <- getEnvData(by.plot=by.plot)
+  env.prep <- getEnvData(by.plot=by.plot)
   cat("\n")
-  
-  names(env)[names(env) == 'mean_T_surface'] <- 'Temp.'
-  names(env)[names(env) == 'Northness'] <- 'sin.aspect'
-  names(env)[names(env) == 'Eastness'] <- 'cos.aspect'
-  colnames(env) <- gsub("\\.N", " N", colnames(env))
-  colnames(env) <- gsub("\\.P", " P", colnames(env))                                  
-  colnames(env) <- gsub("\\.C", " C", colnames(env))                                  
-  colnames(env) <- gsub("EC", "E.C.", colnames(env))
-  colnames(env) <- gsub("C N.", "C/N ", colnames(env))
-  # drop CM30b51 and CM30b58, missing aspect data
-  env.prep <- ComMA::preprocessEnv(env, rm.samples=c("CM30b51","CM30b58"), 
-                                   sel.env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11) )
   
   rda.list <- list()
   tcm.list <- list()
@@ -49,6 +39,8 @@ getRDA <- function(input.names, by.plot=FALSE,
   for (i in 1:length(cm.list)) {
     cm.name <- names(cm.list)[i]
     cat("Start RDA analysis for", cm.name, "...\n")
+    
+    
     
     tcm.env <- ComMA::preprocessRDA(cm.prep.list[[cm.name]], env.prep)
     tcm.list[[cm.name]] <- tcm.env$tcm
