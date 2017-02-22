@@ -17,6 +17,7 @@ getNMDS <- function(input.names, metric="jaccard",
   
   plot.list <- list()
   dist.list <- list()
+  require(gg1L)
   for (i in 1:length(cm.prep.list)) {
     cm.name <- names(cm.prep.list)[i]
     cat("NMDS for", cm.name, ".\n")
@@ -25,7 +26,7 @@ getNMDS <- function(input.names, metric="jaccard",
     dsi.dist <- ComMA::getDissimilarity(cm.prep, method=metric)
     dist.list[[cm.name]] <- dsi.dist
     
-    gg <- ComMA::ggNMDSPlot(dsi.dist, env.subplot, colour.id="Elevation", link.id="Plot", 
+    gg <- gg1L::ggNMDSPlot(dsi.dist, env.subplot, colour.id="Elevation", link.id="Plot", 
                             shape.id="Forest.code", shapes=c(15,16,17,0,1,2,5,6,3,4), 
                             palette=c("blue", "orange"), text.repel=T, text.size=2.5,
                             shape.levels = c("VS2","VS3","VS5","WF7","WF9","WF11","WF12","WF13","MF20","Unknown"),
