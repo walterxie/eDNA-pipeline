@@ -46,7 +46,7 @@ getRDAList <- function(input.names, by.plot=FALSE,
     tcm.list[[cm.name]] <- tcm.env$tcm
     env.list[[cm.name]] <- tcm.env$env
     
-    rda <- ComMA::proceedRDA(tcm.env$tcm, tcm.env$env)
+    rda <- ComMA::doRDA(tcm.env$tcm, tcm.env$env)
     rda.list[[cm.name]] <- rda
   }
   
