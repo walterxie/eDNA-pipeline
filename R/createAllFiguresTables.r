@@ -130,10 +130,10 @@ pdfAllCorrelations(list(gtS20=pp.df2.list[["rank"]][["pd.alpha"]],
 
 # RDA
 source("R/allRedundancyAnalysis.r", local=TRUE)
-env.prep <- getEnv()
+env.prep <- getEnv(by.plot=F)
 pdfAllCorrelations(list(gtS23=env.prep), pattern="", width = 10, height = 10 )
 
-rda <- getRDA(input.names)
+rda.list <- getRDAList(input.names, by.plot=F)
 
 
 

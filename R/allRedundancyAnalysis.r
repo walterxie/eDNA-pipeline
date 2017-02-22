@@ -14,12 +14,12 @@ getEnv <- function(by.plot=FALSE) {
   colnames(env) <- gsub("C N.", "C/N ", colnames(env))
   # drop CM30b51 and CM30b58, missing aspect data
   env.prep <- ComMA::preprocessEnv(env, rm.samples=c("CM30b51","CM30b58"), 
-                                   sel.env.var=c(4,5,8,9,14:22), log.var=c(5:8,9:11) )
+                                   log.var=c(14:20), sel.env.var=c(4,5,8,9,14:22) )
   return(env.prep)
 }
 
 # 
-getRDA <- function(input.names, by.plot=FALSE, 
+getRDAList <- function(input.names, by.plot=FALSE, 
                    genes.taxa=list(list("16S","prokaryota"),list("18S","eukaryota"),list("26S","eukaryota"),
                                    list("ITS","eukaryota"),list("ShCO1","eukaryota"),list("FolCO1","eukaryota")) ) {
   if (missing(input.names)) 
@@ -28,21 +28,21 @@ getRDA <- function(input.names, by.plot=FALSE,
   cm.list <- getCommunityList(genes=input.names, genes.taxa=genes.taxa, by.plot=by.plot )
   cat("\n")
   # drop CM30b51 and CM30b58, missing aspect data
-  cm.prep.list <- preprocessCMList(cm.list, rm.samples=c("CM30b51","CM30b58")) 
+  cm.prep.list <- preprocessCMList(cm.list, rm.samples=c("CM30b51","CM30b58"), min.abund=5, mean.abund.thr=0.025) 
   cat("\n")
-  env.prep <- getEnvData(by.plot=by.plot)
+  env.prep <- getEnv(by.plot=by.plot)
+  sapply(env.prep, class)
+  env.prep <- ComMA::convertType(env.prep)
   cat("\n")
   
   rda.list <- list()
   tcm.list <- list()
   env.list <- list()
-  for (i in 1:length(cm.list)) {
-    cm.name <- names(cm.list)[i]
-    cat("Start RDA analysis for", cm.name, "...\n")
+  for (i in 1:length(cm.prep.list)) {
+    cm.name <- names(cm.prep.list)[i]
+    cat("\nStart RDA analysis for", cm.name, "...\n")
     
-    
-    
-    tcm.env <- ComMA::preprocessRDA(cm.prep.list[[cm.name]], env.prep)
+    tcm.env <- ComMA::matchCMEnv(cm.prep.list[[cm.name]], env.prep)
     tcm.list[[cm.name]] <- tcm.env$tcm
     env.list[[cm.name]] <- tcm.env$env
     
