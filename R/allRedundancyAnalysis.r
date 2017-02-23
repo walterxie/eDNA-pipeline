@@ -54,7 +54,7 @@ getRDAList <- function(input.names, by.plot=FALSE,
 }
 
 # "pick" to choose the model from "reduced", "forward", "backward"
-plotAllRDA <- function(rda.list, pick="backward") {
+plotAllRDA <- function(rda.list, env.list, pick="backward") {
   require(ggplot2)
   require(gg1L)
   theme_set(theme_bw(base_size=8))
@@ -76,7 +76,7 @@ printAllRDA <- function(rda.list, file.xtable=NULL, invalid.char=FALSE) {
   for (i in 1:length(rda.list)) {
     cm.name <- names(rda.list)[i]
     gene.taxa <- unlist(strsplit(cm.name, split=" "))
-    ComMA::printXTable.RDA(rda, matrix.name=gene.taxa[1], taxa.group=gene.taxa[2], 
+    ComMA::printXTable.RDA(rda.list[[i]], matrix.name=gene.taxa[1], taxa.group=gene.taxa[2], 
                            table.file=file.xtable, invalid.char=invalid.char)
   }
 }

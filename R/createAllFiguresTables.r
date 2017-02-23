@@ -20,7 +20,8 @@ mkDir(fig.folder)
 ######## set up report latex #######
 cat("\\documentclass{article}\n\n", file=tableFile, append=FALSE)
 # add packages here
-cat("\\usepackage[utf8]{inputenc}","\\usepackage{graphicx}","\\usepackage{caption}","\n", 
+cat("\\usepackage[utf8]{inputenc}","\\usepackage{graphicx}","\\usepackage{caption}",
+    "\\usepackage[margin=0.5in]{geometry}","\n", 
     file=tableFile, append=TRUE, sep = "\n")
 cat("\\title{Spatial patterns of soil biodiversity revealed by multi-gene meta-barcoding analysis in a forested island ecosystem}\n\n", 
     file=tableFile, append=TRUE)
@@ -135,29 +136,29 @@ pdfAllCorrelations(list(gtS23=env.prep), pattern="", width = 10, height = 10 )
 
 # RDA will takes long time, so do it one by one group 
 rda.all <- getRDAList(input.names, by.plot=F)
-rda.all.pl <- plotAllRDA(rda.all, pick="backward")
+rda.all.pl <- plotAllRDA(rda.all$rda.list, rda.all$env.list, pick="backward")
 
 rda.protists <- getRDAList(input.names, by.plot=F,
                            genes.taxa=list(list("18S","protists"),list("26S","protists"),
                                            list("ShCO1","protists"),list("FolCO1","protists")))
-rda.protists.pl <- plotAllRDA(rda.protists, pick="backward")
+rda.protists.pl <- plotAllRDA(rda.protists$rda.list, rda.protists$env.list, pick="backward")
 
 rda.fungi <- getRDAList(input.names, by.plot=F,
                         genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
                                         list("ITS","fungi"),list("ShCO1","fungi")))
-rda.fungi.pl <- plotAllRDA(rda.fungi, pick="backward")
+rda.fungi.pl <- plotAllRDA(rda.fungi$rda.list, rda.fungi$env.list, pick="backward")
 
 rda.animals <- getRDAList(input.names, by.plot=F,
                           genes.taxa=list(list("18S","animals"),list("26S","animals"),
                                           list("ShCO1","animals"),list("FolCO1","animals")))
-rda.animals.pl <- plotAllRDA(rda.animals, pick="backward")
+rda.animals.pl <- plotAllRDA(rda.animals$rda.list, rda.animals$env.list, pick="backward")
 
 saveFigures(list(gtS24=rda.all.pl$gt, gtS25=rda.protists.pl$gt, gtS26=rda.fungi.pl$gt, gtS27=rda.animals.pl$gt))
 
-printAllRDA(rda.all, file.xtable=tableFile)
-printAllRDA(rda.protists, file.xtable=tableFile)
-printAllRDA(rda.fungi, file.xtable=tableFile)
-printAllRDA(rda.animals, file.xtable=tableFile)
+printAllRDA(rda.all$rda.list, file.xtable=tableFile)
+printAllRDA(rda.protists$rda.list, file.xtable=tableFile)
+printAllRDA(rda.fungi$rda.list, file.xtable=tableFile)
+printAllRDA(rda.animals$rda.list, file.xtable=tableFile)
 
 
 ######## complete report latex #######

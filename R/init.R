@@ -272,15 +272,17 @@ saveFigures <- function(plot.list, fig.folder="figures", width = 8, height = 8) 
     stop("Cannot find plot.list names !")
   for (i in 1:length(plot.list)) {
     plot <- plot.list[[i]]
+    # rename gt1 or gtS1 to Figure1 or FigureS1
     p <- gsub("p|gt", "Figure", names(plot.list)[i])
     
     if (p=="Figure2") {
       width = 12; height = 10
     } else if (p=="FigureS1" || p=="FigureS2" || p=="FigureS3") {
       width = 9; height = 9
-    } else if (p=="Figure4" || p=="FigureS4") {
+    } else if (p=="Figure4" || p=="FigureS4" || p=="FigureS24") {
       width = 10; height = 12
-    } else if (p=="FigureS5" || p=="FigureS6" || p=="FigureS7") {
+    } else if (p=="FigureS5" || p=="FigureS6" || p=="FigureS7" || 
+               p=="FigureS25" || p=="FigureS26" || p=="FigureS27") {
       width = 10; height = 8
     } else if (p=="Figure5") {
       width = 7; height = 6
