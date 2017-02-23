@@ -75,11 +75,12 @@ printMantelAndProcrustes <- function(corrs, label = "tab:gene:comp", file.xtable
 plotProcrustes.allOTUs <- function(procrustes, env.subplot) {
   cat("Max elevation is ", max(env.subplot[,"Elevation"]), "\n")
   require(ggplot2)
+  require(gg1L)
   theme_set(theme_bw(base_size=8))
   # Figure S8
   pS8.list <- ComMA::plotProcrustes(procrustes$proc.list, env.subplot, proc.list.pairs=procrustes$pairs, 
                                     colour.id="Elevation", limits=c(0,650))
-  pS8 <- ComMA::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
+  pS8 <- gg1L::grid_arrange_shared_legend(pS8.list[[1]], input.list=T, ncol=3, nrow=5, 
                                            legend.position="right", widths=c(0.8, 0.15, 0))
 }
 
@@ -135,14 +136,15 @@ plotAllProcrustes <- function(procrustes, env.subplot) {
   pS15 <- ComMA::plotProcrustes(pS15.list$sub.list, env.subplot, proc.list.pairs=pS15.list$sub.pairs, 
                                 colour.id="Elevation", limits=c(0,650))
   
+  require(gg1L)
   # return a list of gtable
-  list(gt7=ComMA::grid_arrange_shared_legend(p7[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS9=ComMA::grid_arrange_shared_legend(pS9[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS10=ComMA::grid_arrange_shared_legend(S10[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS11=ComMA::grid_arrange_shared_legend(pS11[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS12=ComMA::grid_arrange_shared_legend(pS12[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS13=ComMA::grid_arrange_shared_legend(pS13[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS14=ComMA::grid_arrange_shared_legend(pS14[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
-       gtS15=ComMA::grid_arrange_shared_legend(pS15[[1]][[1]], ncol=2, nrow=1, legend.position="right", widths=c(1,0.3))
+  list(gt7=gg1L::grid_arrange_shared_legend(p7[[1]], input.list=T, ncol=3, nrow=5, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS9=gg1L::grid_arrange_shared_legend(pS9[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS10=gg1L::grid_arrange_shared_legend(S10[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS11=gg1L::grid_arrange_shared_legend(pS11[[1]], input.list=T, ncol=3, nrow=2, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS12=gg1L::grid_arrange_shared_legend(pS12[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS13=gg1L::grid_arrange_shared_legend(pS13[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS14=gg1L::grid_arrange_shared_legend(pS14[[1]], input.list=T, ncol=3, nrow=1, legend.position="right", widths=c(0.8, 0.15, 0)),
+       gtS15=gg1L::grid_arrange_shared_legend(pS15[[1]][[1]], ncol=2, nrow=1, legend.position="right", widths=c(1,0.3))
   )
 }

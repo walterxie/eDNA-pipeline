@@ -133,8 +133,31 @@ source("R/allRedundancyAnalysis.r", local=TRUE)
 env.prep <- getEnv(by.plot=F)
 pdfAllCorrelations(list(gtS23=env.prep), pattern="", width = 10, height = 10 )
 
-rda.list <- getRDAList(input.names, by.plot=F)
+# RDA will takes long time, so do it one by one group 
+rda.all <- getRDAList(input.names, by.plot=F)
+rda.all.pl <- plotAllRDA(rda.all, pick="backward")
 
+rda.protists <- getRDAList(input.names, by.plot=F,
+                           genes.taxa=list(list("18S","protists"),list("26S","protists"),
+                                           list("ShCO1","protists"),list("FolCO1","protists")))
+rda.protists.pl <- plotAllRDA(rda.protists, pick="backward")
+
+rda.fungi <- getRDAList(input.names, by.plot=F,
+                        genes.taxa=list(list("18S","fungi"),list("26S","fungi"),
+                                        list("ITS","fungi"),list("ShCO1","fungi")))
+rda.fungi.pl <- plotAllRDA(rda.fungi, pick="backward")
+
+rda.animals <- getRDAList(input.names, by.plot=F,
+                          genes.taxa=list(list("18S","animals"),list("26S","animals"),
+                                          list("ShCO1","animals"),list("FolCO1","animals")))
+rda.animals.pl <- plotAllRDA(rda.animals, pick="backward")
+
+saveFigures(list(gtS24=rda.all.pl$gt, gtS25=rda.protists.pl$gt, gtS26=rda.fungi.pl$gt, gtS27=rda.animals.pl$gt))
+
+printAllRDA(rda.all, file.xtable=tableFile)
+printAllRDA(rda.protists, file.xtable=tableFile)
+printAllRDA(rda.fungi, file.xtable=tableFile)
+printAllRDA(rda.animals, file.xtable=tableFile)
 
 
 ######## complete report latex #######

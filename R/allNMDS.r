@@ -43,9 +43,10 @@ getNMDS <- function(input.names, metric="jaccard",
 # besides gt4, give genes.taxa to genes.taxa.list
 plotAllNMDS <- function(input.names, genes.taxa.list) {
   require(ggplot2)
+  require(gg1L)
   theme_set(theme_bw(base_size=8))
   nmds <- getNMDS(input.names)
-  gt4 <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, 
+  gt4 <- gg1L::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=3, 
                                            legend.position="right", widths=c(0.8, 0.2))
   nmds.list <- list(gt4=gt4)
   
@@ -53,8 +54,8 @@ plotAllNMDS <- function(input.names, genes.taxa.list) {
     gt.name <- names(genes.taxa.list)[i]
     genes.taxa <- genes.taxa.list[[i]]
     nmds <- getNMDS(input.names, genes.taxa=genes.taxa)
-    nrow <- length(genes.taxa)/2
-    gt <- ComMA::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=nrow, 
+    nrow <- round(length(genes.taxa)/2)
+    gt <- gg1L::grid_arrange_shared_legend(nmds$plot.list, input.list=T, nrow=nrow, 
                                             legend.position="right", widths=c(0.8, 0.2))
     nmds.list[[gt.name]] <- gt
   }
