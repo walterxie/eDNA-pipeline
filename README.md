@@ -6,9 +6,17 @@ The available projects are:
 
 ## LBI Hauturu 
 
+### Citation
+
+Andrew Dopheide, Dong Xie, Nicola Nelson, Thomas R. Buckley, Alexei J. Drummond, and Richard D. Newcomb, (2017):
+**Spatial patterns of soil biodiversity in a forested island ecosystem revealed by multi-gene meta-barcoding analysis**,
+proposing.
+
 ### Source
 
 Branch hauturu: http://github.com/walterxie/eDNA-pipeline/tree/hauturu
+
+The code is depended on [ComMA](https://github.com/walterxie/ComMA) package.
 
 ## LBI pilot
 
