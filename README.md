@@ -4,13 +4,28 @@ This is the page for developers, users please go to http://walterxie.github.io/e
 
 The available projects are:
 
+## Methods  
+
+DNA extraction and PCR replication comparison from one site (i.e. the second Waitakere samples experiment).
+
+### Citation
+
+Andrew Dopheide, Dong Xie, Thomas R. Buckley, Alexei J. Drummond, and Richard D. Newcomb. (2018),
+**Impacts of DNA extraction and PCR on DNA metabarcoding estimates of soil biodiversity**,
+in review.
+
+### Source
+
+R code is available at http://github.com/andrewdopheide/DNA_extr_PCR_impacts
+
+
 ## LBI Hauturu 
 
 ### Citation
 
-Andrew Dopheide, Dong Xie, Nicola Nelson, Thomas R. Buckley, Alexei J. Drummond, and Richard D. Newcomb, (2017):
-**Spatial patterns of soil biodiversity in a forested island ecosystem revealed by multi-gene meta-barcoding analysis**,
-proposing.
+Andrew Dopheide, Dong Xie, Nicola Nelson, Thomas R. Buckley, Alexei J. Drummond, and Richard D. Newcomb, (2018):
+**Simultaneous DNA meta-barcoding analysis of soil prokaryotes and eukaryotes in a forested island ecosystem reveals contrasting patterns of biodiversity**,
+in review.
 
 ### Source
 
