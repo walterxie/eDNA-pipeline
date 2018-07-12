@@ -23,7 +23,7 @@ R code is available at http://github.com/andrewdopheide/DNA_extr_PCR_impacts
 
 ### Citation
 
-Andrew Dopheide, Dong Xie, Nicola Nelson, Thomas R. Buckley, Alexei J. Drummond, and Richard D. Newcomb, (2018):
+Andrew Dopheide, Dong Xie, Laura Ward, Nicola Nelson, Thomas R Buckley, Alexei J Drummond, and Richard D Newcomb, (2018):
 **Simultaneous DNA meta-barcoding analysis of soil prokaryotes and eukaryotes in a forested island ecosystem reveals contrasting patterns of biodiversity**,
 in review.
 
